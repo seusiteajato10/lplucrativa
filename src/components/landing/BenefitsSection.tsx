@@ -62,7 +62,7 @@ const BenefitsSection = ({ featuresContent }: BenefitsSectionProps) => {
               style={{ animationDelay: `${index * 0.1}s` }}
             >
               <div className={`w-14 h-14 rounded-xl ${defaultBenefits[index]?.color || 'bg-primary/10 text-primary'} flex items-center justify-center mb-6 group-hover:scale-110 transition-transform duration-300`}>
-                {defaultBenefits[index]?.icon && <defaultBenefits[index].icon className="w-7 h-7" />}
+
               </div>
               <h3 className="text-xl font-bold text-foreground mb-3">
                 {benefit.title}
