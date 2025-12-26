@@ -29,6 +29,7 @@ import { Lead } from "@/hooks/useLeads";
 import { toast } from "sonner";
 import { format } from "date-fns";
 import { ptBR } from "date-fns/locale";
+import { cn } from "@/lib/utils"; // Import cn utility
 
 interface LeadsTableProps {
   leads: Lead[];
@@ -39,11 +40,11 @@ interface LeadsTableProps {
   onSelectAll: (selected: boolean) => void;
 }
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
-  new: { label: "Novo", variant: "default" },
-  contacted: { label: "Contatado", variant: "secondary" },
-  converted: { label: "Convertido", variant: "outline" },
-  discarded: { label: "Descartado", variant: "destructive" },
+const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" | "accent"; className?: string }> = {
+  new: { label: "Novo", variant: "default" }, // default is primary (blue-ish)
+  contacted: { label: "Contatado", variant: "secondary", className: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800" }, // Custom yellow
+  converted: { label: "Convertido", variant: "accent" }, // accent is green
+  discarded: { label: "Descartado", variant: "destructive" }, // destructive is red
 };
 
 const LeadsTable = ({
@@ -177,7 +178,7 @@ const LeadsTable = ({
                     </span>
                   </TableCell>
                   <TableCell>
-                    <Badge variant={config.variant}>{config.label}</Badge>
+                    <Badge variant={config.variant} className={config.className}>{config.label}</Badge>
                   </TableCell>
                   <TableCell className="text-right">
                     <div className="flex items-center justify-end gap-1">
@@ -246,7 +247,7 @@ const LeadsTable = ({
                     <p className="text-sm text-muted-foreground">{lead.project_name}</p>
                   </div>
                 </div>
-                <Badge variant={config.variant}>{config.label}</Badge>
+                <Badge variant={config.variant} className={config.className}>{config.label}</Badge>
               </div>
 
               <div className="flex flex-wrap gap-2 text-sm">

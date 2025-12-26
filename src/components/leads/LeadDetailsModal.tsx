@@ -33,6 +33,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { cn } from "@/lib/utils"; // Import cn utility
 
 interface LeadDetailsModalProps {
   lead: Lead | null;
@@ -40,11 +41,11 @@ interface LeadDetailsModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
-const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" }> = {
-  new: { label: "Novo", variant: "default" },
-  contacted: { label: "Contatado", variant: "secondary" },
-  converted: { label: "Convertido", variant: "outline" },
-  discarded: { label: "Descartado", variant: "destructive" },
+const statusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" | "accent"; className?: string }> = {
+  new: { label: "Novo", variant: "default" }, // default is primary (blue-ish)
+  contacted: { label: "Contatado", variant: "secondary", className: "bg-yellow-100 text-yellow-800 border-yellow-200 dark:bg-yellow-900/30 dark:text-yellow-300 dark:border-yellow-800" }, // Custom yellow
+  converted: { label: "Convertido", variant: "accent" }, // accent is green
+  discarded: { label: "Descartado", variant: "destructive" }, // destructive is red
 };
 
 const LeadDetailsModal = ({ lead, open, onOpenChange }: LeadDetailsModalProps) => {
@@ -99,7 +100,7 @@ const LeadDetailsModal = ({ lead, open, onOpenChange }: LeadDetailsModalProps) =
             </div>
             <div>
               <span className="block">{lead.data.name || "Lead sem nome"}</span>
-              <Badge variant={config.variant} className="mt-1">
+              <Badge variant={config.variant} className={cn("mt-1", config.className)}>
                 {config.label}
               </Badge>
             </div>
