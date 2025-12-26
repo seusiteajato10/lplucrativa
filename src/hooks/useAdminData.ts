@@ -213,18 +213,33 @@ export function useAdminTopProjects(limit = 10) {
   });
 }
 
-// Mutation for updating user
+// Mutation for updating user plan and subscription status
 export function useAdminUpdateUser() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async ({ userId, plan }: { userId: string; plan?: string }) => {
-      const { data, error } = await supabase.rpc('admin_update_user', {
-        p_user_id: userId,
-        p_plan: plan || null,
-      });
-      if (error) throw error;
-      return data;
+    mutationFn: async ({ userId, plan, subscriptionStatus }: { userId: string; plan?: string; subscriptionStatus?: string }) => {
+      const updates: { p_user_id: string; p_plan?: string | null; p_new_status?: string | null } = { p_user_id: userId };
+
+      if (plan !== undefined) {
+        updates.p_plan = plan || null;
+        const { error: planError } = await supabase.rpc('admin_update_user', {
+          p_user_id: userId,
+          p_plan: updates.p_plan,
+        });
+        if (planError) throw planError;
+      }
+
+      if (subscriptionStatus !== undefined) {
+        updates.p_new_status = subscriptionStatus || null;
+        const { error: statusError } = await supabase.rpc('admin_update_subscription_status', {
+          p_user_id: userId,
+          p_new_status: updates.p_new_status,
+        });
+        if (statusError) throw statusError;
+      }
+      
+      return { success: true };
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['adminUsers'] });

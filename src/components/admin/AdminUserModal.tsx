@@ -9,7 +9,8 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import { User, CreditCard, FolderOpen, Settings, ExternalLink } from 'lucide-react';
 import { useAdminUserDetails, useAdminUpdateUser } from '@/hooks/useAdminData';
 import { toast } from 'sonner';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { cn } from '@/lib/utils';
 
 interface AdminUserModalProps {
   userId: string | null;
@@ -17,10 +18,31 @@ interface AdminUserModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+const subscriptionStatusConfig: Record<string, { label: string; variant: "default" | "secondary" | "outline" | "destructive" | "accent"; className?: string }> = {
+  active: { label: "Ativo", variant: "accent" },
+  trialing: { label: "Trial", variant: "outline", className: "bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800" },
+  canceled: { label: "Cancelado", variant: "destructive" },
+  past_due: { label: "Vencido", variant: "destructive" },
+  // Add other statuses if needed
+  default: { label: "Sem assinatura", variant: "secondary" },
+};
+
 export function AdminUserModal({ userId, open, onOpenChange }: AdminUserModalProps) {
-  const { data, isLoading, error } = useAdminUserDetails(userId);
+  const { data, isLoading, error, refetch } = useAdminUserDetails(userId);
   const updateUser = useAdminUpdateUser();
   const [selectedPlan, setSelectedPlan] = useState<string>('');
+  const [selectedSubscriptionStatus, setSelectedSubscriptionStatus] = useState<string>('');
+
+  useEffect(() => {
+    if (data?.user?.plan) {
+      setSelectedPlan(data.user.plan);
+    }
+    if (data?.subscription?.status) {
+      setSelectedSubscriptionStatus(data.subscription.status);
+    } else {
+      setSelectedSubscriptionStatus('default'); // Or an appropriate default for no subscription
+    }
+  }, [data]);
 
   const formatDate = (dateString: string | null | undefined) => {
     if (!dateString) return '-';
@@ -45,34 +67,32 @@ export function AdminUserModal({ userId, open, onOpenChange }: AdminUserModalPro
 
     try {
       await updateUser.mutateAsync({ userId, plan: selectedPlan });
-      toast.success('Plano atualizado com sucesso!');
-      setSelectedPlan('');
+      toast.success('Plano do usuário atualizado com sucesso!');
+      refetch(); // Refetch user details to show updated plan
     } catch (err) {
       toast.error('Erro ao atualizar plano');
       console.error(err);
     }
   };
 
-  const getStatusBadge = (status: string | undefined) => {
-    if (!status) return <Badge variant="secondary">Sem assinatura</Badge>;
-    
-    const variants: Record<string, 'default' | 'secondary' | 'destructive' | 'outline'> = {
-      active: 'default',
-      trialing: 'outline',
-      canceled: 'destructive',
-      past_due: 'destructive',
-    };
+  const handleChangeSubscriptionStatus = async () => {
+    if (!userId || !selectedSubscriptionStatus) return;
 
-    const labels: Record<string, string> = {
-      active: 'Ativo',
-      trialing: 'Trial',
-      canceled: 'Cancelado',
-      past_due: 'Vencido',
-    };
+    try {
+      await updateUser.mutateAsync({ userId, subscriptionStatus: selectedSubscriptionStatus });
+      toast.success('Status da assinatura atualizado com sucesso!');
+      refetch(); // Refetch user details to show updated status
+    } catch (err) {
+      toast.error('Erro ao atualizar status da assinatura');
+      console.error(err);
+    }
+  };
 
+  const getStatusBadge = (status: string | undefined | null) => {
+    const config = status ? subscriptionStatusConfig[status] || subscriptionStatusConfig.default : subscriptionStatusConfig.default;
     return (
-      <Badge variant={variants[status] || 'secondary'}>
-        {labels[status] || status}
+      <Badge variant={config.variant} className={cn(config.className)}>
+        {config.label}
       </Badge>
     );
   };
@@ -218,7 +238,7 @@ export function AdminUserModal({ userId, open, onOpenChange }: AdminUserModalPro
                             <TableCell className="font-medium">{project.name}</TableCell>
                             <TableCell className="capitalize">{project.niche}</TableCell>
                             <TableCell>
-                              <Badge variant={project.status === 'active' ? 'default' : 'secondary'}>
+                              <Badge variant={project.status === 'active' ? 'accent' : 'secondary'}>
                                 {project.status === 'active' ? 'Ativo' : 'Pausado'}
                               </Badge>
                             </TableCell>
@@ -268,6 +288,26 @@ export function AdminUserModal({ userId, open, onOpenChange }: AdminUserModalPro
                       disabled={!selectedPlan || updateUser.isPending}
                     >
                       {updateUser.isPending ? 'Atualizando...' : 'Alterar Plano'}
+                    </Button>
+                  </div>
+
+                  <div className="flex items-center gap-4">
+                    <Select value={selectedSubscriptionStatus} onValueChange={setSelectedSubscriptionStatus}>
+                      <SelectTrigger className="w-[200px]">
+                        <SelectValue placeholder="Status da assinatura" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="active">Ativo</SelectItem>
+                        <SelectItem value="trialing">Trial</SelectItem>
+                        <SelectItem value="canceled">Cancelado</SelectItem>
+                        <SelectItem value="past_due">Vencido</SelectItem>
+                      </SelectContent>
+                    </Select>
+                    <Button 
+                      onClick={handleChangeSubscriptionStatus} 
+                      disabled={!selectedSubscriptionStatus || updateUser.isPending}
+                    >
+                      {updateUser.isPending ? 'Atualizando...' : 'Alterar Status Assinatura'}
                     </Button>
                   </div>
                 </CardContent>
