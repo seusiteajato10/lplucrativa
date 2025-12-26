@@ -7,8 +7,9 @@ import { AdminPlansSection } from '@/components/admin/AdminPlansSection';
 import { AdminUserModal } from '@/components/admin/AdminUserModal';
 import { AdminReports } from '@/components/admin/AdminReports';
 import { AdminIntegrations } from '@/components/admin/AdminIntegrations';
+import { HomepageContentEditor } from '@/components/admin/HomepageContentEditor'; // Import the new component
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LayoutDashboard, CreditCard, Settings } from 'lucide-react';
+import { LayoutDashboard, CreditCard, Settings, Home } from 'lucide-react'; // Import Home icon
 
 export default function Admin() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -45,6 +46,10 @@ export default function Admin() {
               <Settings className="h-4 w-4" />
               Configurações
             </TabsTrigger>
+            <TabsTrigger value="homepage-content" className="gap-2"> {/* New Tab Trigger */}
+              <Home className="h-4 w-4" />
+              Conteúdo da Home
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="dashboard" className="space-y-6">
@@ -68,6 +73,10 @@ export default function Admin() {
           <TabsContent value="settings" className="space-y-6">
             {/* Gerenciamento de Planos */}
             <AdminPlansSection />
+          </TabsContent>
+
+          <TabsContent value="homepage-content" className="space-y-6"> {/* New Tab Content */}
+            <HomepageContentEditor />
           </TabsContent>
         </Tabs>
       </div>

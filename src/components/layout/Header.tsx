@@ -3,6 +3,13 @@ import { Button } from "@/components/ui/button";
 import { Rocket } from "lucide-react";
 
 const Header = () => {
+  const scrollToSection = (id: string) => {
+    const element = document.getElementById(id);
+    if (element) {
+      element.scrollIntoView({ behavior: 'smooth' });
+    }
+  };
+
   return (
     <header className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-lg border-b border-border">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
@@ -16,12 +23,12 @@ const Header = () => {
         </Link>
 
         <nav className="hidden md:flex items-center gap-8">
-          <a href="#beneficios" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">
+          <button onClick={() => scrollToSection('beneficios')} className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">
             Benefícios
-          </a>
-          <a href="#precos" className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">
+          </button>
+          <button onClick={() => scrollToSection('precos')} className="text-muted-foreground hover:text-foreground transition-colors text-sm font-medium">
             Preços
-          </a>
+          </button>
         </nav>
 
         <div className="flex items-center gap-3">

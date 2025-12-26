@@ -1,8 +1,24 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Sparkles, Zap, Target } from "lucide-react";
+import { useHomepageContent } from "@/hooks/useHomepageContent"; // Import useHomepageContent
 
-const HeroSection = () => {
+interface HeroSectionProps {
+  heroContent?: {
+    title?: string;
+    subtitle?: string;
+    primaryButton?: string;
+    secondaryButton?: string;
+  };
+}
+
+const HeroSection = ({ heroContent }: HeroSectionProps) => {
+  // Fallback to default values if dynamic content is not provided
+  const title = heroContent?.title || "Crie Landing Pages que Convertem em Minutos";
+  const subtitle = heroContent?.subtitle || "Sem precisar de programação ou design. Templates prontos, editor visual intuitivo e tudo que você precisa para capturar leads e vender mais.";
+  const primaryButtonText = heroContent?.primaryButton || "Começar agora grátis";
+  const secondaryButtonText = heroContent?.secondaryButton || "Ver planos";
+
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden pt-16">
       {/* Background decoration */}
@@ -32,27 +48,26 @@ const HeroSection = () => {
 
           {/* Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-foreground leading-tight mb-6 animate-fade-in" style={{ animationDelay: "0.1s" }}>
-            Crie Landing Pages que{" "}
-            <span className="text-gradient">Convertem</span>{" "}
-            em Minutos
+            {title.split(' ').map((word, i) => (
+              word === 'Convertem' ? <span key={i} className="text-gradient">Convertem</span> : <span key={i}>{word} </span>
+            ))}
           </h1>
 
           {/* Subtitle */}
           <p className="text-lg sm:text-xl text-muted-foreground max-w-2xl mx-auto mb-10 animate-fade-in" style={{ animationDelay: "0.2s" }}>
-            Sem precisar de programação ou design. Templates prontos, editor visual 
-            intuitivo e tudo que você precisa para capturar leads e vender mais.
+            {subtitle}
           </p>
 
           {/* CTAs */}
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4 mb-16 animate-fade-in" style={{ animationDelay: "0.3s" }}>
             <Button variant="accent" size="xl" asChild>
               <Link to="/signup" className="group">
-                Começar agora grátis
+                {primaryButtonText}
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
             <Button variant="outline" size="xl" asChild>
-              <a href="#precos">Ver planos</a>
+              <a href="#precos">{secondaryButtonText}</a>
             </Button>
           </div>
 

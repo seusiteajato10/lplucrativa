@@ -1,7 +1,21 @@
 import { Link } from "react-router-dom";
 import { Rocket } from "lucide-react";
+import { useHomepageContent } from "@/hooks/useHomepageContent"; // Import useHomepageContent
 
-const Footer = () => {
+interface FooterProps {
+  contactContent?: {
+    email?: string;
+    phone?: string;
+    address?: string;
+  };
+}
+
+const Footer = ({ contactContent }: FooterProps) => {
+  // Fallback to default values if dynamic content is not provided
+  const email = contactContent?.email || "contato@lplucrativa.com.br";
+  const phone = contactContent?.phone || "(XX) XXXX-XXXX";
+  const address = contactContent?.address || "Rua Exemplo, 123 - Cidade, Estado";
+
   return (
     <footer className="bg-secondary/50 border-t border-border">
       <div className="container mx-auto px-4 py-12">
@@ -58,6 +72,11 @@ const Footer = () => {
           <p className="text-muted-foreground text-sm">
             © {new Date().getFullYear()} LP Lucrativa. Todos os direitos reservados.
           </p>
+          <div className="text-muted-foreground text-xs mt-2">
+            <p>Email: {email}</p>
+            <p>Telefone: {phone}</p>
+            <p>Endereço: {address}</p>
+          </div>
         </div>
       </div>
     </footer>
