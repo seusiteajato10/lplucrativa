@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { useAuth } from '@/contexts/AuthContext';
+import { useQuery, useQueryClient } from '@tanstack/react-query'; // Import useQuery and useQueryClient
 
 export interface SubscriptionPlan {
   id: string;
@@ -52,42 +53,46 @@ export interface UserSubscription {
 
 export function useSubscription() {
   const { user } = useAuth();
-  const [subscription, setSubscription] = useState<UserSubscription | null>(null);
-  const [limits, setLimits] = useState<SubscriptionLimits | null>(null);
-  const [plans, setPlans] = useState<SubscriptionPlan[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient(); // Initialize queryClient
 
-  // Buscar planos disponíveis
-  const fetchPlans = useCallback(async () => {
-    const { data, error } = await supabase
-      .from('subscription_plans')
-      .select('*')
-      .eq('is_active', true)
-      .order('price_monthly', { ascending: true });
+  // 1. Plans Query
+  const { data: plansData = [], isLoading: isLoadingPlans, error: plansQueryError } = useQuery<SubscriptionPlan[]>({
+    queryKey: ['subscriptionPlans'], // Unique key for plans
+    queryFn: async () => {
+      const { data, error } = await supabase
+        .from('subscription_plans')
+        .select('*')
+        .eq('is_active', true)
+        .order('price_monthly', { ascending: true });
 
-    if (error) {
-      console.error('Error fetching plans:', error);
-      return;
-    }
+      if (error) {
+        console.error('Error fetching plans:', error);
+        throw error; // Throw error for React Query to catch
+      }
 
-    setPlans(data?.map(plan => ({
-      ...plan,
-      features: Array.isArray(plan.features) ? plan.features : JSON.parse(plan.features as string),
-    })) || []);
-  }, []);
+      return data?.map(plan => ({
+        ...plan,
+        features: Array.isArray(plan.features) ? plan.features : JSON.parse(plan.features as string),
+      })) || [];
+    },
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
+  });
 
-  // Buscar assinatura do usuário
-  const fetchSubscription = useCallback(async () => {
-    if (!user) {
-      setSubscription(null);
-      setLimits({ has_subscription: false });
-      setLoading(false);
-      return;
-    }
+  // 2. User Subscription and Limits Query
+  const {
+    data: userSubscriptionData,
+    isLoading: isLoadingUserSubscription,
+    error: userSubscriptionError,
+    refetch: refetchUserSubscriptionQuery, // Renamed to avoid conflict with combined refetch
+  } = useQuery<{ subscription: UserSubscription | null; limits: SubscriptionLimits | null }>({
+    queryKey: ['userSubscription', user?.id],
+    queryFn: async () => {
+      if (!user?.id) return { subscription: null, limits: { has_subscription: false } };
 
-    try {
-      // Buscar assinatura ativa
+      let currentSubscription: UserSubscription | null = null;
+      let currentLimits: SubscriptionLimits | null = { has_subscription: false };
+
+      // Fetch active subscription
       const { data: subData, error: subError } = await supabase
         .from('user_subscriptions')
         .select(`
@@ -100,85 +105,80 @@ export function useSubscription() {
 
       if (subError) {
         console.error('Error fetching subscription:', subError);
-        setError(subError.message);
-        setLoading(false);
-        return;
+        throw subError;
       }
 
       if (subData) {
-        setSubscription({
+        currentSubscription = {
           ...subData,
           plan: subData.plan ? {
             ...subData.plan,
-            features: Array.isArray(subData.plan.features) 
-              ? subData.plan.features 
+            features: Array.isArray(subData.plan.features)
+              ? subData.plan.features
               : JSON.parse(subData.plan.features as string),
           } : undefined,
-        });
-      } else {
-        setSubscription(null);
+        };
       }
 
-      // Buscar limites via RPC
+      // Fetch limits via RPC
       const { data: limitsData, error: limitsError } = await supabase
         .rpc('check_user_limits', { p_user_id: user.id });
 
       if (limitsError) {
         console.error('Error checking limits:', limitsError);
-        setLimits({ has_subscription: false });
+        // Don't throw, just set default limits
       } else {
-        setLimits(limitsData as SubscriptionLimits);
+        currentLimits = limitsData as SubscriptionLimits;
       }
-    } catch (err) {
-      console.error('Error in fetchSubscription:', err);
-      setError(err instanceof Error ? err.message : 'Unknown error');
-    } finally {
-      setLoading(false);
-    }
-  }, [user]);
 
-  // Verificar se pode criar projeto
+      return { subscription: currentSubscription, limits: currentLimits };
+    },
+    enabled: !!user?.id, // Only run if user is logged in
+    staleTime: 10 * 1000, // Cache for 10 seconds
+  });
+
+  // Combine loading and error states
+  const loading = isLoadingPlans || isLoadingUserSubscription;
+  const error = plansQueryError || userSubscriptionError;
+
+  // Expose a combined refetch function that invalidates relevant queries
+  const refetch = useCallback(async () => {
+    await Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['subscriptionPlans'] }),
+      queryClient.invalidateQueries({ queryKey: ['userSubscription', user?.id] }),
+    ]);
+  }, [queryClient, user?.id]);
+
+  // Memoized selectors for derived states
   const canCreateProject = useCallback((): boolean => {
-    if (!limits) return false;
-    return limits.can_create_project ?? false;
-  }, [limits]);
+    if (!userSubscriptionData?.limits) return false;
+    return userSubscriptionData.limits.can_create_project ?? false;
+  }, [userSubscriptionData?.limits]);
 
-  // Verificar se tem feature específica
   const hasFeature = useCallback((feature: string): boolean => {
-    if (!limits?.features) return false;
-    return limits.features.some(f => 
+    if (!userSubscriptionData?.limits?.features) return false;
+    return userSubscriptionData.limits.features.some(f =>
       f.toLowerCase().includes(feature.toLowerCase())
     );
-  }, [limits]);
+  }, [userSubscriptionData?.limits?.features]);
 
-  // Verificar tipo de checkout permitido
   const canUseCheckoutType = useCallback((type: 'external' | 'embedded' | 'post_lead'): boolean => {
-    if (!limits?.checkout_types) return type === 'external'; // fallback
-    return (limits.checkout_types as string[]).includes(type);
-  }, [limits]);
+    if (!userSubscriptionData?.limits?.checkout_types) return type === 'external';
+    return (userSubscriptionData.limits.checkout_types as string[]).includes(type);
+  }, [userSubscriptionData?.limits?.checkout_types]);
 
-  // Verificar se pode usar webhooks
   const canUseWebhooks = useCallback((): boolean => {
-    return limits?.webhook_integration ?? false;
-  }, [limits]);
+    return userSubscriptionData?.limits?.webhook_integration ?? false;
+  }, [userSubscriptionData?.limits?.webhook_integration]);
 
-  // Verificar se pode remover branding
   const canRemoveBranding = useCallback((): boolean => {
-    return limits?.remove_branding ?? false;
-  }, [limits]);
-
-  useEffect(() => {
-    fetchPlans();
-  }, [fetchPlans]);
-
-  useEffect(() => {
-    fetchSubscription();
-  }, [fetchSubscription]);
+    return userSubscriptionData?.limits?.remove_branding ?? false;
+  }, [userSubscriptionData?.limits?.remove_branding]);
 
   return {
-    subscription,
-    limits,
-    plans,
+    subscription: userSubscriptionData?.subscription || null,
+    limits: userSubscriptionData?.limits || null,
+    plans: plansData,
     loading,
     error,
     canCreateProject,
@@ -186,6 +186,6 @@ export function useSubscription() {
     canUseCheckoutType,
     canUseWebhooks,
     canRemoveBranding,
-    refetch: fetchSubscription,
+    refetch,
   };
 }

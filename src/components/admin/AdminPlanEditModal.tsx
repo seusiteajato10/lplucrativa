@@ -97,7 +97,9 @@ export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditMo
       if (error) throw error;
 
       toast.success('Plano atualizado com sucesso!');
-      queryClient.invalidateQueries({ queryKey: ['adminPlans'] });
+      queryClient.invalidateQueries({ queryKey: ['adminPlans'] }); // Invalidate for the admin table
+      queryClient.invalidateQueries({ queryKey: ['subscriptionPlans'] }); // Invalidate for the Pricing page
+      queryClient.invalidateQueries({ queryKey: ['userSubscription'] }); // Invalidate for Dashboard/Configuracoes pages
       onOpenChange(false);
     } catch (error: any) {
       toast.error('Erro ao atualizar plano: ' + error.message);
