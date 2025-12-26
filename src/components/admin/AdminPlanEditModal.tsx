@@ -9,6 +9,9 @@ import { supabase } from '@/integrations/supabase/client';
 import { useQueryClient } from '@tanstack/react-query';
 import { AdminPlan } from '@/hooks/useAdminData';
 import { Loader2 } from 'lucide-react';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Textarea } from '@/components/ui/textarea';
+import { Separator } from '@/components/ui/separator';
 
 interface AdminPlanEditModalProps {
   plan: AdminPlan | null;
@@ -19,7 +22,6 @@ interface AdminPlanEditModalProps {
 export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditModalProps) {
   const queryClient = useQueryClient();
   const [saving, setSaving] = useState(false);
-  
   const [formData, setFormData] = useState({
     name: '',
     price_monthly: 0,
@@ -27,11 +29,14 @@ export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditMo
     max_projects: null as number | null,
     max_page_views: null as number | null,
     webhook_integration: false,
-    custom_domain: false,
+    custom_domain: false, // This will be controlled by domainType
     remove_branding: false,
     priority_support: false,
     is_active: true,
   });
+  const [domainType, setDomainType] = useState<'subdomain' | 'custom_domain'>('subdomain');
+  const [featuresText, setFeaturesText] = useState('');
+  const [errors, setErrors] = useState<{ features?: string }>({});
 
   useEffect(() => {
     if (plan) {
@@ -47,14 +52,31 @@ export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditMo
         priority_support: plan.priority_support,
         is_active: plan.is_active,
       });
+      setDomainType(plan.custom_domain ? 'custom_domain' : 'subdomain');
+      setFeaturesText(plan.features.join('\n'));
+      setErrors({});
     }
   }, [plan]);
 
+  const validate = () => {
+    const newErrors: { features?: string } = {};
+    const parsedFeatures = featuresText.split('\n').map(f => f.trim()).filter(f => f.length > 0);
+
+    if (parsedFeatures.length === 0) {
+      newErrors.features = 'Pelo menos um recurso é obrigatório.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSave = async () => {
-    if (!plan) return;
+    if (!plan || !validate()) return;
     
     setSaving(true);
     try {
+      const parsedFeatures = featuresText.split('\n').map(f => f.trim()).filter(f => f.length > 0);
+
       const { error } = await supabase
         .from('subscription_plans')
         .update({
@@ -64,10 +86,11 @@ export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditMo
           max_projects: formData.max_projects,
           max_page_views: formData.max_page_views,
           webhook_integration: formData.webhook_integration,
-          custom_domain: formData.custom_domain,
+          custom_domain: domainType === 'custom_domain', // Update based on radio button
           remove_branding: formData.remove_branding,
           priority_support: formData.priority_support,
           is_active: formData.is_active,
+          features: parsedFeatures as unknown as AdminPlan['features'], // Cast to Json type
         })
         .eq('id', plan.id);
 
@@ -81,13 +104,6 @@ export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditMo
     } finally {
       setSaving(false);
     }
-  };
-
-  const formatCurrency = (value: number) => {
-    return new Intl.NumberFormat('pt-BR', {
-      style: 'currency',
-      currency: 'BRL',
-    }).format(value);
   };
 
   return (
@@ -164,21 +180,33 @@ export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditMo
             </div>
           </div>
 
-          <div className="space-y-3 pt-2 border-t">
+          <Separator />
+
+          <div className="space-y-3 pt-2">
+            <div className="space-y-2">
+              <Label>Tipo de Domínio</Label>
+              <RadioGroup
+                value={domainType}
+                onValueChange={(value: 'subdomain' | 'custom_domain') => setDomainType(value)}
+                className="flex space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="subdomain" id="domain-subdomain" />
+                  <Label htmlFor="domain-subdomain">Subdomínio</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="custom_domain" id="domain-custom" />
+                  <Label htmlFor="domain-custom">Domínio personalizado</Label>
+                </div>
+              </RadioGroup>
+            </div>
+
             <div className="flex items-center justify-between">
               <Label htmlFor="webhook">Webhooks</Label>
               <Switch
                 id="webhook"
                 checked={formData.webhook_integration}
                 onCheckedChange={(checked) => setFormData({ ...formData, webhook_integration: checked })}
-              />
-            </div>
-            <div className="flex items-center justify-between">
-              <Label htmlFor="domain">Domínio Próprio</Label>
-              <Switch
-                id="domain"
-                checked={formData.custom_domain}
-                onCheckedChange={(checked) => setFormData({ ...formData, custom_domain: checked })}
               />
             </div>
             <div className="flex items-center justify-between">
@@ -205,6 +233,21 @@ export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditMo
                 onCheckedChange={(checked) => setFormData({ ...formData, is_active: checked })}
               />
             </div>
+          </div>
+
+          <Separator />
+
+          <div className="space-y-2">
+            <Label htmlFor="features">Recursos Incluídos (um por linha)</Label>
+            <Textarea
+              id="features"
+              value={featuresText}
+              onChange={(e) => setFeaturesText(e.target.value)}
+              placeholder="Digite cada recurso em uma nova linha"
+              rows={6}
+              className={errors.features ? "border-destructive" : ""}
+            />
+            {errors.features && <p className="text-sm text-destructive">{errors.features}</p>}
           </div>
         </div>
 

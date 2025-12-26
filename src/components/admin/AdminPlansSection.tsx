@@ -3,7 +3,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Check, X, Users, Pencil } from 'lucide-react';
+import { Check, X, Users, Pencil, Globe, MapPin } from 'lucide-react';
 import { useAdminPlans, AdminPlan } from '@/hooks/useAdminData';
 import { AdminPlanEditModal } from './AdminPlanEditModal';
 
@@ -113,8 +113,8 @@ export function AdminPlansSection() {
                     </div>
 
                     <div className="space-y-1 text-sm border-t pt-3">
+                      <FeatureItem enabled={plan.custom_domain} label="Domínio personalizado" icon={<Globe className="h-3 w-3" />} fallbackIcon={<MapPin className="h-3 w-3" />} fallbackLabel="Subdomínio incluído" />
                       <FeatureItem enabled={plan.webhook_integration} label="Webhooks" />
-                      <FeatureItem enabled={plan.custom_domain} label="Domínio próprio" />
                       <FeatureItem enabled={plan.remove_branding} label="Remover marca" />
                       <FeatureItem enabled={plan.priority_support} label="Suporte prioritário" />
                     </div>
@@ -146,15 +146,20 @@ export function AdminPlansSection() {
   );
 }
 
-function FeatureItem({ enabled, label }: { enabled: boolean; label: string }) {
+function FeatureItem({ enabled, label, icon, fallbackIcon, fallbackLabel }: { enabled: boolean; label: string; icon?: React.ReactNode; fallbackIcon?: React.ReactNode; fallbackLabel?: string }) {
   return (
     <div className="flex items-center gap-2">
       {enabled ? (
-        <Check className="h-3 w-3 text-green-500" />
+        <>
+          {icon || <Check className="h-3 w-3 text-green-500" />}
+          <span className="text-foreground">{label}</span>
+        </>
       ) : (
-        <X className="h-3 w-3 text-muted-foreground" />
+        <>
+          {fallbackIcon || <X className="h-3 w-3 text-muted-foreground" />}
+          <span className="text-muted-foreground">{fallbackLabel || label}</span>
+        </>
       )}
-      <span className={enabled ? '' : 'text-muted-foreground'}>{label}</span>
     </div>
   );
 }
