@@ -108,12 +108,12 @@ export function AdminPlanEditModal({ plan, open, onOpenChange }: AdminPlanEditMo
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="max-w-md">
+      <DialogContent className="max-w-md flex flex-col max-h-[90vh]">
         <DialogHeader>
           <DialogTitle>Editar Plano: {plan?.name}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4 py-4">
+        <div className="flex-1 overflow-y-auto p-4 space-y-4">
           <div className="space-y-2">
             <Label htmlFor="name">Nome do Plano</Label>
             <Input
