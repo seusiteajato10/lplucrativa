@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,13 +8,13 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator"; // Adicionado import para Separator
+import { Separator } from "@/components/ui/separator";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { ProjectNiche, nicheLabels, getTemplateOptionsForNiche, ProjectType } from "@/types/project";
 import { toast } from "sonner";
 import { getProjectPublicPath } from "@/lib/routes";
-import { AlertTriangle, Crown, MousePointer2, ShoppingCart, Repeat, BookOpen, PlayCircle, HelpCircle, Ticket } from "lucide-react";
+import { AlertTriangle, Crown, MousePointer2, ShoppingCart, Repeat, BookOpen, PlayCircle, HelpCircle, Ticket, Layout } from "lucide-react";
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -46,14 +46,20 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
   const [errors, setErrors] = useState<any>({});
 
   const canCreate = canCreateProject();
+  const isCaptureType = projectType === 'lead_only' || projectType === 'full_funnel';
 
-  // Atualiza as opções de template quando o tipo de projeto ou nicho muda
-  useEffect(() => {
-    const options = getTemplateOptionsForNiche(niche, projectType);
-    if (options.length > 0) {
-      setSelectedTemplateId(options[0].value);
-    }
+  const currentTemplateOptions = useMemo(() => {
+    return getTemplateOptionsForNiche(niche, projectType);
   }, [niche, projectType]);
+
+  // Atualiza o template selecionado quando o tipo de projeto ou nicho muda
+  useEffect(() => {
+    if (currentTemplateOptions.length > 0) {
+      setSelectedTemplateId(currentTemplateOptions[0].value);
+    } else {
+      setSelectedTemplateId("");
+    }
+  }, [currentTemplateOptions]);
 
   const handleNameChange = (value: string) => {
     setName(value);
@@ -112,9 +118,6 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
     onOpenChange(false);
   };
 
-  const isCapture = projectType === 'lead_only' || projectType === 'full_funnel';
-  const captureTemplates = getTemplateOptionsForNiche('product', 'lead_only');
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="sm:max-w-[600px] max-h-[95vh] overflow-y-auto">
@@ -170,12 +173,23 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
 
           <Separator />
 
-          {/* 2. Seleção de Template (Se for Captura ou Funil) */}
-          {isCapture && (
-            <div className="space-y-3">
-              <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Escolha o estilo de captura:</Label>
+          {/* 2. Seleção de Nicho (sempre visível) */}
+          <div className="space-y-2">
+            <Label>Nicho do Negócio</Label>
+            <Select value={niche} onValueChange={(v) => setNiche(v as ProjectNiche)}>
+              <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
+              <SelectContent>
+                {Object.entries(nicheLabels).map(([k, l]) => <SelectItem key={k} value={k}>{l}</SelectItem>)}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* 3. Seleção de Template (dinâmica) */}
+          <div className="space-y-3">
+            <Label className="text-xs font-bold uppercase tracking-wider text-muted-foreground">Escolha o estilo da página:</Label>
+            {isCaptureType ? (
               <div className="grid grid-cols-2 md:grid-cols-4 gap-2">
-                {captureTemplates.map((tpl) => (
+                {currentTemplateOptions.map((tpl) => (
                   <button
                     key={tpl.value}
                     type="button"
@@ -192,41 +206,48 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
                   </button>
                 ))}
               </div>
-            </div>
-          )}
+            ) : (
+              <Select
+                value={selectedTemplateId}
+                onValueChange={(value) => setSelectedTemplateId(value)}
+              >
+                <SelectTrigger>
+                  <SelectValue placeholder="Selecione um template" />
+                </SelectTrigger>
+                <SelectContent>
+                  {currentTemplateOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            )}
+            {errors.template && <p className="text-[10px] text-destructive">{errors.template}</p>}
+          </div>
 
-          {/* 3. Dados Básicos */}
+          <Separator />
+
+          {/* 4. Dados Básicos do Projeto */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="name">Nome do Projeto</Label>
               <Input id="name" value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder="Ex: E-book Fone Pro" className={errors.name ? 'border-destructive' : ''} />
             </div>
-            {!isCapture && (
-              <div className="space-y-2">
-                <Label>Nicho do Negócio</Label>
-                <Select value={niche} onValueChange={(v) => setNiche(v as ProjectNiche)}>
-                  <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
-                  <SelectContent>
-                    {Object.entries(nicheLabels).map(([k, l]) => <SelectItem key={k} value={k}>{l}</SelectItem>)}
-                  </SelectContent>
-                </Select>
+            <div className="space-y-2">
+              <Label htmlFor="slug">URL Amigável (slug)</Label>
+              <div className="flex items-center gap-1 bg-muted px-3 py-2 rounded-md">
+                <span className="text-xs text-muted-foreground">lplucrativa.com/p/</span>
+                <input 
+                  id="slug" 
+                  value={slug} 
+                  onChange={(e) => handleSlugChange(e.target.value)} 
+                  className="bg-transparent border-none outline-none text-xs font-mono flex-1 h-auto p-0"
+                  placeholder="meu-projeto"
+                />
               </div>
-            )}
-          </div>
-
-          <div className="space-y-2">
-            <Label htmlFor="slug">URL Amigável (slug)</Label>
-            <div className="flex items-center gap-1 bg-muted px-3 py-2 rounded-md">
-              <span className="text-xs text-muted-foreground">lplucrativa.com/p/</span>
-              <input 
-                id="slug" 
-                value={slug} 
-                onChange={(e) => handleSlugChange(e.target.value)} 
-                className="bg-transparent border-none outline-none text-xs font-mono flex-1 h-auto p-0"
-                placeholder="meu-projeto"
-              />
+              {errors.slug && <p className="text-[10px] text-destructive">{errors.slug}</p>}
             </div>
-            {errors.slug && <p className="text-[10px] text-destructive">{errors.slug}</p>}
           </div>
 
           {!canCreate && (
