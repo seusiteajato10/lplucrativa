@@ -62,13 +62,13 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
   return (
     <div className="min-h-screen bg-gray-50">
       
-      {discount > 0 ? (
+      {discount > 0 && (
         <div className="bg-red-600 text-white py-3 text-center font-bold">
           <span className="text-sm md:text-base">
-            🔥 {discount}% OFF • Últimas {productStock} unidades • Frete Grátis para todo Brasil
+            OFERTA: {discount}% OFF - Últimas {productStock} unidades - Frete Grátis Brasil
           </span>
         </div>
-      ) : null}
+      )}
 
       <div className="container mx-auto px-4 py-6 md:py-10 max-w-6xl">
         
@@ -84,7 +84,7 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
                 />
               </div>
               
-              {productImages.length > 1 ? (
+              {productImages.length > 1 && (
                 <div className="grid grid-cols-4 gap-2">
                   {productImages.map((img: string, idx: number) => (
                     <button
@@ -98,7 +98,7 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
                     </button>
                   ))}
                 </div>
-              ) : null}
+              )}
             </div>
 
             <div>
@@ -114,22 +114,22 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
                 </div>
                 <span className="text-sm font-semibold">4.8</span>
                 <span className="text-sm text-gray-500">(324 avaliações)</span>
-                <Badge className="bg-green-100 text-green-700 text-xs">✓ Produto verificado</Badge>
+                <Badge className="bg-green-100 text-green-700 text-xs">Produto verificado</Badge>
               </div>
 
               <div className="mb-6">
-                {productOriginalPrice > 0 ? (
+                {productOriginalPrice > 0 && (
                   <div className="flex items-center gap-3 mb-2">
                     <span className="text-lg text-gray-500 line-through">
                       R$ {productOriginalPrice.toFixed(2)}
                     </span>
-                    {discount > 0 ? (
+                    {discount > 0 && (
                       <Badge className="bg-red-500 text-white px-2 py-1">
                         -{discount}%
                       </Badge>
-                    ) : null}
+                    )}
                   </div>
-                ) : null}
+                )}
                 
                 <p className="text-4xl md:text-5xl font-black text-green-600 mb-2">
                   R$ {productPrice.toFixed(2)}
@@ -160,12 +160,12 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
 
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
                 <p className="text-orange-800 font-semibold text-sm">
-                  ⚠️ Apenas {productStock} unidades disponíveis em estoque
+                  Atenção: Apenas {productStock} unidades disponíveis em estoque
                 </p>
               </div>
 
               <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-xl py-6 rounded-lg mb-3">
-                🛒 COMPRAR AGORA
+                COMPRAR AGORA
               </Button>
 
               <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-4">
@@ -230,9 +230,9 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
                   </div>
                 </div>
                 <p className="text-gray-700 text-sm">{review.comment}</p>
-                {review.verified ? (
-                  <Badge className="bg-green-100 text-green-700 text-xs mt-2">✓ Compra verificada</Badge>
-                ) : null}
+                {review.verified && (
+                  <Badge className="bg-green-100 text-green-700 text-xs mt-2">Compra verificada</Badge>
+                )}
               </div>
             ))}
           </div>
