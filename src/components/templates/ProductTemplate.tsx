@@ -1,7 +1,6 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Check, Shield, Star, ChevronDown, Package, Zap, TrendingUp } from 'lucide-react';
-import { motion } from 'framer-motion';
 
 interface ProductTemplateProps {
   projectData: {
@@ -76,7 +75,7 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
       {/* CTA FIXO NO TOPO */}
       <div className="fixed top-0 left-0 right-0 bg-primary/95 backdrop-blur-sm z-50 py-3 shadow-lg">
         <div className="container mx-auto px-4 flex items-center justify-between">
-          <span className="text-primary-foreground font-semibold">
+          <span className="text-primary-foreground font-semibold text-sm md:text-base">
             🔥 Oferta por tempo limitado!
           </span>
           <Button variant="secondary" size="sm">
@@ -89,11 +88,7 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
       <section className="pt-32 pb-20 px-4">
         <div className="container mx-auto max-w-6xl">
           <div className="grid md:grid-cols-2 gap-12 items-center">
-            <motion.div
-              initial={{ opacity: 0, x: -50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6 }}
-            >
+            <div className="animate-fade-in-up">
               <div className="inline-block bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-semibold mb-6">
                 ⚡ Mais de 1.000 alunos satisfeitos
               </div>
@@ -144,14 +139,9 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
                   4.9/5 baseado em 847 avaliações
                 </span>
               </div>
-            </motion.div>
+            </div>
 
-            <motion.div
-              initial={{ opacity: 0, x: 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ duration: 0.6, delay: 0.2 }}
-              className="relative"
-            >
+            <div className="relative animate-fade-in-up">
               <div className="relative rounded-2xl overflow-hidden shadow-2xl">
                 <img
                   src="https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800"
@@ -161,11 +151,10 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent" />
               </div>
               
-              {/* Badge flutuante */}
               <div className="absolute -top-4 -right-4 bg-red-500 text-white px-6 py-3 rounded-full font-bold shadow-lg rotate-12">
                 50% OFF
               </div>
-            </motion.div>
+            </div>
           </div>
         </div>
       </section>
@@ -175,18 +164,15 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
         <div className="container mx-auto px-4 max-w-6xl">
           <div className="grid md:grid-cols-4 gap-8">
             {benefits.map((benefit, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
                 className="flex flex-col items-center text-center p-6 bg-card rounded-xl shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center mb-4">
                   <benefit.icon className="w-7 h-7 text-primary" />
                 </div>
                 <p className="font-medium">{benefit.text}</p>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -204,18 +190,15 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
 
           <div className="grid md:grid-cols-2 gap-6">
             {features.map((feature, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, x: -20 }}
-                whileInView={{ opacity: 1, x: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="flex items-start gap-4 p-4 bg-card rounded-lg"
+                className="flex items-start gap-4 p-4 bg-card rounded-lg hover:shadow-sm transition-shadow"
               >
                 <div className="w-6 h-6 rounded-full bg-green-500/20 flex items-center justify-center flex-shrink-0 mt-1">
                   <Check className="w-4 h-4 text-green-500" />
                 </div>
                 <span className="font-medium">{feature}</span>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
@@ -245,12 +228,9 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
 
           <div className="grid md:grid-cols-3 gap-8">
             {testimonials.map((testimonial, index) => (
-              <motion.div
+              <div
                 key={index}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ delay: index * 0.1 }}
-                className="bg-card p-6 rounded-xl shadow-sm"
+                className="bg-card p-6 rounded-xl shadow-sm hover:shadow-md transition-shadow"
               >
                 <div className="flex gap-1 mb-4">
                   {[...Array(testimonial.rating)].map((_, i) => (
@@ -262,7 +242,7 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
                   <p className="font-semibold">{testimonial.name}</p>
                   <p className="text-sm text-muted-foreground">{testimonial.role}</p>
                 </div>
-              </motion.div>
+              </div>
             ))}
           </div>
         </div>
