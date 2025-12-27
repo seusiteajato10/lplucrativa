@@ -3,6 +3,10 @@ export type ProjectNiche = 'product' | 'service' | 'event' | 'course';
 export type ProjectStatus = 'active' | 'paused';
 export type UserPlan = 'starter' | 'pro' | 'agency';
 
+// Novos tipos de projeto
+export type ProjectType = 'lead_only' | 'sales_only' | 'full_funnel';
+export type FunnelPosition = 'lead' | 'sales';
+
 export interface PlanLimits {
   projects: number;
   leads_per_month: number;
@@ -23,6 +27,9 @@ export interface Project {
   name: string;
   slug: string;
   niche: ProjectNiche;
+  project_type: ProjectType; // Novo campo
+  connected_page_id: string | null; // Novo campo
+  funnel_position: FunnelPosition | null; // Novo campo
   custom_domain: string | null;
   status: ProjectStatus;
   template_id: string;
@@ -40,15 +47,15 @@ export const nicheLabels: Record<ProjectNiche, string> = {
   course: "Curso Online",
 };
 
+export const projectTypeLabels: Record<ProjectType, string> = {
+  lead_only: "Página de Captura",
+  sales_only: "Página de Vendas",
+  full_funnel: "Funil Completo (Captura + Vendas)",
+};
+
 export const statusLabels: Record<ProjectStatus, string> = {
   active: "Ativo",
   paused: "Pausado",
-};
-
-export const planLabels: Record<UserPlan, string> = {
-  starter: "Starter",
-  pro: "Pro",
-  agency: "Agency",
 };
 
 // Template ID mapping based on niche
@@ -61,14 +68,6 @@ export const getTemplateId = (niche: ProjectNiche): string => {
   };
   return templates[niche];
 };
-
-// Niche display options for forms
-export const nicheOptions = [
-  { value: 'product' as ProjectNiche, label: 'Produto Físico' },
-  { value: 'service' as ProjectNiche, label: 'Serviço' },
-  { value: 'event' as ProjectNiche, label: 'Evento' },
-  { value: 'course' as ProjectNiche, label: 'Curso Online' },
-];
 
 // Listagem de templates disponíveis por nicho
 export const getTemplateOptionsForNiche = (niche: ProjectNiche) => {

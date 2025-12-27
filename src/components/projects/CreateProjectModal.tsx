@@ -6,12 +6,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { useSubscription } from "@/hooks/useSubscription";
-import { ProjectNiche, nicheLabels, getTemplateOptionsForNiche } from "@/types/project"; // Import getTemplateOptionsForNiche
+import { ProjectNiche, nicheLabels, getTemplateOptionsForNiche, ProjectType } from "@/types/project";
 import { toast } from "sonner";
 import { getProjectPublicPath } from "@/lib/routes";
-import { AlertTriangle, Crown } from "lucide-react";
+import { AlertTriangle, Crown, MousePointer2, ShoppingCart, Repeat } from "lucide-react";
 
 interface CreateProjectModalProps {
   open: boolean;
@@ -22,11 +23,11 @@ const generateSlug = (name: string): string => {
   return name
     .toLowerCase()
     .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "") // Remove accents
-    .replace(/[^a-z0-9\s-]/g, "") // Remove special characters
+    .replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9\s-]/g, "")
     .trim()
-    .replace(/\s+/g, "-") // Replace spaces with hyphens
-    .replace(/-+/g, "-"); // Remove consecutive hyphens
+    .replace(/\s+/g, "-")
+    .replace(/-+/g, "-");
 };
 
 const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => {
@@ -35,27 +36,23 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
   const { limits, loading: subscriptionLoading, canCreateProject } = useSubscription();
   const [name, setName] = useState("");
   const [niche, setNiche] = useState<ProjectNiche | "">("");
-  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(""); // New state for template selection
+  const [projectType, setProjectType] = useState<ProjectType>("sales_only");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>("");
   const [slug, setSlug] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; niche?: string; slug?: string; template?: string }>({});
+  const [errors, setErrors] = useState<any>({});
 
   const canCreate = canCreateProject();
   const currentProjects = limits?.usage?.projects_count || 0;
   const maxProjects = limits?.limits?.max_projects;
   const planName = limits?.plan || "Nenhum";
 
-  // Update available templates when niche changes
   useEffect(() => {
     if (niche) {
       const options = getTemplateOptionsForNiche(niche as ProjectNiche);
       if (options.length > 0) {
-        setSelectedTemplateId(options[0].value); // Select the first template by default
-      } else {
-        setSelectedTemplateId("");
+        setSelectedTemplateId(options[0].value);
       }
-    } else {
-      setSelectedTemplateId("");
     }
   }, [niche]);
 
@@ -65,205 +62,136 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
   };
 
   const handleSlugChange = (value: string) => {
-    // Only allow valid slug characters
     const cleanSlug = value.toLowerCase().replace(/[^a-z0-9-]/g, "");
     setSlug(cleanSlug);
   };
 
   const validate = (): boolean => {
-    const newErrors: { name?: string; niche?: string; slug?: string; template?: string } = {};
-
-    if (!name.trim()) {
-      newErrors.name = "Nome do projeto é obrigatório";
-    }
-
-    if (!niche) {
-      newErrors.niche = "Selecione um nicho";
-    }
-
-    if (!selectedTemplateId) {
-      newErrors.template = "Selecione um template";
-    }
-
-    if (!slug.trim()) {
-      newErrors.slug = "Slug é obrigatório";
-    } else if (!/^[a-z0-9-]+$/.test(slug)) {
-      newErrors.slug = "Slug deve conter apenas letras, números e hífens";
-    }
-
+    const newErrors: any = {};
+    if (!name.trim()) newErrors.name = "Nome é obrigatório";
+    if (!niche) newErrors.niche = "Selecione um nicho";
+    if (!selectedTemplateId) newErrors.template = "Selecione um template";
+    if (!slug.trim()) newErrors.slug = "Slug é obrigatório";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
     if (!canCreate) {
-      toast.error("Você atingiu o limite de projetos do seu plano.");
+      toast.error("Limite de projetos atingido.");
       return;
     }
-
     if (!validate()) return;
 
     setIsLoading(true);
-    
-    const { error } = await addProject({
+    const { error, project } = await addProject({
       name: name.trim(),
       slug: slug.trim(),
       niche: niche as ProjectNiche,
-      template_id: selectedTemplateId, // Pass the selected template ID
+      project_type: projectType,
+      template_id: selectedTemplateId,
     });
-
     setIsLoading(false);
 
     if (error) {
-      toast.error("Erro ao criar projeto: " + error.message);
+      toast.error("Erro: " + error.message);
       return;
     }
 
-    toast.success("Projeto criado com sucesso!");
+    toast.success("Projeto criado!");
+    if (project) navigate(`/dashboard/projetos/${project.id}/editar`);
     handleClose();
-  };
-
-  const handleUpgrade = () => {
-    handleClose();
-    navigate("/pricing");
   };
 
   const handleClose = () => {
     setName("");
     setNiche("");
+    setProjectType("sales_only");
     setSelectedTemplateId("");
     setSlug("");
     setErrors({});
     onOpenChange(false);
   };
 
-  const templateOptions = niche ? getTemplateOptionsForNiche(niche as ProjectNiche) : [];
-
   return (
     <Dialog open={open} onOpenChange={handleClose}>
-      <DialogContent className="sm:max-w-[500px]">
+      <DialogContent className="sm:max-w-[550px]">
         <DialogHeader>
           <DialogTitle>Criar Novo Projeto</DialogTitle>
-          <DialogDescription>
-            Preencha as informações abaixo para criar sua nova landing page.
-          </DialogDescription>
+          <DialogDescription>Escolha o tipo de página que deseja criar hoje.</DialogDescription>
         </DialogHeader>
 
-        {/* Limite de projetos alcançado */}
-        {!subscriptionLoading && !canCreate && (
-          <Alert className="border-amber-500/50 bg-amber-500/10">
-            <AlertTriangle className="h-4 w-4 text-amber-500" />
-            <AlertDescription className="text-amber-700">
-              <strong>Limite atingido!</strong> Você já tem {currentProjects} de {maxProjects || "∞"} projetos do plano {planName}.
-              <Button 
-                variant="link" 
-                className="p-0 h-auto ml-1 text-amber-700 underline"
-                onClick={handleUpgrade}
-              >
-                <Crown className="w-3 h-3 mr-1" />
-                Fazer upgrade
-              </Button>
-            </AlertDescription>
-          </Alert>
-        )}
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Tipo de Projeto */}
+          <div className="space-y-3">
+            <Label>O que você deseja criar?</Label>
+            <RadioGroup 
+              value={projectType} 
+              onValueChange={(v) => setProjectType(v as ProjectType)}
+              className="grid grid-cols-1 md:grid-cols-3 gap-4"
+            >
+              <div>
+                <RadioGroupItem value="lead_only" id="type-lead" className="peer sr-only" />
+                <Label
+                  htmlFor="type-lead"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                >
+                  <MousePointer2 className="mb-3 h-6 w-6" />
+                  <span className="text-xs font-bold text-center">Página de Captura</span>
+                </Label>
+              </div>
 
-        {/* Info do plano atual */}
-        {!subscriptionLoading && canCreate && maxProjects && (
-          <p className="text-sm text-muted-foreground">
-            Projetos: {currentProjects} de {maxProjects} ({planName})
-          </p>
-        )}
+              <div>
+                <RadioGroupItem value="sales_only" id="type-sales" className="peer sr-only" />
+                <Label
+                  htmlFor="type-sales"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                >
+                  <ShoppingCart className="mb-3 h-6 w-6" />
+                  <span className="text-xs font-bold text-center">Página de Vendas</span>
+                </Label>
+              </div>
 
-        <form onSubmit={handleSubmit} className="space-y-6 mt-4">
-          {/* Project Name */}
-          <div className="space-y-2">
-            <Label htmlFor="name">Nome do Projeto *</Label>
-            <Input
-              id="name"
-              placeholder="Ex: Curso de Violão Online"
-              value={name}
-              onChange={(e) => handleNameChange(e.target.value)}
-              className={errors.name ? "border-destructive" : ""}
-              disabled={!canCreate}
-            />
-            {errors.name && <p className="text-sm text-destructive">{errors.name}</p>}
+              <div>
+                <RadioGroupItem value="full_funnel" id="type-funnel" className="peer sr-only" />
+                <Label
+                  htmlFor="type-funnel"
+                  className="flex flex-col items-center justify-between rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer"
+                >
+                  <Repeat className="mb-3 h-6 w-6" />
+                  <span className="text-xs font-bold text-center">Funil Completo</span>
+                </Label>
+              </div>
+            </RadioGroup>
           </div>
 
-          {/* Niche */}
-          <div className="space-y-2">
-            <Label>Nicho *</Label>
-            <Select value={niche} onValueChange={(value) => setNiche(value as ProjectNiche)} disabled={!canCreate}>
-              <SelectTrigger className={errors.niche ? "border-destructive" : ""}>
-                <SelectValue placeholder="Selecione o nicho" />
-              </SelectTrigger>
-              <SelectContent>
-                {Object.entries(nicheLabels).map(([key, label]) => (
-                  <SelectItem key={key} value={key}>
-                    {label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {errors.niche && <p className="text-sm text-destructive">{errors.niche}</p>}
-          </div>
-
-          {/* Template Selection */}
-          {niche && templateOptions.length > 0 && (
+          <div className="grid grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label>Template *</Label>
-              <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId} disabled={!canCreate}>
-                <SelectTrigger className={errors.template ? "border-destructive" : ""}>
-                  <SelectValue placeholder="Selecione um template" />
-                </SelectTrigger>
+              <Label htmlFor="name">Nome do Projeto</Label>
+              <Input id="name" value={name} onChange={(e) => handleNameChange(e.target.value)} placeholder="Ex: Produto X" />
+            </div>
+            <div className="space-y-2">
+              <Label>Nicho</Label>
+              <Select value={niche} onValueChange={(v) => setNiche(v as ProjectNiche)}>
+                <SelectTrigger><SelectValue placeholder="Selecione" /></SelectTrigger>
                 <SelectContent>
-                  {templateOptions.map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
+                  {Object.entries(nicheLabels).map(([k, l]) => <SelectItem key={k} value={k}>{l}</SelectItem>)}
                 </SelectContent>
               </Select>
-              {errors.template && <p className="text-sm text-destructive">{errors.template}</p>}
             </div>
-          )}
+          </div>
 
-          {/* Slug */}
           <div className="space-y-2">
-            <Label htmlFor="slug">URL amigável (slug) *</Label>
-            <Input
-              id="slug"
-              placeholder="curso-de-violao"
-              value={slug}
-              onChange={(e) => handleSlugChange(e.target.value)}
-              className={errors.slug ? "border-destructive" : ""}
-              disabled={!canCreate}
-            />
-            {errors.slug && <p className="text-sm text-destructive">{errors.slug}</p>}
-            {slug && (
-              <p className="text-sm text-muted-foreground">
-                URL: <span className="font-mono text-foreground">{getProjectPublicPath(slug)}</span>
-              </p>
-            )}
+            <Label htmlFor="slug">URL (slug)</Label>
+            <Input id="slug" value={slug} onChange={(e) => handleSlugChange(e.target.value)} placeholder="meu-produto" />
+            {slug && <p className="text-[10px] text-muted-foreground">Link: {getProjectPublicPath(slug)}</p>}
           </div>
 
-          {/* Actions */}
-          <div className="flex gap-3 justify-end pt-4">
-            <Button type="button" variant="outline" onClick={handleClose} disabled={isLoading}>
-              Cancelar
-            </Button>
-            {canCreate ? (
-              <Button type="submit" variant="accent" disabled={isLoading || subscriptionLoading}>
-                {isLoading ? "Criando..." : "Criar Projeto"}
-              </Button>
-            ) : (
-              <Button type="button" onClick={handleUpgrade}>
-                <Crown className="w-4 h-4 mr-2" />
-                Ver Planos
-              </Button>
-            )}
-          </div>
+          <DialogFooter>
+            <Button type="button" variant="outline" onClick={handleClose}>Cancelar</Button>
+            <Button type="submit" variant="accent" disabled={isLoading}>{isLoading ? "Criando..." : "Criar Agora"}</Button>
+          </DialogFooter>
         </form>
       </DialogContent>
     </Dialog>

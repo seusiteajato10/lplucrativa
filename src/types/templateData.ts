@@ -176,6 +176,13 @@ export interface FooterConfig {
   linkTerms?: string;
 }
 
+// Nova configuração de redirecionamento pós-captura
+export interface RedirectAfterCaptureConfig {
+  enabled: boolean;
+  targetPageId: string; // UUID do projeto de vendas
+  delay?: number; // segundos antes de redirecionar
+}
+
 export interface TemplateData {
   // Content
   headline: string;
@@ -256,8 +263,15 @@ export interface TemplateData {
   upsellPage: UpsellPageConfig;
   downsellPage: DownsellPageConfig;
 
-  // New Footer field
+  // Footer field
   footer?: FooterConfig;
+
+  // Novo campo de redirecionamento de funil
+  redirectAfterCapture?: RedirectAfterCaptureConfig;
+  
+  // Contexto adicional (usado no editor)
+  niche?: string;
+  template_id?: string;
 }
 
 export const defaultTemplateData: TemplateData = {
@@ -359,5 +373,12 @@ export const defaultTemplateData: TemplateData = {
     linkAbout: '#',
     linkPrivacy: '#',
     linkTerms: '#',
+  },
+
+  // Default redirect config
+  redirectAfterCapture: {
+    enabled: false,
+    targetPageId: '',
+    delay: 3
   }
 };
