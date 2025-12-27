@@ -15,8 +15,8 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
   
   const templateData = data || {};
   
-  const productName = templateData.headline || projectName || "Fone de Ouvido Bluetooth Premium";
-  const productDescription = templateData.description || "Fone de ouvido wireless com cancelamento de ruído ativo, bateria de 30 horas e som de alta fidelidade. Ideal para trabalho, estudo e entretenimento.";
+  const productName = projectName || "Fone de Ouvido Bluetooth Premium";
+  const productDescription = "Fone de ouvido wireless com cancelamento de ruído ativo, bateria de 30 horas e som de alta fidelidade. Ideal para trabalho, estudo e entretenimento.";
   const productPrice = parseFloat(templateData.price) || 197;
   const productOriginalPrice = parseFloat(templateData.originalPrice) || 297;
   const productStock = templateData.stock || 47;
