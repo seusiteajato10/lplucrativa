@@ -12,6 +12,12 @@ import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL";
 import ProductTemplateModern from "@/components/templates/ProductTemplateModern";
 import ProductTemplateClassic from "@/components/templates/ProductTemplateClassic";
 
+// Capture Templates
+import LeadCaptureEbook from '@/components/templates/capture/LeadCaptureEbook';
+import LeadCaptureVSL from '@/components/templates/capture/LeadCaptureVSL';
+import LeadCaptureQuiz from '@/components/templates/capture/LeadCaptureQuiz';
+import LeadCaptureDiscount from '@/components/templates/capture/LeadCaptureDiscount';
+
 const PublicLandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
   const [project, setProject] = useState<Project | null>(null);
@@ -67,21 +73,38 @@ const PublicLandingPage = () => {
   }
 
   const templateData = (project.template_data as Record<string, unknown>) || {};
+  const templateId = project.template_id;
   
   const renderTemplate = () => {
-    if (project.niche === 'product') {
-      switch (project.template_id) {
-        case 'product_vsl':
-          return <ProductTemplateVSL data={templateData} projectName={project.name} />;
-        case 'product_modern':
-          return <ProductTemplateModern data={templateData} projectName={project.name} />;
-        case 'product_classic':
-          return <ProductTemplateClassic data={templateData} projectName={project.name} />;
-        default:
-          return <ProductTemplate data={templateData} projectName={project.name} />;
+    const commonProps = { 
+      data: templateData, 
+      projectName: project.name,
+      projectId: project.id,
+      userId: project.user_id,
+      slug: project.slug
+    };
+
+    // 1. Lógica de templates de CAPTURA (Prioridade)
+    if (templateId?.startsWith('capture_')) {
+      switch (templateId) {
+        case 'capture_ebook': return <LeadCaptureEbook {...commonProps} />;
+        case 'capture_vsl': return <LeadCaptureVSL {...commonProps} />;
+        case 'capture_quiz': return <LeadCaptureQuiz {...commonProps} />;
+        case 'capture_discount': return <LeadCaptureDiscount {...commonProps} />;
       }
     }
 
+    // 2. Lógica de templates de PRODUTO
+    if (project.niche === 'product') {
+      switch (templateId) {
+        case 'product_vsl': return <ProductTemplateVSL data={templateData} projectName={project.name} />;
+        case 'product_modern': return <ProductTemplateModern data={templateData} projectName={project.name} />;
+        case 'product_classic': return <ProductTemplateClassic data={templateData} projectName={project.name} />;
+        default: return <ProductTemplate data={templateData} projectName={project.name} />;
+      }
+    }
+
+    // 3. Outros Nichos
     const nicheComponents: Record<string, React.ComponentType<any>> = {
       service: ServiceTemplate,
       event: EventTemplate,
@@ -91,13 +114,7 @@ const PublicLandingPage = () => {
     const SelectedComponent = nicheComponents[project.niche] || ProductTemplate;
 
     return (
-      <SelectedComponent 
-        data={templateData}
-        projectName={project.name} 
-        projectId={project.id}
-        userId={project.user_id}
-        slug={project.slug}
-      />
+      <SelectedComponent {...commonProps} />
     );
   };
 

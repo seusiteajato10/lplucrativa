@@ -17,7 +17,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { Plus, Search, Pencil, Eye, Users, Settings, Trash2, ExternalLink, Loader2, ArrowRight, Repeat, TrendingUp } from "lucide-react";
+import { Plus, Search, Pencil, Eye, Users, Settings, Trash2, ExternalLink, Loader2, ArrowRight, Repeat, TrendingUp, MousePointer2, ShoppingCart } from "lucide-react";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { nicheLabels, statusLabels, ProjectStatus, Project } from "@/types/project";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
@@ -50,7 +50,6 @@ const Projetos = () => {
     });
   }, [projects, search, statusFilter]);
 
-  // Lógica para agrupar projetos em funis
   const funnelGroups = useMemo(() => {
     const groups: any[] = [];
     const processedIds = new Set();
@@ -58,7 +57,6 @@ const Projetos = () => {
     filteredProjects.forEach(project => {
       if (processedIds.has(project.id)) return;
 
-      // Se for uma página conectada (lead ou sales)
       if (project.connected_page_id) {
         const connected = filteredProjects.find(p => p.id === project.connected_page_id);
         if (connected) {
@@ -76,7 +74,6 @@ const Projetos = () => {
           processedIds.add(leadPage.id);
           processedIds.add(salesPage.id);
         } else {
-          // Página orfã ou conexão não carregada no filtro
           groups.push({ type: 'single', project });
           processedIds.add(project.id);
         }
@@ -100,32 +97,65 @@ const Projetos = () => {
     }
   };
 
-  const ProjectCard = ({ project }: { project: Project }) => (
-    <div className="flex flex-col lg:flex-row lg:items-center gap-4 p-4 hover:bg-muted/50 transition-colors rounded-lg border border-border/50">
-      <div className="flex-1 min-w-0">
-        <div className="flex items-center gap-2 mb-1">
-          <h4 className="font-medium text-foreground truncate">{project.name}</h4>
-          <Badge variant="outline" className="text-[10px] h-4">{project.status}</Badge>
+  const ProjectCard = ({ project }: { project: Project }) => {
+    const isLead = project.project_type === 'lead_only' || project.funnel_position === 'lead' || project.template_id?.startsWith('capture_');
+    
+    return (
+      <div className="flex flex-col lg:flex-row lg:items-center gap-4 p-4 hover:bg-muted/50 transition-colors rounded-lg border border-border/50">
+        <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-secondary shrink-0">
+          {isLead ? (
+            <MousePointer2 className="w-5 h-5 text-primary" />
+          ) : (
+            <ShoppingCart className="w-5 h-5 text-accent" />
+          )}
         </div>
-        <div className="flex items-center gap-3 text-xs text-muted-foreground">
-          <span className="flex items-center gap-1"><Users className="w-3 h-3" /> {project.leads_count || 0} leads</span>
-          <span className="flex items-center gap-1 font-mono">{getProjectPublicPath(project.slug)}</span>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <h4 className="font-medium text-foreground truncate">{project.name}</h4>
+            <Badge variant={isLead ? "default" : "accent"} className="text-[9px] h-4 uppercase px-1">
+              {isLead ? "Captura" : "Vendas"}
+            </Badge>
+            <Badge variant="outline" className="text-[9px] h-4 uppercase px-1">{project.status}</Badge>
+          </div>
+          <div className="flex items-center gap-3 text-xs text-muted-foreground">
+            <span className="flex items-center gap-1 font-mono bg-muted px-1.5 py-0.5 rounded">
+              {getProjectPublicPath(project.slug)}
+            </span>
+            {isLead && (
+              <span className="flex items-center gap-1 text-primary font-bold">
+                <Users className="w-3 h-3" /> {project.leads_count || 0} leads
+              </span>
+            )}
+          </div>
+        </div>
+        
+        <div className="flex items-center gap-1">
+          <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/projetos/${project.id}/editar`)} className="gap-1">
+            <Pencil className="w-4 h-4" /> <span className="hidden sm:inline">Editar</span>
+          </Button>
+          <Button variant="ghost" size="sm" asChild>
+            <Link to={getProjectPublicPath(project.slug)} target="_blank">
+              <Eye className="w-4 h-4" />
+            </Link>
+          </Button>
+          <Button variant="ghost" size="sm" className="text-destructive" onClick={() => setDeleteConfirmId(project.id)}>
+            <Trash2 className="w-4 h-4" />
+          </Button>
         </div>
       </div>
-      <div className="flex items-center gap-1">
-        <Button variant="ghost" size="sm" onClick={() => navigate(`/dashboard/projetos/${project.id}/editar`)}><Pencil className="w-4 h-4" /></Button>
-        <Button variant="ghost" size="sm" asChild><Link to={getProjectPublicPath(project.slug)} target="_blank"><Eye className="w-4 h-4" /></Link></Button>
-        <Button variant="ghost" size="sm" className="text-destructive" onClick={() => setDeleteConfirmId(project.id)}><Trash2 className="w-4 h-4" /></Button>
-      </div>
-    </div>
-  );
+    );
+  };
 
   return (
     <>
       <Helmet><title>Meus Projetos - LP Lucrativa</title></Helmet>
       <DashboardLayout>
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
-          <h1 className="text-2xl font-bold">Meus Projetos e Funis</h1>
+          <div>
+            <h1 className="text-2xl font-bold">Meus Projetos e Funis</h1>
+            <p className="text-muted-foreground text-sm">Gerencie suas páginas de captura e vendas em um só lugar.</p>
+          </div>
           <Button variant="accent" className="gap-2" onClick={() => setCreateModalOpen(true)}>
             <Plus className="w-5 h-5" /> Criar Novo Projeto
           </Button>
@@ -148,6 +178,12 @@ const Projetos = () => {
 
         {isLoading ? (
           <div className="p-12 flex justify-center"><Loader2 className="w-8 h-8 animate-spin text-muted-foreground" /></div>
+        ) : filteredProjects.length === 0 ? (
+          <div className="text-center py-20 bg-card rounded-2xl border-2 border-dashed border-border">
+            <h3 className="text-lg font-medium mb-2">Nenhum projeto encontrado</h3>
+            <p className="text-muted-foreground mb-6">Que tal começar criando sua primeira página?</p>
+            <Button variant="accent" onClick={() => setCreateModalOpen(true)}>Criar Projeto</Button>
+          </div>
         ) : (
           <div className="space-y-6">
             {funnelGroups.map((group) => (
@@ -157,10 +193,10 @@ const Projetos = () => {
                     <div className="bg-primary/10 px-6 py-3 border-b border-primary/20 flex items-center justify-between">
                       <div className="flex items-center gap-2">
                         <Repeat className="w-4 h-4 text-primary" />
-                        <h3 className="font-bold text-primary">Funil: {group.name}</h3>
+                        <h3 className="font-bold text-primary">Funil Ativo: {group.name}</h3>
                       </div>
                       <div className="flex items-center gap-4 text-xs font-semibold text-primary">
-                        <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Conversão Funil: 2.2%</span>
+                        <span className="flex items-center gap-1"><TrendingUp className="w-3 h-3" /> Conversão Estimada: 2.2%</span>
                       </div>
                     </div>
                     <div className="p-6 space-y-4">
@@ -183,7 +219,7 @@ const Projetos = () => {
                   </CardContent>
                 </Card>
               ) : (
-                <div key={group.project.id} className="bg-card border border-border rounded-xl">
+                <div key={group.project.id} className="bg-card border border-border rounded-xl overflow-hidden">
                   <ProjectCard project={group.project} />
                 </div>
               )
@@ -195,7 +231,7 @@ const Projetos = () => {
 
         <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
           <AlertDialogContent>
-            <AlertDialogHeader><AlertDialogTitle>Excluir projeto?</AlertDialogTitle><AlertDialogDescription>Essa ação não pode ser desfeita.</AlertDialogDescription></AlertDialogHeader>
+            <AlertDialogHeader><AlertDialogTitle>Excluir projeto?</AlertDialogTitle><AlertDialogDescription>Essa ação não pode ser desfeita e todos os dados relacionados serão perdidos.</AlertDialogDescription></AlertDialogHeader>
             <AlertDialogFooter>
               <AlertDialogCancel disabled={isDeleting}>Cancelar</AlertDialogCancel>
               <AlertDialogAction onClick={handleDelete} disabled={isDeleting} className="bg-destructive">Excluir</AlertDialogAction>
