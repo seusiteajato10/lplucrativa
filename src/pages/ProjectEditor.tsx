@@ -79,7 +79,7 @@ const ProjectEditor = () => {
 
         <div className="flex flex-1 overflow-hidden">
           <EditorSidebar
-            templateData={templateData}
+            templateData={{ ...templateData, niche: project.niche, template_id: project.template_id }}
             projectId={project.id}
             userId={user?.id || ''}
             onUpdate={updateTemplateData}
@@ -87,7 +87,9 @@ const ProjectEditor = () => {
           <EditorPreview
             templateData={templateData}
             niche={project.niche}
+            templateId={project.template_id}
             previewMode={previewMode}
+            projectName={project.name}
           />
         </div>
       </div>
