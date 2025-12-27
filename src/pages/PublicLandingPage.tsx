@@ -42,19 +42,36 @@ const PublicLandingPage = () => {
 
   const templateData = project?.template_data as Record<string, unknown> || {};
   
-  // Determine which template to use based on niche and potentially a specific template_id
-  const templateComponents = {
-    product: ProductTemplate,
-    service: ServiceTemplate,
-    event: EventTemplate,
-    course: CourseTemplate,
-    // Add VSL template for product niche if template_id indicates it
-    product_vsl: ProductTemplateVSL, 
-  };
-  
-  // Use template_id if available, otherwise fallback to niche
-  const componentKey = project?.template_id === 'product_vsl' ? 'product_vsl' : project?.niche;
-  const TemplateComponent = templateComponents[componentKey as keyof typeof templateComponents] || ServiceTemplate;
+  // Determine which template to use based on niche and template_id
+  let TemplateComponent;
+  if (project?.niche === 'product') {
+    switch (project.template_id) {
+      case 'product_vsl':
+        TemplateComponent = ProductTemplateVSL;
+        break;
+      case 'product_modern':
+        // TODO: Implement ProductTemplateModern
+        TemplateComponent = ProductTemplate; // Fallback for now
+        break;
+      case 'product_minimal':
+        // TODO: Implement ProductTemplateMinimal
+        TemplateComponent = ProductTemplate; // Fallback for now
+        break;
+      case 'product_default':
+      default:
+        TemplateComponent = ProductTemplate;
+        break;
+    }
+  } else {
+    // Existing niche-based selection for other types
+    const nicheComponents: Record<ProjectNiche, React.ComponentType<any>> = {
+      product: ProductTemplate, // Should not be reached if product niche is handled above
+      service: ServiceTemplate,
+      event: EventTemplate,
+      course: CourseTemplate,
+    };
+    TemplateComponent = nicheComponents[project?.niche || 'product'] || ProductTemplate;
+  }
 
   return (
     <>

@@ -181,6 +181,8 @@ export interface TemplateData {
   guaranteeDays: number;
   productSpecs?: string[];
   productImages?: string[];
+  productBenefits?: string[]; // New field for product benefits
+  originalPrice?: string; // New field for original price
   
   // Service specific
   targetAudienceTitle: string;
@@ -268,6 +270,13 @@ export const defaultTemplateData: TemplateData = {
   guaranteeDays: 30,
   productSpecs: [],
   productImages: [],
+  productBenefits: [ // Default product benefits
+    'Acesso imediato após a compra',
+    'Conteúdo completo e atualizado',
+    'Suporte direto com o criador',
+    'Garantia de 7 dias',
+  ],
+  originalPrice: 'R$ 297,00', // Default original price
   
   // Service specific
   targetAudienceTitle: 'Para Quem é Este Serviço',

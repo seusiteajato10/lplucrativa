@@ -11,6 +11,7 @@ import LgpdTab from './tabs/LgpdTab';
 import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
+import ProductConfigTab from './tabs/ProductConfigTab'; // Import the new tab
 
 interface EditorSidebarProps {
   templateData: TemplateData;
@@ -39,6 +40,12 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
           <TabsTrigger value="upsell" className="text-xs py-2">Upsell</TabsTrigger>
           <TabsTrigger value="downsell" className="text-xs py-2">Downsell</TabsTrigger>
         </TabsList>
+        {/* New tab for Product Config */}
+        {templateData.niche === 'product' && (
+          <TabsList className="grid grid-cols-1 mx-2 mt-1 h-auto">
+            <TabsTrigger value="product-config" className="text-xs py-2">Config. Produto</TabsTrigger>
+          </TabsList>
+        )}
 
         <ScrollArea className="flex-1 p-4">
           <TabsContent value="content" className="mt-0">
@@ -76,6 +83,11 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
           <TabsContent value="downsell" className="mt-0">
             <DownsellTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
+          {templateData.niche === 'product' && (
+            <TabsContent value="product-config" className="mt-0">
+              <ProductConfigTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+          )}
         </ScrollArea>
       </Tabs>
     </aside>

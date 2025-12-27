@@ -54,12 +54,11 @@ export const planLabels: Record<UserPlan, string> = {
 // Template ID mapping based on niche
 export const getTemplateId = (niche: ProjectNiche): string => {
   const templates: Record<ProjectNiche, string> = {
-    product: 'product_basic',
+    product: 'product_default', // Default to product_default
     service: 'service_basic',
     event: 'event_basic',
     course: 'course_basic',
   };
-  // Default to product_basic if niche is product, or add specific logic for VSL if needed
   return templates[niche];
 };
 
@@ -76,8 +75,10 @@ export const getTemplateOptionsForNiche = (niche: ProjectNiche) => {
   switch (niche) {
     case 'product':
       return [
-        { value: 'product_basic', label: 'Página de Vendas Padrão' },
-        { value: 'product_vsl', label: 'Página de Vendas com VSL' },
+        { value: 'product_default', label: 'Padrão' },
+        { value: 'product_modern', label: 'Moderno' },
+        { value: 'product_minimal', label: 'Minimalista' },
+        { value: 'product_vsl', label: 'VSL (Video Sales Letter)' },
       ];
     case 'service':
       return [{ value: 'service_basic', label: 'Página de Serviço Padrão' }];

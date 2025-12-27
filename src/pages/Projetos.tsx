@@ -20,6 +20,7 @@ import { Plus, Search, Pencil, Eye, Users, Settings, Trash2, ExternalLink, Loade
 import { useProjects } from "@/contexts/ProjectsContext";
 import { nicheLabels, statusLabels, ProjectStatus } from "@/types/project";
 import CreateProjectModal from "@/components/projects/CreateProjectModal";
+import { ProductConfigModal } from "@/components/projects/ProductConfigModal"; // Import ProductConfigModal
 import { toast } from "sonner";
 import { getProjectPublicPath } from "@/lib/routes";
 
@@ -33,6 +34,9 @@ const Projetos = () => {
   const [createModalOpen, setCreateModalOpen] = useState(false);
   const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
+
+  const [configModalOpen, setConfigModalOpen] = useState(false); // State for config modal
+  const [selectedProjectIdForConfig, setSelectedProjectIdForConfig] = useState<string | null>(null); // State for project to configure
 
   // Check URL param for auto-opening create modal
   useEffect(() => {
@@ -81,8 +85,14 @@ const Projetos = () => {
     navigate(`/dashboard/leads?projeto=${projectId}`);
   };
 
-  const handleConfigClick = (projectId: string) => {
-    toast.info("Configurações do projeto em breve!", { description: "Esta funcionalidade será implementada em breve." });
+  const handleConfigClick = (project: typeof projects[0]) => {
+    // Only allow config for 'product' niche for now
+    if (project.niche === 'product') {
+      setSelectedProjectIdForConfig(project.id);
+      setConfigModalOpen(true);
+    } else {
+      toast.info("Configurações avançadas em breve!", { description: "Esta funcionalidade está disponível apenas para projetos de Produto no momento." });
+    }
   };
 
   return (
@@ -212,7 +222,7 @@ const Projetos = () => {
                       variant="outline" 
                       size="sm" 
                       className="gap-1.5"
-                      onClick={() => handleConfigClick(project.id)}
+                      onClick={() => handleConfigClick(project)} // Pass the whole project object
                     >
                       <Settings className="w-4 h-4" />
                       <span className="hidden sm:inline">Config</span>
@@ -235,6 +245,13 @@ const Projetos = () => {
 
         {/* Create Project Modal */}
         <CreateProjectModal open={createModalOpen} onOpenChange={setCreateModalOpen} />
+
+        {/* Product Config Modal */}
+        <ProductConfigModal
+          projectId={selectedProjectIdForConfig}
+          open={configModalOpen}
+          onOpenChange={setConfigModalOpen}
+        />
 
         {/* Delete Confirmation Dialog */}
         <AlertDialog open={!!deleteConfirmId} onOpenChange={() => setDeleteConfirmId(null)}>
