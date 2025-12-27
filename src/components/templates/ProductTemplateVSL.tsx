@@ -1,6 +1,7 @@
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { TemplateData, defaultTemplateData } from "@/types/templateData";
 import Footer from "@/components/layout/Footer";
 
 interface ProductTemplateVSLProps {
@@ -10,7 +11,7 @@ interface ProductTemplateVSLProps {
 }
 
 export default function ProductTemplateVSL({ data, projectName }: ProductTemplateVSLProps) {
-  const templateData = data || {};
+  const templateData: TemplateData = { ...defaultTemplateData, ...data };
   
   const product = {
     name: projectName || "Smartwatch Pro X1",
@@ -71,7 +72,7 @@ export default function ProductTemplateVSL({ data, projectName }: ProductTemplat
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer templateData={templateData} />
     </div>
   );
 }

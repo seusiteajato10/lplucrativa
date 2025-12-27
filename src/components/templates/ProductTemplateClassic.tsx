@@ -41,7 +41,7 @@ export default function ProductTemplateClassic({ data, projectName }: ProductTem
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer templateData={templateData} />
     </div>
   );
 }

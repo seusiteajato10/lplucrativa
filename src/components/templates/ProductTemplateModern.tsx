@@ -55,7 +55,7 @@ export default function ProductTemplateModern({ data, projectName }: ProductTemp
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer templateData={templateData} />
     </div>
   );
 }

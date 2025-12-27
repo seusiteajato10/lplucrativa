@@ -99,7 +99,7 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
           </div>
         </div>
       </main>
-      <Footer />
+      <Footer templateData={templateData} />
     </div>
   );
 }

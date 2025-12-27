@@ -160,6 +160,22 @@ export interface DownsellPageConfig {
   ctaDeclineText: string;
 }
 
+export interface FooterConfig {
+  companyName?: string;
+  companyDescription?: string;
+  companyLogo?: string;
+  email?: string;
+  phone?: string;
+  workingHours?: string;
+  socialInstagram?: string;
+  socialFacebook?: string;
+  socialTwitter?: string;
+  socialYoutube?: string;
+  linkAbout?: string;
+  linkPrivacy?: string;
+  linkTerms?: string;
+}
+
 export interface TemplateData {
   // Content
   headline: string;
@@ -175,7 +191,7 @@ export interface TemplateData {
   faqs: FAQ[];
   
   // Product specific
-  price: string; // NOVO CAMPO
+  price: string;
   originalPrice: string;
   guaranteeTitle: string;
   guaranteeText: string;
@@ -239,6 +255,9 @@ export interface TemplateData {
   thankYouPage: ThankYouPageConfig;
   upsellPage: UpsellPageConfig;
   downsellPage: DownsellPageConfig;
+
+  // New Footer field
+  footer?: FooterConfig;
 }
 
 export const defaultTemplateData: TemplateData = {
@@ -288,7 +307,6 @@ export const defaultTemplateData: TemplateData = {
     'Conexão Bluetooth 5.0 ultra estável',
   ],
   
-  // Outros padrões omitidos para brevidade, mantendo compatibilidade
   targetAudienceTitle: 'Para Quem é Este Serviço',
   targetAudience: [],
   processTitle: 'Como Funciona',
@@ -326,4 +344,20 @@ export const defaultTemplateData: TemplateData = {
   thankYouPage: { enabled: true, title: 'Obrigado!', message: '', ctaText: 'Continuar', redirectUrl: '' },
   upsellPage: { enabled: false, title: '', subtitle: '', productName: '', originalPrice: '', discountPrice: '', benefits: [], ctaAcceptText: '', ctaDeclineText: '' },
   downsellPage: { enabled: false, title: '', subtitle: '', productName: '', price: '', benefits: [], ctaAcceptText: '', ctaDeclineText: '' },
+  
+  // Default footer data
+  footer: {
+    companyName: 'Minha Empresa',
+    companyDescription: 'Sua loja de produtos premium com entrega garantida.',
+    email: 'contato@exemplo.com',
+    phone: '(11) 99999-9999',
+    workingHours: 'Seg a Sex: 09h às 18h',
+    socialInstagram: '',
+    socialFacebook: '',
+    socialTwitter: '',
+    socialYoutube: '',
+    linkAbout: '#',
+    linkPrivacy: '#',
+    linkTerms: '#',
+  }
 };
