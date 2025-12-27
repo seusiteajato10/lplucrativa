@@ -3,16 +3,22 @@ import { Button } from '@/components/ui/button';
 import { Check, Shield, Star, ChevronDown, Package, Zap, TrendingUp } from 'lucide-react';
 
 interface ProductTemplateProps {
-  projectData: {
-    title: string;
-    description: string;
-    buttonText: string;
-    primaryColor: string;
+  projectData?: {
+    title?: string;
+    description?: string;
+    buttonText?: string;
+    primaryColor?: string;
   };
 }
 
-function ProductTemplate({ projectData }: ProductTemplateProps) {
+function ProductTemplate({ projectData = {} }: ProductTemplateProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+
+  // Valores padrão seguros
+  const title = projectData?.title || 'Transforme Seu Negócio em 30 Dias';
+  const description = projectData?.description || 'Aprenda o método completo que já ajudou milhares de pessoas a alcançarem seus objetivos.';
+  const buttonText = projectData?.buttonText || 'Quero Começar Agora';
+  const primaryColor = projectData?.primaryColor || '#6366f1';
 
   const benefits = [
     { icon: Zap, text: 'Acesso imediato após a compra' },
@@ -94,11 +100,11 @@ function ProductTemplate({ projectData }: ProductTemplateProps) {
               </div>
               
               <h1 className="text-4xl md:text-6xl font-extrabold text-foreground mb-6 leading-tight">
-                {projectData.title || 'Transforme Seu Negócio em 30 Dias'}
+                {title}
               </h1>
               
               <p className="text-xl text-muted-foreground mb-8 leading-relaxed">
-                {projectData.description || 'Aprenda o método completo que já ajudou milhares de pessoas a alcançarem seus objetivos.'}
+                {description}
               </p>
 
               <div className="flex flex-wrap gap-4 mb-8">
@@ -120,9 +126,9 @@ function ProductTemplate({ projectData }: ProductTemplateProps) {
                 <Button 
                   size="lg" 
                   className="text-lg px-8 py-6 shadow-lg hover:shadow-xl transition-all"
-                  style={{ backgroundColor: projectData.primaryColor }}
+                  style={{ backgroundColor: primaryColor }}
                 >
-                  {projectData.buttonText || 'Quero Começar Agora'}
+                  {buttonText}
                 </Button>
                 <Button size="lg" variant="outline" className="text-lg px-8 py-6">
                   Ver Demonstração
@@ -292,7 +298,7 @@ function ProductTemplate({ projectData }: ProductTemplateProps) {
           <Button 
             size="lg" 
             className="text-lg px-12 py-6 shadow-xl hover:shadow-2xl transition-all"
-            style={{ backgroundColor: projectData.primaryColor }}
+            style={{ backgroundColor: primaryColor }}
           >
             Garantir Minha Vaga Agora
           </Button>
