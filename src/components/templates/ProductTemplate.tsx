@@ -11,7 +11,7 @@ interface ProductTemplateProps {
   };
 }
 
-export function ProductTemplate({ projectData }: ProductTemplateProps) {
+function ProductTemplate({ projectData }: ProductTemplateProps) {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
 
   const benefits = [
@@ -304,3 +304,5 @@ export function ProductTemplate({ projectData }: ProductTemplateProps) {
     </div>
   );
 }
+
+export default ProductTemplate;
