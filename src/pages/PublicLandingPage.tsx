@@ -2,13 +2,13 @@ import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
-import { Project, nicheLabels } from "@/types/project";
+import { Project, nicheLabels, ProjectNiche } from "@/types/project";
 import { Loader2 } from "lucide-react";
 import ProductTemplate from "@/components/templates/ProductTemplate";
 import ServiceTemplate from "@/components/templates/ServiceTemplate";
 import EventTemplate from "@/components/templates/EventTemplate";
 import CourseTemplate from "@/components/templates/CourseTemplate";
-import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL"; // Import the new VSL template
+import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL";
 
 const PublicLandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -42,42 +42,26 @@ const PublicLandingPage = () => {
 
   const templateData = project?.template_data as Record<string, unknown> || {};
   
-  // Determine which template to use based on niche and template_id
-  let TemplateComponent;
-  if (project?.niche === 'product') {
-    switch (project.template_id) {
-      case 'product_vsl':
-        TemplateComponent = ProductTemplateVSL;
-        break;
-      case 'product_modern':
-        // TODO: Implement ProductTemplateModern
-        TemplateComponent = ProductTemplate; // Fallback for now
-        break;
-      case 'product_minimal':
-        // TODO: Implement ProductTemplateMinimal
-        TemplateComponent = ProductTemplate; // Fallback for now
-        break;
-      case 'product_default':
-      default:
-        TemplateComponent = ProductTemplate;
-        break;
-    }
+  // Lógica de seleção de template
+  let TemplateComponent: React.ComponentType<any>;
+  
+  if (project?.niche === 'product' && project.template_id === 'product_vsl') {
+    TemplateComponent = ProductTemplateVSL;
   } else {
-    // Existing niche-based selection for other types
     const nicheComponents: Record<ProjectNiche, React.ComponentType<any>> = {
-      product: ProductTemplate, // Should not be reached if product niche is handled above
+      product: ProductTemplate,
       service: ServiceTemplate,
       event: EventTemplate,
       course: CourseTemplate,
     };
-    TemplateComponent = nicheComponents[project?.niche || 'product'] || ProductTemplate;
+    TemplateComponent = nicheComponents[project?.niche as ProjectNiche] || ProductTemplate;
   }
 
   return (
     <>
       <Helmet>
         <title>{project?.name || 'Landing Page'}</title>
-        <meta name="description" content={`${nicheLabels[project?.niche || 'product']} - ${project?.name}`} />
+        <meta name="description" content={`${nicheLabels[project?.niche as ProjectNiche] || 'Produto'} - ${project?.name}`} />
       </Helmet>
       <TemplateComponent 
         data={templateData} 
