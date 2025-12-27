@@ -224,7 +224,7 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
                     {[1,2,3,4,5].map((star) => (
                       <Star 
                         key={star} 
-                        className={`w-4 h-4 ${star <= review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'}`} 
+                        className={star <= review.rating ? 'w-4 h-4 fill-yellow-400 text-yellow-400' : 'w-4 h-4 text-gray-300'} 
                       />
                     ))}
                   </div>
