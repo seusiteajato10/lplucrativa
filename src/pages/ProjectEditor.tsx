@@ -72,8 +72,8 @@ const ProjectEditor = () => {
             templateData={templateData}
             projectId={project.id}
             userId={user?.id || ''}
-            projectNiche={project.niche} {/* Passando niche */}
-            projectType={project.project_type} {/* Passando project_type */}
+            projectNiche={project.niche} /* Passando niche */
+            projectType={project.project_type} /* Passando project_type */
             onUpdate={updateTemplateData}
           />
           <EditorPreview
