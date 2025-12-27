@@ -1,6 +1,14 @@
 import { Link } from "react-router-dom";
-import { Rocket } from "lucide-react";
-import { useHomepageContent } from "@/hooks/useHomepageContent"; // Import useHomepageContent
+import { 
+  Rocket, 
+  Instagram, 
+  Facebook, 
+  Twitter, 
+  Mail, 
+  MessageCircle, 
+  Clock, 
+  ShieldCheck 
+} from "lucide-react";
 
 interface FooterProps {
   contactContent?: {
@@ -11,73 +19,113 @@ interface FooterProps {
 }
 
 const Footer = ({ contactContent }: FooterProps) => {
-  // Fallback to default values if dynamic content is not provided
-  const email = contactContent?.email || "contato@lplucrativa.com.br";
-  const phone = contactContent?.phone || "(XX) XXXX-XXXX";
-  const address = contactContent?.address || "Rua Exemplo, 123 - Cidade, Estado";
+  const email = contactContent?.email || "contato@exemplo.com";
+  const phone = contactContent?.phone || "(11) 99999-9999";
+  const address = contactContent?.address || "Sua loja de produtos premium";
 
   return (
-    <footer className="bg-secondary/50 border-t border-border">
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="md:col-span-2">
-            <Link to="/" className="flex items-center gap-2 mb-4">
-              <div className="w-10 h-10 gradient-hero rounded-xl flex items-center justify-center">
-                <Rocket className="w-5 h-5 text-primary-foreground" />
+    <footer className="bg-gray-900 text-gray-300 border-t border-gray-800 pt-16">
+      <div className="container mx-auto px-4 max-w-7xl">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12 text-left">
+          
+          {/* Coluna 1: Sobre */}
+          <div className="space-y-4">
+            <div className="flex items-center gap-2">
+              <div className="w-8 h-8 gradient-hero rounded flex items-center justify-center">
+                <Rocket className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-foreground">
-                LP <span className="text-gradient">Lucrativa</span>
-              </span>
-            </Link>
-            <p className="text-muted-foreground text-sm max-w-md">
-              Crie landing pages de alta conversão em minutos, sem precisar de conhecimentos técnicos. 
-              A ferramenta perfeita para empreendedores e marketeiros.
+              <span className="text-xl font-bold text-white">LP Lucrativa</span>
+            </div>
+            <p className="text-sm leading-relaxed">
+              {address}
             </p>
+            <p className="text-xs text-gray-500">Copyright © {new Date().getFullYear()} - Todos os direitos reservados.</p>
           </div>
 
+          {/* Coluna 2: Links Rápidos */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Produto</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#beneficios" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                  Benefícios
-                </a>
-              </li>
-              <li>
-                <a href="#precos" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                  Preços
-                </a>
-              </li>
+            <h4 className="text-white font-bold mb-6">Links Rápidos</h4>
+            <ul className="space-y-3 text-sm">
+              <li><a href="#" className="hover:text-white transition-colors">Sobre Nós</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Como Comprar</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Trocas e Devoluções</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">FAQ</a></li>
             </ul>
           </div>
 
+          {/* Coluna 3: Atendimento */}
           <div>
-            <h4 className="font-semibold text-foreground mb-4">Legal</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link to="/termos" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                  Termos de Uso
-                </Link>
-              </li>
-              <li>
-                <Link to="/privacidade" className="text-muted-foreground hover:text-foreground text-sm transition-colors">
-                  Política de Privacidade
-                </Link>
-              </li>
+            <h4 className="text-white font-bold mb-6">Atendimento</h4>
+            <ul className="space-y-3 text-sm">
+              <li><a href="#" className="hover:text-white transition-colors">Fale Conosco</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Central de Suporte</a></li>
+              <li><a href="#" className="hover:text-white transition-colors">Rastreamento de Pedido</a></li>
+              <li><Link to="/privacidade" className="hover:text-white transition-colors">Política de Privacidade</Link></li>
             </ul>
+          </div>
+
+          {/* Coluna 4: Contato */}
+          <div className="space-y-4">
+            <h4 className="text-white font-bold mb-6">Contato</h4>
+            <div className="space-y-3 text-sm">
+              <div className="flex items-center gap-3">
+                <Mail size={16} className="text-primary" />
+                <span>{email}</span>
+              </div>
+              <div className="flex items-center gap-3 text-green-500 font-medium">
+                <MessageCircle size={16} />
+                <span>{phone}</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <Clock size={16} />
+                <span>Seg a Sex: 09h às 18h</span>
+              </div>
+            </div>
+            <div className="flex gap-4 pt-4">
+              <a href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-all">
+                <Instagram size={16} />
+              </a>
+              <a href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-all">
+                <Facebook size={16} />
+              </a>
+              <a href="#" className="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center hover:bg-primary transition-all">
+                <Twitter size={16} />
+              </a>
+            </div>
           </div>
         </div>
 
-        <div className="border-t border-border mt-8 pt-8 text-center">
-          <p className="text-muted-foreground text-sm">
-            © {new Date().getFullYear()} LP Lucrativa. Todos os direitos reservados.
-          </p>
-          <div className="text-muted-foreground text-xs mt-2">
-            <p>Email: {email}</p>
-            <p>Telefone: {phone}</p>
-            <p>Endereço: {address}</p>
+        {/* Divisor */}
+        <div className="h-px bg-gray-800 w-full mb-8"></div>
+
+        {/* Sub-footer: Pagamentos e Segurança */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-6 pb-12">
+          <div className="flex flex-col items-center md:items-start gap-4">
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Formas de Pagamento</span>
+            <div className="flex gap-3">
+              <div className="bg-gray-800 px-3 py-1 rounded text-[10px] font-bold text-white">VISA</div>
+              <div className="bg-gray-800 px-3 py-1 rounded text-[10px] font-bold text-white">MASTERCARD</div>
+              <div className="bg-gray-800 px-3 py-1 rounded text-[10px] font-bold text-white">PIX</div>
+              <div className="bg-gray-800 px-3 py-1 rounded text-[10px] font-bold text-white">BOLETO</div>
+            </div>
+          </div>
+
+          <div className="flex flex-col items-center md:items-end gap-4">
+            <span className="text-xs font-bold uppercase tracking-widest text-gray-500">Segurança</span>
+            <div className="flex gap-4">
+              <div className="flex items-center gap-2 text-xs border border-gray-700 px-3 py-2 rounded">
+                <ShieldCheck size={16} className="text-green-500" />
+                <span>Site Seguro SSL</span>
+              </div>
+            </div>
           </div>
         </div>
+      </div>
+      
+      <div className="bg-black py-4">
+        <p className="text-[10px] text-center text-gray-600 uppercase tracking-widest">
+          Todos os direitos reservados © {new Date().getFullYear()}
+        </p>
       </div>
     </footer>
   );
