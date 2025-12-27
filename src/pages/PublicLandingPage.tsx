@@ -8,7 +8,7 @@ import ProductTemplate from "@/components/templates/ProductTemplate";
 import ServiceTemplate from "@/components/templates/ServiceTemplate";
 import EventTemplate from "@/components/templates/EventTemplate";
 import CourseTemplate from "@/components/templates/CourseTemplate";
-import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL"; // Importação corrigida
+import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL"; // Import the new VSL template
 
 const PublicLandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
