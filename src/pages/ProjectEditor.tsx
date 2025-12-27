@@ -19,7 +19,7 @@ const ProjectEditor = () => {
   const {
     project,
     templateData,
-    templateId, // Agora usamos o ID que muda em tempo real
+    templateId,
     isLoading,
     isSaving,
     lastSavedAt,
@@ -69,15 +69,17 @@ const ProjectEditor = () => {
         />
         <div className="flex flex-1 overflow-hidden">
           <EditorSidebar
-            templateData={{ ...templateData, niche: project.niche, template_id: templateId }}
+            templateData={templateData}
             projectId={project.id}
             userId={user?.id || ''}
+            projectNiche={project.niche} {/* Passando niche */}
+            projectType={project.project_type} {/* Passando project_type */}
             onUpdate={updateTemplateData}
           />
           <EditorPreview
             templateData={templateData}
             niche={project.niche}
-            templateId={templateId} // Preview agora reflete a troca instantaneamente
+            templateId={templateId}
             previewMode={previewMode}
             projectName={project.name}
           />

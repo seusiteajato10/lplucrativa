@@ -5,12 +5,12 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Switch } from '@/components/ui/switch';
 import { TemplateData, RedirectAfterCaptureConfig } from '@/types/templateData';
 import { Info, Repeat, BookOpen, PlayCircle, HelpCircle, Ticket } from 'lucide-react';
-import { getTemplateOptionsForNiche, ProjectType } from '@/types/project';
+import { getTemplateOptionsForNiche, ProjectType, ProjectNiche } from '@/types/project'; // Importar ProjectNiche
 import { Separator } from '@/components/ui/separator';
 import { useProjects } from '@/contexts/ProjectsContext';
 
 interface TemplateSettingsTabProps {
-  templateData: TemplateData & { template_id?: string; niche?: string; project_type?: ProjectType };
+  templateData: TemplateData; // templateData já contém template_id, niche e project_type
   onUpdate: (updates: Partial<TemplateData & { template_id?: string }>) => void;
 }
 
@@ -18,7 +18,7 @@ const TemplateSettingsTab = ({ templateData, onUpdate }: TemplateSettingsTabProp
   const { projects } = useProjects();
   const currentNiche = templateData.niche || 'product';
   const currentProjectType = templateData.project_type || 'sales_only';
-  const templateOptions = getTemplateOptionsForNiche(currentNiche as any, currentProjectType);
+  const templateOptions = getTemplateOptionsForNiche(currentNiche as ProjectNiche, currentProjectType as ProjectType);
 
   // Filtrar apenas páginas de vendas do usuário para o select de redirecionamento
   const salesPages = projects.filter(p => p.project_type === 'sales_only' || p.funnel_position === 'sales');
@@ -41,7 +41,33 @@ const TemplateSettingsTab = ({ templateData, onUpdate }: TemplateSettingsTabProp
     });
   };
 
+  const updateLeadCapture = (updates: Partial<TemplateData['leadCapture']>) => {
+    onUpdate({
+      leadCapture: {
+        ...(templateData.leadCapture || {}),
+        ...updates
+      }
+    });
+  };
+
   const isCapturePage = currentProjectType === 'lead_only' || currentProjectType === 'full_funnel';
+  const isProductSalesPage = currentNiche === 'product' && currentProjectType === 'sales_only';
+
+  const addLeadCaptureBenefit = () => {
+    const benefits = templateData.leadCapture.benefits || [];
+    updateLeadCapture({ benefits: [...benefits, 'Novo benefício'] });
+  };
+
+  const updateLeadCaptureBenefit = (index: number, value: string) => {
+    const benefits = [...(templateData.leadCapture.benefits || [])];
+    benefits[index] = value;
+    updateLeadCapture({ benefits });
+  };
+
+  const removeLeadCaptureBenefit = (index: number) => {
+    const benefits = (templateData.leadCapture.benefits || []).filter((_, i) => i !== index);
+    updateLeadCapture({ benefits });
+  };
 
   return (
     <div className="space-y-8">
@@ -139,7 +165,7 @@ const TemplateSettingsTab = ({ templateData, onUpdate }: TemplateSettingsTabProp
 
       <Separator />
 
-      {/* Rodapé */}
+      {/* Rodapé (Mantido conforme anterior) */}
       <div className="space-y-6">
         <div>
           <h3 className="text-sm font-bold flex items-center gap-2 mb-4">

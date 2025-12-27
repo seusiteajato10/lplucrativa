@@ -12,19 +12,22 @@ import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
 import TemplateSettingsTab from './tabs/TemplateSettingsTab';
-import ProductSalesTab from './tabs/ProductSalesTab'; // Importar o novo tab
-import LeadCaptureTab from './tabs/LeadCaptureTab'; // Importar o novo tab
+import ProductSalesTab from './tabs/ProductSalesTab';
+import LeadCaptureTab from './tabs/LeadCaptureTab';
+import { ProjectNiche, ProjectType } from '@/types/project'; // Importar tipos
 
 interface EditorSidebarProps {
   templateData: TemplateData;
   projectId: string;
   userId: string;
+  projectNiche: ProjectNiche; // Novo prop
+  projectType: ProjectType; // Novo prop
   onUpdate: (updates: Partial<TemplateData>) => void;
 }
 
-const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSidebarProps) => {
-  const isCapturePage = templateData.project_type === 'lead_only' || templateData.project_type === 'full_funnel';
-  const isProductSalesPage = templateData.niche === 'product' && templateData.project_type === 'sales_only';
+const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectType, onUpdate }: EditorSidebarProps) => {
+  const isCapturePage = projectType === 'lead_only' || projectType === 'full_funnel';
+  const isProductSalesPage = projectNiche === 'product' && projectType === 'sales_only';
 
   return (
     <aside className="w-80 border-r border-border bg-background flex flex-col h-full overflow-hidden">
@@ -97,7 +100,7 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
             </TabsContent>
             <TabsContent value="template-settings" className="mt-0">
               <TemplateSettingsTab 
-                templateData={templateData} 
+                templateData={{ ...templateData, niche: projectNiche, project_type: projectType }} // Passando niche e project_type
                 onUpdate={onUpdate} 
               />
             </TabsContent>
