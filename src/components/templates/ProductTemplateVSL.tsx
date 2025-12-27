@@ -9,16 +9,17 @@ interface ProductTemplateVSLProps {
 }
 
 export default function ProductTemplateVSL({ data, projectName }: ProductTemplateVSLProps) {
-  const templateData = data?.templateData || {};
+  const templateData = data || {};
   
   const product = {
-    name: templateData.headline || projectName || "Seu Produto Incrível",
-    description: templateData.subheadline || "Transforme sua vida em 30 dias",
-    price: parseFloat(templateData.price) || 297,
-    originalPrice: parseFloat(templateData.originalPrice) || 497,
+    name: projectName || "Fone de Ouvido Bluetooth Premium",
+    description: "Tecnologia de cancelamento de ruído ativo e bateria de 30 horas",
+    price: parseFloat(templateData.price) || 197,
+    originalPrice: parseFloat(templateData.originalPrice) || 297,
     videoUrl: templateData.videoUrl || "",
-    ctaText: templateData.ctaText || "QUERO GARANTIR AGORA",
-    garantia: templateData.garantia || "Garantia incondicional de 30 dias"
+    ctaText: "COMPRAR AGORA",
+    garantia: "Garantia do fabricante de 12 meses",
+    estoque: templateData.estoque || 47
   };
   
   const discount = product.originalPrice && product.price
@@ -45,7 +46,7 @@ export default function ProductTemplateVSL({ data, projectName }: ProductTemplat
           
           <div className="flex items-center justify-center gap-2 mt-6">
             <span className="text-yellow-400 text-2xl">★★★★★</span>
-            <span className="text-white ml-2 font-semibold">4.9/5 - 2.847 avaliações</span>
+            <span className="text-white ml-2 font-semibold">4.8/5 - 324 avaliações</span>
           </div>
         </div>
 
@@ -104,7 +105,7 @@ export default function ProductTemplateVSL({ data, projectName }: ProductTemplat
             </div>
 
             <Button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black text-2xl md:text-3xl py-8 px-10 rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-105">
-              🚀 {product.ctaText}
+              🛒 {product.ctaText}
             </Button>
 
             <div className="mt-8 flex items-center justify-center gap-3">
@@ -115,17 +116,17 @@ export default function ProductTemplateVSL({ data, projectName }: ProductTemplat
             </div>
             
             <p className="mt-6 text-gray-200 text-sm">
-              🔒 Pagamento 100% Seguro | 📱 Acesso Imediato
+              🔒 Pagamento 100% Seguro | 🚚 Frete Grátis
             </p>
           </CardContent>
         </Card>
 
         <div className="text-center">
           <p className="text-red-400 text-2xl md:text-3xl font-black mb-3">
-            ⚠️ ATENÇÃO: VAGAS LIMITADAS
+            ⚠️ ATENÇÃO: ESTOQUE LIMITADO
           </p>
           <p className="text-white text-lg">
-            Apenas <span className="text-yellow-300 font-bold">7 vagas</span> restantes com esse desconto!
+            Apenas <span className="text-yellow-300 font-bold">{product.estoque} unidades</span> restantes com esse desconto!
           </p>
         </div>
       </div>
