@@ -19,6 +19,7 @@ const ProjectEditor = () => {
   const {
     project,
     templateData,
+    templateId, // Agora usamos o ID que muda em tempo real
     isLoading,
     isSaving,
     lastSavedAt,
@@ -31,12 +32,8 @@ const ProjectEditor = () => {
     redo,
   } = useProjectEditor({ projectId: id || '' });
 
-  // Redirect if not logged in
-  if (!authLoading && !user) {
-    return <Navigate to="/login" replace />;
-  }
+  if (!authLoading && !user) return <Navigate to="/login" replace />;
 
-  // Loading state
   if (isLoading || authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -45,10 +42,7 @@ const ProjectEditor = () => {
     );
   }
 
-  // Project not found
-  if (!project) {
-    return <Navigate to="/dashboard/projetos" replace />;
-  }
+  if (!project) return <Navigate to="/dashboard/projetos" replace />;
 
   const handleRestoreVersion = (restoredData: Record<string, unknown>) => {
     const merged = { ...defaultTemplateData, ...restoredData } as TemplateData;
@@ -57,10 +51,7 @@ const ProjectEditor = () => {
 
   return (
     <>
-      <Helmet>
-        <title>Editar {project.name} - LP Lucrativa</title>
-      </Helmet>
-
+      <Helmet><title>Editar {project.name}</title></Helmet>
       <div className="h-screen flex flex-col bg-background">
         <EditorTopBar
           projectName={project.name}
@@ -76,10 +67,9 @@ const ProjectEditor = () => {
           onUndo={undo}
           onRedo={redo}
         />
-
         <div className="flex flex-1 overflow-hidden">
           <EditorSidebar
-            templateData={{ ...templateData, niche: project.niche, template_id: project.template_id }}
+            templateData={{ ...templateData, niche: project.niche, template_id: templateId }}
             projectId={project.id}
             userId={user?.id || ''}
             onUpdate={updateTemplateData}
@@ -87,19 +77,13 @@ const ProjectEditor = () => {
           <EditorPreview
             templateData={templateData}
             niche={project.niche}
-            templateId={project.template_id}
+            templateId={templateId} // Preview agora reflete a troca instantaneamente
             previewMode={previewMode}
             projectName={project.name}
           />
         </div>
       </div>
-
-      <VersionHistoryModal
-        open={historyOpen}
-        onOpenChange={setHistoryOpen}
-        projectId={project.id}
-        onRestore={handleRestoreVersion}
-      />
+      <VersionHistoryModal open={historyOpen} onOpenChange={setHistoryOpen} projectId={project.id} onRestore={handleRestoreVersion} />
     </>
   );
 };
