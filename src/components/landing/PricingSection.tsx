@@ -49,4 +49,4 @@ const PricingSection = () => {
     return (
       <section id="precos" className="py-24">
         <div className="container mx-auto px-4 text-center text-destructive">
-          <p>Erro
+      
