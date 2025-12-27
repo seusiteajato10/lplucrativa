@@ -12,8 +12,6 @@ import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
 import TemplateSettingsTab from './tabs/TemplateSettingsTab';
-import ProductSalesTab from './tabs/ProductSalesTab';
-import LeadCaptureTab from './tabs/LeadCaptureTab';
 import { ProjectNiche, ProjectType } from '@/types/project'; // Importar tipos
 
 interface EditorSidebarProps {
@@ -26,8 +24,8 @@ interface EditorSidebarProps {
 }
 
 const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectType, onUpdate }: EditorSidebarProps) => {
-  const isCapturePage = projectType === 'lead_only' || projectType === 'full_funnel';
-  const isProductSalesPage = projectNiche === 'product' && projectType === 'sales_only';
+  // A lógica de isCapturePage e isProductSalesPage agora será tratada dentro de TemplateSettingsTab
+  // para evitar a criação de tabs condicionais aqui, conforme sua instrução.
 
   return (
     <aside className="w-80 border-r border-border bg-background flex flex-col h-full overflow-hidden">
@@ -49,15 +47,9 @@ const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectT
             <TabsTrigger value="upsell" className="text-[10px] py-1">Upsell</TabsTrigger>
             <TabsTrigger value="downsell" className="text-[10px] py-1">Downsell</TabsTrigger>
           </TabsList>
-          {/* Tabs Condicionais para Funil/Produto/Captura */}
+          {/* O tab de configurações gerais agora incluirá as configurações de funil/produto/captura */}
           <TabsList className="grid grid-cols-1 w-full h-auto">
             <TabsTrigger value="template-settings" className="text-[10px] py-1 font-bold">Configurações Gerais</TabsTrigger>
-            {isProductSalesPage && (
-              <TabsTrigger value="product-sales" className="text-[10px] py-1 font-bold">Vendas Produto</TabsTrigger>
-            )}
-            {isCapturePage && (
-              <TabsTrigger value="lead-capture" className="text-[10px] py-1 font-bold">Captura Leads</TabsTrigger>
-            )}
           </TabsList>
         </div>
 
@@ -100,20 +92,10 @@ const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectT
             </TabsContent>
             <TabsContent value="template-settings" className="mt-0">
               <TemplateSettingsTab 
-                templateData={{ ...templateData, niche: projectNiche, project_type: projectType }} // Passando niche e project_type
+                templateData={{ ...templateData, niche: projectNiche, project_type: projectType }} 
                 onUpdate={onUpdate} 
               />
             </TabsContent>
-            {isProductSalesPage && (
-              <TabsContent value="product-sales" className="mt-0">
-                <ProductSalesTab templateData={templateData} onUpdate={onUpdate} />
-              </TabsContent>
-            )}
-            {isCapturePage && (
-              <TabsContent value="lead-capture" className="mt-0">
-                <LeadCaptureTab templateData={templateData} onUpdate={onUpdate} />
-              </TabsContent>
-            )}
           </div>
         </div>
       </Tabs>
