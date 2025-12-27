@@ -47,7 +47,7 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
           </TabsList>
         )}
 
-        <ScrollArea className="flex-1 p-4 h-0">
+        <ScrollArea className="flex-1 p-4 h-0 min-h-0">
           <TabsContent value="content" className="mt-0">
             <ContentTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
