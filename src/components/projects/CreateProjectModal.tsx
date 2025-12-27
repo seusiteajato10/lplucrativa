@@ -7,6 +7,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Badge } from "@/components/ui/badge";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { useSubscription } from "@/hooks/useSubscription";
 import { ProjectNiche, nicheLabels, getTemplateOptionsForNiche, ProjectType } from "@/types/project";
