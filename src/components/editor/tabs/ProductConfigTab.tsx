@@ -23,17 +23,38 @@ const ProductConfigTab = ({ templateData, onUpdate }: ProductConfigTabProps) => 
           value={templateData.template_id}
           onValueChange={(value) => onUpdate({ template_id: value })}
         >
-          <SelectTrigger id="template-select" className="w-full relative z-10">
+          <SelectTrigger id="template-select" className="w-full">
             <SelectValue placeholder="Selecione um template" />
           </SelectTrigger>
-          <SelectContent className="z-[100]">
+          <SelectContent>
             {templateOptions.map((option) => (
-              <SelectItem key={option.value} value={option.value} className="cursor-pointer">
+              <SelectItem key={option.value} value={option.value}>
                 {option.label}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
+      </div>
+
+      <div className="grid grid-cols-2 gap-4">
+        <div className="space-y-2">
+          <Label htmlFor="price">Preço de Venda (R$)</Label>
+          <Input 
+            id="price" 
+            value={templateData.price || ''} 
+            onChange={(e) => onUpdate({ price: e.target.value })} 
+            placeholder="197.00" 
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="original-price">Preço Original (R$)</Label>
+          <Input 
+            id="original-price" 
+            value={templateData.originalPrice || ''} 
+            onChange={(e) => onUpdate({ originalPrice: e.target.value })} 
+            placeholder="297.00" 
+          />
+        </div>
       </div>
 
       {templateData.template_id === 'product_vsl' && (
@@ -46,11 +67,6 @@ const ProductConfigTab = ({ templateData, onUpdate }: ProductConfigTabProps) => 
       <div className="space-y-2">
         <Label htmlFor="cta-button-text">Texto do Botão CTA</Label>
         <Input id="cta-button-text" value={templateData.ctaButtonText} onChange={(e) => onUpdate({ ctaButtonText: e.target.value })} />
-      </div>
-
-      <div className="space-y-2">
-        <Label htmlFor="original-price">Preço Original</Label>
-        <Input id="original-price" value={templateData.originalPrice || ''} onChange={(e) => onUpdate({ originalPrice: e.target.value })} placeholder="R$ 297,00" />
       </div>
 
       <div className="space-y-2">
