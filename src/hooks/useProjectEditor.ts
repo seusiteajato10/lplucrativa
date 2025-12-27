@@ -17,9 +17,6 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   
-  // Ref para o estado de salvamento para evitar race conditions
-  const isSavingRef = useRef(false);
-  
   // Gerenciamento de Histórico (Undo/Redo)
   const [history, setHistory] = useState<TemplateData[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -47,13 +44,13 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
       const mergedData = { 
         ...defaultTemplateData, 
         ...dbData, 
-        niche: data.niche // Garante que o nicho venha do banco
+        niche: data.niche 
       } as TemplateData;
       
       setProject(data as Project);
       setTemplateData(mergedData);
       
-      // Inicializa histórico
+      // Inicializa histórico com o estado inicial do banco
       setHistory([mergedData]);
       setHistoryIndex(0);
       setHasChanges(false);
@@ -71,11 +68,11 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
 
   // Função centralizada para salvar
   const saveNow = useCallback(async () => {
-    // Se já estiver salvando ou não houver projeto/mudanças, ignora
-    if (!project || isSavingRef.current || !hasChanges) return;
+    // Forçamos o salvamento se houver projeto, independente de 'hasChanges' 
+    // para garantir que o botão manual sempre funcione.
+    if (!project || isSaving) return;
 
     try {
-      isSavingRef.current = true;
       setIsSaving(true);
       
       const { error } = await supabase
@@ -90,35 +87,33 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
 
       setHasChanges(false);
       setLastSavedAt(new Date());
+      toast.success('Alterações salvas com sucesso!');
     } catch (err: any) {
       console.error('Erro ao salvar:', err);
       toast.error('Erro ao salvar: ' + (err.message || 'Erro desconhecido'));
     } finally {
-      isSavingRef.current = false;
       setIsSaving(false);
     }
-  }, [project, templateData, hasChanges]);
+  }, [project, templateData, isSaving]);
 
-  // Atualização de dados do template
+  // Atualização de dados do template - SEM efeitos colaterais proibidos
   const updateTemplateData = useCallback((updates: Partial<TemplateData>) => {
     setTemplateData(prev => {
       const newData = { ...prev, ...updates };
       
-      // Gerencia o histórico de forma assíncrona para não travar o estado
-      setHistory(prevHistory => {
-        const newHistory = prevHistory.slice(0, historyIndex + 1);
-        newHistory.push(newData);
-        if (newHistory.length > MAX_HISTORY_SIZE) newHistory.shift();
-        return newHistory;
-      });
-      
-      setHistoryIndex(prevIndex => {
-        const newIndex = prevIndex + 1;
-        // Limita ao tamanho máximo do histórico
-        return Math.min(newIndex, MAX_HISTORY_SIZE - 1);
-      });
+      // Agendamos a atualização do histórico e mudanças para o próximo "tick"
+      // para não travar a renderização do React
+      setTimeout(() => {
+        setHasChanges(true);
+        setHistory(prevHistory => {
+          const newHistory = prevHistory.slice(0, historyIndex + 1);
+          newHistory.push(newData);
+          if (newHistory.length > MAX_HISTORY_SIZE) newHistory.shift();
+          return newHistory;
+        });
+        setHistoryIndex(prevIndex => Math.min(prevIndex + 1, MAX_HISTORY_SIZE - 1));
+      }, 0);
 
-      setHasChanges(true);
       return newData;
     });
   }, [historyIndex]);
@@ -148,15 +143,15 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
     toast.success('Projeto publicado com sucesso!');
   }, [saveNow]);
 
-  // Auto-save a cada 60 segundos se houver mudanças
+  // Auto-save a cada 2 minutos apenas se houver mudanças reais
   useEffect(() => {
-    const interval = setInterval(() => {
-      if (hasChanges && !isSavingRef.current) {
+    const timer = setTimeout(() => {
+      if (hasChanges && !isSaving) {
         saveNow();
       }
-    }, 60000);
-    return () => clearInterval(interval);
-  }, [hasChanges, saveNow]);
+    }, 120000);
+    return () => clearTimeout(timer);
+  }, [hasChanges, isSaving, saveNow]);
 
   return { 
     project, 
