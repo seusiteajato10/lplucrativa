@@ -7,10 +7,9 @@ import { AdminPlansSection } from '@/components/admin/AdminPlansSection';
 import { AdminUserModal } from '@/components/admin/AdminUserModal';
 import { AdminReports } from '@/components/admin/AdminReports';
 import { AdminIntegrations } from '@/components/admin/AdminIntegrations';
-import { HomepageContentEditor } from '@/components/admin/HomepageContentEditor'; // Import the new component
+import { HomepageContentEditor } from '@/components/admin/HomepageContentEditor';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { LayoutDashboard, CreditCard, Settings, Home } from 'lucide-react'; // Import Home icon
-import { HomepageContentEditor } from "@/components/admin/HomepageContentEditor";
+import { LayoutDashboard, CreditCard, Settings, Home } from 'lucide-react';
 
 export default function Admin() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
@@ -47,7 +46,7 @@ export default function Admin() {
               <Settings className="h-4 w-4" />
               Configurações
             </TabsTrigger>
-            <TabsTrigger value="homepage-content" className="gap-2"> {/* New Tab Trigger */}
+            <TabsTrigger value="homepage-content" className="gap-2">
               <Home className="h-4 w-4" />
               Conteúdo da Home
             </TabsTrigger>
@@ -63,17 +62,6 @@ export default function Admin() {
             {/* Planos */}
             <AdminPlansSection />
 
-                  {/* Seção de Edição da Homepage */}
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-bold mb-2">Editar Homepage</h2>
-          <p className="text-muted-foreground">
-            Personalize o conteúdo exibido na página inicial
-          </p>
-        </div>
-        <HomepageContentEditor />
-      </div>
-
             {/* Relatórios */}
             <AdminReports />
           </TabsContent>
@@ -87,7 +75,13 @@ export default function Admin() {
             <AdminPlansSection />
           </TabsContent>
 
-          <TabsContent value="homepage-content" className="space-y-6"> {/* New Tab Content */}
+          <TabsContent value="homepage-content" className="space-y-6">
+            <div>
+              <h2 className="text-2xl font-bold mb-2">Editar Homepage</h2>
+              <p className="text-muted-foreground">
+                Personalize o conteúdo exibido na página inicial
+              </p>
+            </div>
             <HomepageContentEditor />
           </TabsContent>
         </Tabs>
