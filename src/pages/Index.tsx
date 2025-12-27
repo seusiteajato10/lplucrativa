@@ -4,12 +4,14 @@ import Footer from "@/components/layout/Footer";
 import HeroSection from "@/components/landing/HeroSection";
 import BenefitsSection from "@/components/landing/BenefitsSection";
 import PricingSection from "@/components/landing/PricingSection";
-import { useHomepageContent } from "@/hooks/useHomepageContent"; // Import the new hook
+import { useHomepageContent } from "@/hooks/useHomepageContent"; // Import the hook
 import { Loader2 } from "lucide-react";
 
 const Index = () => {
-  const { data: homepageContent, isLoading, error } = useHomepageContent();
+  // 2. USAR o hook no componente
+  const { data: content, isLoading, error } = useHomepageContent();
 
+  // LOADING STATE
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-background">
@@ -39,11 +41,12 @@ const Index = () => {
       <div className="min-h-screen bg-background">
         <Header />
         <main>
-          <HeroSection heroContent={homepageContent?.hero} />
-          <BenefitsSection featuresContent={homepageContent?.features} />
-          <PricingSection /> {/* PricingSection already uses useSubscription */}
+          {/* 3. SUBSTITUIR textos fixos pelos dados dinâmicos */}
+          <HeroSection heroContent={content?.hero} />
+          <BenefitsSection featuresContent={content?.features} />
+          <PricingSection />
         </main>
-        <Footer contactContent={homepageContent?.contact} />
+        <Footer contactContent={content?.contact} />
       </div>
     </>
   );
