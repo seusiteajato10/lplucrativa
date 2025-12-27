@@ -11,7 +11,9 @@ import LgpdTab from './tabs/LgpdTab';
 import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
-import TemplateSettingsTab from './tabs/TemplateSettingsTab'; // Importar o novo tab
+import TemplateSettingsTab from './tabs/TemplateSettingsTab';
+import ProductSalesTab from './tabs/ProductSalesTab'; // Importar o novo tab
+import LeadCaptureTab from './tabs/LeadCaptureTab'; // Importar o novo tab
 
 interface EditorSidebarProps {
   templateData: TemplateData;
@@ -21,6 +23,9 @@ interface EditorSidebarProps {
 }
 
 const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSidebarProps) => {
+  const isCapturePage = templateData.project_type === 'lead_only' || templateData.project_type === 'full_funnel';
+  const isProductSalesPage = templateData.niche === 'product' && templateData.project_type === 'sales_only';
+
   return (
     <aside className="w-80 border-r border-border bg-background flex flex-col h-full overflow-hidden">
       <Tabs defaultValue="content" className="flex flex-col h-full">
@@ -41,9 +46,15 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
             <TabsTrigger value="upsell" className="text-[10px] py-1">Upsell</TabsTrigger>
             <TabsTrigger value="downsell" className="text-[10px] py-1">Downsell</TabsTrigger>
           </TabsList>
-          {/* Novo tab de configurações de template, visível para todos */}
+          {/* Tabs Condicionais para Funil/Produto/Captura */}
           <TabsList className="grid grid-cols-1 w-full h-auto">
-            <TabsTrigger value="template-settings" className="text-[10px] py-1 font-bold">Configurações do Template</TabsTrigger>
+            <TabsTrigger value="template-settings" className="text-[10px] py-1 font-bold">Configurações Gerais</TabsTrigger>
+            {isProductSalesPage && (
+              <TabsTrigger value="product-sales" className="text-[10px] py-1 font-bold">Vendas Produto</TabsTrigger>
+            )}
+            {isCapturePage && (
+              <TabsTrigger value="lead-capture" className="text-[10px] py-1 font-bold">Captura Leads</TabsTrigger>
+            )}
           </TabsList>
         </div>
 
@@ -84,13 +95,22 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
             <TabsContent value="downsell" className="mt-0">
               <DownsellTab templateData={templateData} onUpdate={onUpdate} />
             </TabsContent>
-            {/* Renderizar o novo TemplateSettingsTab */}
             <TabsContent value="template-settings" className="mt-0">
               <TemplateSettingsTab 
                 templateData={templateData} 
                 onUpdate={onUpdate} 
               />
             </TabsContent>
+            {isProductSalesPage && (
+              <TabsContent value="product-sales" className="mt-0">
+                <ProductSalesTab templateData={templateData} onUpdate={onUpdate} />
+              </TabsContent>
+            )}
+            {isCapturePage && (
+              <TabsContent value="lead-capture" className="mt-0">
+                <LeadCaptureTab templateData={templateData} onUpdate={onUpdate} />
+              </TabsContent>
+            )}
           </div>
         </div>
       </Tabs>
