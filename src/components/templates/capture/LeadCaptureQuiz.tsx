@@ -17,7 +17,7 @@ const LeadCaptureQuiz = ({ data, projectId, userId }: LeadCaptureQuizProps) => {
   const [step, setStep] = useState(0); // 0: Intro, 1..n: Questions, n+1: Form
   const [answers, setAnswers] = useState<Record<number, number>>({});
 
-  const totalSteps = config.questions.length + 2;
+  const totalSteps = config.questions.length + 2; // Intro + Questions + Form
   const progress = (step / (totalSteps - 1)) * 100;
 
   const nextStep = () => setStep(s => s + 1);

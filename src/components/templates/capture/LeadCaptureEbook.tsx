@@ -68,7 +68,7 @@ const LeadCaptureEbook = ({ data, projectId, userId, projectName }: LeadCaptureE
                   userId={userId}
                   ctaText={config.ctaText}
                   redirectConfig={templateData.redirectAfterCapture}
-                  fields={['name', 'email']}
+                  fields={['name', 'email', 'phone']} // Adicionado 'phone' conforme requisito
                 />
 
                 <p className="text-center mt-6 text-xs text-slate-400">
@@ -82,7 +82,7 @@ const LeadCaptureEbook = ({ data, projectId, userId, projectName }: LeadCaptureE
 
       <footer className="py-8 border-t border-slate-200 text-center">
         <p className="text-slate-400 text-xs uppercase tracking-widest">
-          © 2025 {templateData.footer?.companyName || projectName} • Política de Privacidade
+          © {new Date().getFullYear()} {templateData.footer?.companyName || projectName} • Política de Privacidade
         </p>
       </footer>
     </div>
