@@ -27,9 +27,9 @@ export interface Project {
   name: string;
   slug: string;
   niche: ProjectNiche;
-  project_type: ProjectType; // Novo campo
-  connected_page_id: string | null; // Novo campo
-  funnel_position: FunnelPosition | null; // Novo campo
+  project_type: ProjectType;
+  connected_page_id: string | null;
+  funnel_position: FunnelPosition | null;
   custom_domain: string | null;
   status: ProjectStatus;
   template_id: string;
@@ -58,7 +58,6 @@ export const statusLabels: Record<ProjectStatus, string> = {
   paused: "Pausado",
 };
 
-// Template ID mapping based on niche
 export const getTemplateId = (niche: ProjectNiche): string => {
   const templates: Record<ProjectNiche, string> = {
     product: 'product_default',
@@ -69,23 +68,28 @@ export const getTemplateId = (niche: ProjectNiche): string => {
   return templates[niche];
 };
 
-// Listagem de templates disponíveis por nicho
-export const getTemplateOptionsForNiche = (niche: ProjectNiche) => {
+export const getTemplateOptionsForNiche = (niche: ProjectNiche, projectType?: ProjectType) => {
+  // Se for página de captura, retornamos os templates de captura independentemente do nicho
+  if (projectType === 'lead_only') {
+    return [
+      { value: 'capture_ebook', label: 'E-book / Isca Digital' },
+      { value: 'capture_vsl', label: 'Vídeo (VSL) + Captura' },
+      { value: 'capture_quiz', label: 'Quiz Interativo' },
+      { value: 'capture_discount', label: 'Cupom de Desconto' },
+    ];
+  }
+
   switch (niche) {
     case 'product':
       return [
-        { value: 'product_default', label: 'Padrão' },
-        { value: 'product_modern', label: 'Moderno' },
-        { value: 'product_classic', label: 'Clássico' },
+        { value: 'product_default', label: 'Venda Padrão' },
+        { value: 'product_modern', label: 'Venda Moderno' },
+        { value: 'product_classic', label: 'Venda Clássico' },
         { value: 'product_vsl', label: 'VSL (Vídeo de Vendas)' },
       ];
-    case 'service':
-      return [{ value: 'service_basic', label: 'Página de Serviço Padrão' }];
-    case 'event':
-      return [{ value: 'event_basic', label: 'Página de Evento Padrão' }];
-    case 'course':
-      return [{ value: 'course_basic', label: 'Página de Curso Padrão' }];
-    default:
-      return [];
+    case 'service': return [{ value: 'service_basic', label: 'Página de Serviço Padrão' }];
+    case 'event': return [{ value: 'event_basic', label: 'Página de Evento Padrão' }];
+    case 'course': return [{ value: 'course_basic', label: 'Página de Curso Padrão' }];
+    default: return [];
   }
 };

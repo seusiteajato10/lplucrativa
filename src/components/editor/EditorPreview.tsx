@@ -9,30 +9,50 @@ import ProductTemplateVSL from '@/components/templates/ProductTemplateVSL';
 import ProductTemplateModern from '@/components/templates/ProductTemplateModern';
 import ProductTemplateClassic from '@/components/templates/ProductTemplateClassic';
 
+// Capture Templates
+import LeadCaptureEbook from '@/components/templates/capture/LeadCaptureEbook';
+import LeadCaptureVSL from '@/components/templates/capture/LeadCaptureVSL';
+import LeadCaptureQuiz from '@/components/templates/capture/LeadCaptureQuiz';
+import LeadCaptureDiscount from '@/components/templates/capture/LeadCaptureDiscount';
+
 interface EditorPreviewProps {
   templateData: TemplateData;
   niche: ProjectNiche;
   templateId: string;
   previewMode: 'desktop' | 'mobile';
   projectName: string;
+  projectId?: string;
+  userId?: string;
 }
 
-const EditorPreview = ({ templateData, niche, templateId, previewMode, projectName }: EditorPreviewProps) => {
+const EditorPreview = ({ templateData, niche, templateId, previewMode, projectName, projectId, userId }: EditorPreviewProps) => {
   
   const renderTemplate = () => {
     const dataWithContext = { ...templateData, template_id: templateId };
+    const commonProps = { 
+      data: dataWithContext, 
+      projectName, 
+      projectId: projectId || "preview", 
+      userId: userId || "preview" 
+    };
 
-    // Lógica de roteamento de templates de PRODUTO
+    // Lógica de templates de CAPTURA
+    if (templateId.startsWith('capture_')) {
+      switch (templateId) {
+        case 'capture_ebook': return <LeadCaptureEbook {...commonProps} />;
+        case 'capture_vsl': return <LeadCaptureVSL {...commonProps} />;
+        case 'capture_quiz': return <LeadCaptureQuiz {...commonProps} />;
+        case 'capture_discount': return <LeadCaptureDiscount {...commonProps} />;
+      }
+    }
+
+    // Lógica de templates de PRODUTO
     if (niche === 'product') {
       switch (templateId) {
-        case 'product_vsl':
-          return <ProductTemplateVSL data={dataWithContext} projectName={projectName} />;
-        case 'product_modern':
-          return <ProductTemplateModern data={dataWithContext} projectName={projectName} />;
-        case 'product_classic':
-          return <ProductTemplateClassic data={dataWithContext} projectName={projectName} />;
-        default:
-          return <ProductTemplate data={dataWithContext} projectName={projectName} />;
+        case 'product_vsl': return <ProductTemplateVSL {...commonProps} />;
+        case 'product_modern': return <ProductTemplateModern {...commonProps} />;
+        case 'product_classic': return <ProductTemplateClassic {...commonProps} />;
+        default: return <ProductTemplate {...commonProps} />;
       }
     }
 
@@ -43,8 +63,7 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
     };
 
     const SelectedComponent = templates[niche] || ProductTemplate;
-
-    return <SelectedComponent data={dataWithContext} projectName={projectName} />;
+    return <SelectedComponent {...commonProps} />;
   };
 
   return (

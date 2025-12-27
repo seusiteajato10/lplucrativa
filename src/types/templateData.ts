@@ -176,15 +176,35 @@ export interface FooterConfig {
   linkTerms?: string;
 }
 
-// Nova configuração de redirecionamento pós-captura
 export interface RedirectAfterCaptureConfig {
   enabled: boolean;
-  targetPageId: string; // UUID do projeto de vendas
-  delay?: number; // segundos antes de redirecionar
+  targetPageId: string;
+  delay?: number;
+}
+
+// Configurações específicas de Captura de Leads
+export interface LeadCaptureConfig {
+  headline: string;
+  subheadline: string;
+  benefits: string[];
+  ebookCoverUrl: string;
+  videoUrl: string;
+  formTitle: string;
+  formText: string;
+  ctaText: string;
+  privacyText: string;
+  subscribersCount: number;
+  discountPercent: number;
+  termsText: string;
+  resultHeadline: string;
+  quizTitle: string;
+  questions: Array<{
+    question: string;
+    options: Array<{ text: string; icon?: string }>;
+  }>;
 }
 
 export interface TemplateData {
-  // Content
   headline: string;
   subheadline: string;
   ctaButtonText: string;
@@ -196,8 +216,6 @@ export interface TemplateData {
   testimonials: Testimonial[];
   faqTitle: string;
   faqs: FAQ[];
-  
-  // Product specific
   price: string;
   originalPrice: string;
   guaranteeTitle: string;
@@ -207,8 +225,6 @@ export interface TemplateData {
   productImages?: string[];
   productBenefits?: string[];
   stock?: number;
-  
-  // Service specific
   targetAudienceTitle: string;
   targetAudience: Benefit[];
   processTitle: string;
@@ -216,8 +232,6 @@ export interface TemplateData {
   caseStudies: CaseStudy[];
   pricingTitle: string;
   pricingTiers: PricingTier[];
-  
-  // Event specific
   eventDate: string;
   eventTime: string;
   eventLocation: string;
@@ -227,8 +241,6 @@ export interface TemplateData {
   scheduleTitle: string;
   schedule: ScheduleItem[];
   ticketsTitle: string;
-  
-  // Course specific
   instructorName: string;
   instructorPhoto?: string;
   instructorBio: string;
@@ -237,39 +249,23 @@ export interface TemplateData {
   modules: CourseModule[];
   bonusTitle: string;
   bonuses: Benefit[];
-  
-  // Images
   logoUrl: string;
   heroImageUrl: string;
-  
-  // Video
   videoUrl: string;
   useImageInsteadOfVideo: boolean;
-  
-  // Styles
   styles: StylesConfig;
-  
-  // Form config
   formFields: FormFieldConfig;
-  
-  // Integrations
   integrations: IntegrationsConfig;
-  
-  // LGPD
   lgpd: LgpdConfig;
-  
-  // Extra pages
   thankYouPage: ThankYouPageConfig;
   upsellPage: UpsellPageConfig;
   downsellPage: DownsellPageConfig;
-
-  // Footer field
   footer?: FooterConfig;
-
-  // Novo campo de redirecionamento de funil
   redirectAfterCapture?: RedirectAfterCaptureConfig;
   
-  // Contexto adicional (usado no editor)
+  // Novo campo de captura
+  leadCapture: LeadCaptureConfig;
+
   niche?: string;
   template_id?: string;
 }
@@ -297,30 +293,19 @@ export const defaultTemplateData: TemplateData = {
     { id: '2', question: 'Qual é o prazo de entrega?', answer: 'O prazo varia de 3 a 7 dias úteis dependendo da sua região.' },
     { id: '3', question: 'Posso parcelar o pagamento?', answer: 'Sim! Aceitamos parcelamento em até 12x no cartão de crédito.' },
   ],
-  
-  // Product specific
   price: '197.00',
   originalPrice: '297.00',
   guaranteeTitle: 'Garantia de 30 Dias',
   guaranteeText: 'Experimente sem risco. Se não ficar satisfeito, devolvemos 100% do seu investimento. Sem perguntas.',
   guaranteeDays: 30,
   stock: 47,
-  productSpecs: {
-    "Marca": "Premium Audio",
-    "Modelo": "BT-2024",
-    "Garantia": "12 meses"
-  },
+  productSpecs: { "Marca": "Premium Audio", "Modelo": "BT-2024", "Garantia": "12 meses" },
   productImages: [
     "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=800",
     "https://images.unsplash.com/photo-1484704849700-f032a568e944?w=800",
     "https://images.unsplash.com/photo-1545127398-14699f92334b?w=800"
   ],
-  productBenefits: [
-    'Cancelamento ativo de ruído (ANC)',
-    'Bateria de longa duração - até 30 horas',
-    'Conexão Bluetooth 5.0 ultra estável',
-  ],
-  
+  productBenefits: ['Cancelamento ativo de ruído (ANC)', 'Bateria de longa duração - até 30 horas', 'Conexão Bluetooth 5.0 ultra estável'],
   targetAudienceTitle: 'Para Quem é Este Serviço',
   targetAudience: [],
   processTitle: 'Como Funciona',
@@ -358,12 +343,10 @@ export const defaultTemplateData: TemplateData = {
   thankYouPage: { enabled: true, title: 'Obrigado!', message: '', ctaText: 'Continuar', redirectUrl: '' },
   upsellPage: { enabled: false, title: '', subtitle: '', productName: '', originalPrice: '', discountPrice: '', benefits: [], ctaAcceptText: '', ctaDeclineText: '' },
   downsellPage: { enabled: false, title: '', subtitle: '', productName: '', price: '', benefits: [], ctaAcceptText: '', ctaDeclineText: '' },
-  
-  // Default footer data
   footer: {
-    companyName: 'Minha Empresa',
+    companyName: 'LP Lucrativa',
     companyDescription: 'Sua loja de produtos premium com entrega garantida.',
-    email: 'contato@exemplo.com',
+    email: 'contato@lplucrativa.com.br',
     phone: '(11) 99999-9999',
     workingHours: 'Seg a Sex: 09h às 18h',
     socialInstagram: '',
@@ -374,11 +357,41 @@ export const defaultTemplateData: TemplateData = {
     linkPrivacy: '#',
     linkTerms: '#',
   },
+  redirectAfterCapture: { enabled: false, targetPageId: '', delay: 3 },
 
-  // Default redirect config
-  redirectAfterCapture: {
-    enabled: false,
-    targetPageId: '',
-    delay: 3
+  // Default Lead Capture Data
+  leadCapture: {
+    headline: 'Baixe Agora o Guia Completo',
+    subheadline: 'Aprenda as técnicas exclusivas para escalar seu negócio hoje mesmo.',
+    benefits: ['Acesso vitalício ao material', 'Checklist de implementação rápida', 'Templates prontos para usar'],
+    ebookCoverUrl: 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=800',
+    videoUrl: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+    formTitle: 'Preencha para receber grátis',
+    formText: 'Gostou? Receba mais conteúdo exclusivo',
+    ctaText: 'QUERO RECEBER AGORA',
+    privacyText: '🔒 Seus dados estão 100% seguros',
+    subscribersCount: 2847,
+    discountPercent: 10,
+    termsText: 'Válido apenas para novos clientes',
+    resultHeadline: 'Perfeito! Veja seu resultado personalizado',
+    quizTitle: 'Descubra Qual Solução é Ideal Para Você',
+    questions: [
+      {
+        question: 'Qual o seu principal objetivo hoje?',
+        options: [
+          { text: 'Aumentar Vendas', icon: '💰' },
+          { text: 'Reduzir Custos', icon: '📉' },
+          { text: 'Escalar Time', icon: '🚀' }
+        ]
+      },
+      {
+        question: 'Quanto você fatura mensalmente?',
+        options: [
+          { text: 'Até R$ 10k', icon: '🌱' },
+          { text: 'R$ 10k a R$ 50k', icon: '🌿' },
+          { text: 'Mais de R$ 50k', icon: '🌳' }
+        ]
+      }
+    ]
   }
 };
