@@ -10,7 +10,7 @@ import { AdminIntegrations } from '@/components/admin/AdminIntegrations';
 import { HomepageContentEditor } from '@/components/admin/HomepageContentEditor'; // Import the new component
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { LayoutDashboard, CreditCard, Settings, Home } from 'lucide-react'; // Import Home icon
-
+import { HomepageContentEditor } from "@/components/admin/HomepageContentEditor";
 
 export default function Admin() {
   const [selectedUserId, setSelectedUserId] = useState<string | null>(null);
