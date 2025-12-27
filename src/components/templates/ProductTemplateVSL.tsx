@@ -117,4 +117,94 @@ export default function ProductTemplateVSL({ data, projectName }: ProductTemplat
                     src={product.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                    allow
+                    allowFullScreen
+                  />
+                ) : (
+                  <video src={product.videoUrl} controls className="w-full h-full">
+                    Seu navegador não suporta vídeo.
+                  </video>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        <Card className="mb-12 bg-white/10 border-purple-400/30 backdrop-blur-xl shadow-2xl hover:shadow-purple-400/50 transition-all duration-500">
+          <CardContent className="p-8">
+            <h2 className="text-4xl font-black text-white mb-8 text-center flex items-center justify-center gap-3">
+              <Zap className="w-10 h-10 text-yellow-400" />
+              O que você vai receber
+            </h2>
+            <div className="grid md:grid-cols-2 gap-5">
+              {product.benefits.map((benefit: string, index: number) => (
+                <div 
+                  key={index} 
+                  className="flex items-start gap-4 bg-white/5 p-5 rounded-xl hover:bg-white/10 transition-all duration-300 hover:scale-105 hover:shadow-xl group"
+                >
+                  <CheckCircle2 className="w-7 h-7 text-green-400 flex-shrink-0 mt-1 group-hover:scale-125 transition-transform duration-300" />
+                  <p className="text-gray-100 text-lg font-medium leading-relaxed">{benefit}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
+
+        <Card className="mb-12 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 border-none shadow-2xl hover:shadow-pink-500/80 transition-all duration-500">
+          <CardContent className="p-10 text-center">
+            {product.originalPrice && (
+              <div className="mb-6">
+                <p className="text-gray-200 text-2xl mb-3 font-semibold">De:</p>
+                <p className="text-5xl text-white/80 line-through font-bold">
+                  R$ {product.originalPrice.toFixed(2)}
+                </p>
+              </div>
+            )}
+            
+            <div className="mb-8">
+              <p className="text-yellow-300 text-3xl font-black mb-4">
+                Por apenas 12x de:
+              </p>
+              <p className="text-7xl md:text-8xl font-black text-white mb-3 drop-shadow-2xl">
+                R$ {(product.price / 12).toFixed(2)}
+              </p>
+              <p className="text-2xl text-gray-200 mb-4">
+                ou R$ {product.price.toFixed(2)} à vista
+              </p>
+              {discount > 0 && (
+                <Badge className="bg-yellow-400 text-black text-2xl px-6 py-3 font-black">
+                  ECONOMIZE {discount}%
+                </Badge>
+              )}
+            </div>
+
+            <Button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black text-2xl md:text-3xl py-8 px-10 rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-green-500/50">
+              🚀 {product.ctaText}
+            </Button>
+
+            {product.garantia && (
+              <div className="mt-8 flex items-center justify-center gap-3">
+                <Shield className="w-8 h-8 text-yellow-300" />
+                <p className="text-yellow-300 text-xl font-bold">
+                  🛡️ {product.garantia}
+                </p>
+              </div>
+            )}
+            
+            <p className="mt-6 text-gray-200 text-sm">
+              🔒 Pagamento 100% Seguro | 📱 Acesso Imediato
+            </p>
+          </CardContent>
+        </Card>
+
+        <div className="text-center">
+          <p className="text-red-400 text-2xl md:text-3xl font-black mb-3">
+            ⚠️ ATENÇÃO: VAGAS LIMITADAS
+          </p>
+          <p className="text-white text-lg">
+            Apenas <span className="text-yellow-300 font-bold">7 vagas</span> restantes com esse desconto!
+          </p>
+        </div>
+      </div>
+    </div>
+  );
+}
