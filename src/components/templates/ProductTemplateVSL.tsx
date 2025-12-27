@@ -2,24 +2,61 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Play, CheckCircle2, Clock, Shield, Star, Zap } from "lucide-react";
 import { useEffect, useState } from "react";
+import { TemplateData, defaultTemplateData } from '@/types/templateData';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 interface ProductTemplateVSLProps {
-  product: {
-    id: string;
-    name: string;
-    description: string;
-    price: number;
-    originalPrice?: number;
-    videoUrl?: string;
-    benefits?: string[];
-    ctaText?: string;
-    garantia?: string;
-  };
+  data: Record<string, unknown>;
+  projectName: string;
+  projectId?: string;
+  userId?: string;
+  slug?: string;
 }
 
-export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
+export function ProductTemplateVSL({ data, projectName, projectId, userId, slug }: ProductTemplateVSLProps) {
+  const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 30 });
-  
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [formData, setFormData] = useState({
+    fullName: "",
+    email: "",
+    whatsapp: "",
+    cpf: "",
+    company: "",
+    role: "",
+  });
+
+  // Merge data with defaults
+  const templateData: TemplateData = { ...defaultTemplateData, ...data } as TemplateData;
+
+  const {
+    headline,
+    subheadline,
+    ctaButtonText,
+    heroText,
+    guaranteeText,
+    guaranteeDays,
+    productBenefits,
+    originalPrice,
+    logoUrl,
+    videoUrl,
+    formFields,
+    styles,
+  } = templateData;
+
+  const checkout = templateData.integrations?.checkout || { enabled: true, type: 'external' as const };
+
+  // Preço atual (usando um valor fixo ou extraindo de algum lugar se necessário, mas por enquanto, vamos focar no originalPrice)
+  // Para VSL, o preço é geralmente o foco principal. Vamos usar um preço de exemplo se o originalPrice não for um número.
+  const price = 197.00; // Preço de exemplo
+
+  const originalPriceValue = parseFloat(originalPrice?.replace(/[^\d,]/g, '').replace(',', '.') || '0');
+  const discount = originalPriceValue > price ? Math.round(((originalPriceValue - price) / originalPriceValue) * 100) : 0;
+
   // Contador regressivo
   useEffect(() => {
     const timer = setInterval(() => {
@@ -38,9 +75,46 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
     return () => clearInterval(timer);
   }, []);
 
-  const discount = product.originalPrice
-    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
-    : 0;
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectId || !userId) return;
+
+    setIsSubmitting(true);
+    
+    const leadData: Record<string, string> = {};
+    if (formFields.fullName && formData.fullName) leadData.fullName = formData.fullName;
+    if (formFields.email && formData.email) leadData.email = formData.email;
+    if (formFields.whatsapp && formData.whatsapp) leadData.whatsapp = formData.whatsapp;
+    if (formFields.cpf && formData.cpf) leadData.cpf = formData.cpf;
+    if (formFields.company && formData.company) leadData.company = formData.company;
+    if (formFields.role && formData.role) leadData.role = formData.role;
+
+    const { error } = await supabase.from("leads_captured").insert({
+      project_id: projectId,
+      user_id: userId,
+      data: leadData,
+      source_url: window.location.href,
+    });
+
+    setIsSubmitting(false);
+
+    if (error) {
+      toast.error("Erro ao enviar. Tente novamente.");
+      return;
+    }
+
+    toast.success("Inscrição realizada com sucesso!");
+    setFormData({ fullName: "", email: "", whatsapp: "", cpf: "", company: "", role: "" });
+
+    if (slug && templateData.thankYouPage.enabled) {
+      const params = new URLSearchParams();
+      if (formData.fullName) params.set('name', formData.fullName);
+      if (formData.email) params.set('email', formData.email);
+      navigate(`/p/${slug}/obrigado?${params.toString()}`);
+    } else if (checkout.url) {
+      window.location.href = checkout.url;
+    }
+  };
 
   const defaultBenefits = [
     "Acesso imediato e vitalício ao conteúdo completo",
@@ -50,8 +124,8 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
     "Atualizações gratuitas para sempre"
   ];
 
-  const benefits = product.benefits && product.benefits.length > 0 
-    ? product.benefits 
+  const benefits = productBenefits && productBenefits.length > 0 
+    ? productBenefits 
     : defaultBenefits;
 
   return (
@@ -72,10 +146,10 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
         {/* Headline Principal com animação */}
         <div className="text-center mb-8 animate-slide-up">
           <h1 className="text-5xl md:text-7xl font-black text-transparent bg-clip-text bg-gradient-to-r from-white via-purple-200 to-pink-200 mb-6 leading-tight drop-shadow-2xl">
-            {product.name}
+            {headline}
           </h1>
           <p className="text-2xl md:text-3xl text-gray-200 max-w-3xl mx-auto font-light leading-relaxed">
-            {product.description}
+            {subheadline}
           </p>
           
           {/* Avaliação com estrelas */}
@@ -114,20 +188,20 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
         </div>
 
         {/* Player de Vídeo com shadow melhorado */}
-        {product.videoUrl && (
+        {videoUrl && (
           <Card className="mb-12 bg-black/60 border-purple-500/50 backdrop-blur-xl shadow-2xl hover:shadow-purple-500/50 transition-all duration-500 animate-fade-in">
             <CardContent className="p-3">
               <div className="relative aspect-video rounded-xl overflow-hidden bg-gradient-to-br from-purple-900 to-black group">
-                {product.videoUrl.includes('youtube.com') || product.videoUrl.includes('youtu.be') ? (
+                {videoUrl.includes('youtube.com') || videoUrl.includes('youtu.be') ? (
                   <iframe
-                    src={product.videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+                    src={videoUrl.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
                     className="w-full h-full"
                     allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     allowFullScreen
                   />
                 ) : (
                   <video
-                    src={product.videoUrl}
+                    src={videoUrl}
                     controls
                     className="w-full h-full"
                   >
@@ -136,6 +210,56 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
                 )}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent pointer-events-none group-hover:from-black/30 transition-all duration-300"></div>
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Lead Capture Form (Se não houver vídeo, ou se for um VSL que captura lead antes do checkout) */}
+        {projectId && userId && (
+          <Card className="mb-12 bg-white/10 border-purple-400/30 backdrop-blur-xl shadow-2xl animate-slide-right">
+            <CardContent className="p-8">
+              <h2 className="text-3xl font-bold text-white mb-2 text-center">
+                {heroText || "Garanta Seu Acesso Imediato"}
+              </h2>
+              <p className="text-gray-300 text-center mb-6">
+                Preencha seus dados para prosseguir para o checkout.
+              </p>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                {formFields.fullName && (
+                  <Input
+                    placeholder="Nome Completo"
+                    value={formData.fullName}
+                    onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                    required
+                    className="h-12 bg-white/10 text-white border-purple-400/50 placeholder:text-gray-400"
+                  />
+                )}
+                {formFields.email && (
+                  <Input
+                    type="email"
+                    placeholder="E-mail"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                    className="h-12 bg-white/10 text-white border-purple-400/50 placeholder:text-gray-400"
+                  />
+                )}
+                {formFields.whatsapp && (
+                  <Input
+                    placeholder="WhatsApp"
+                    value={formData.whatsapp}
+                    onChange={(e) => setFormData({ ...formData, whatsapp: e.target.value })}
+                    className="h-12 bg-white/10 text-white border-purple-400/50 placeholder:text-gray-400"
+                  />
+                )}
+                <Button
+                  type="submit"
+                  className="w-full h-12 text-white text-lg font-medium bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 shadow-lg hover:shadow-green-500/50"
+                  disabled={isSubmitting}
+                >
+                  {isSubmitting ? "Enviando..." : ctaButtonText}
+                </Button>
+              </form>
             </CardContent>
           </Card>
         )}
@@ -165,11 +289,11 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
         {/* Preço e CTA com animações intensas */}
         <Card className="mb-12 bg-gradient-to-br from-purple-600 via-pink-600 to-red-600 border-none shadow-2xl hover:shadow-pink-500/80 transition-all duration-500 animate-scale-in">
           <CardContent className="p-10 text-center">
-            {product.originalPrice && (
+            {originalPriceValue > price && (
               <div className="mb-6 animate-fade-in">
                 <p className="text-gray-200 text-2xl mb-3 font-semibold">De:</p>
                 <p className="text-5xl text-white/80 line-through font-bold">
-                  R$ {product.originalPrice.toFixed(2)}
+                  R$ {originalPriceValue.toFixed(2).replace('.', ',')}
                 </p>
               </div>
             )}
@@ -179,10 +303,10 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
                 Por apenas 12x de:
               </p>
               <p className="text-7xl md:text-8xl font-black text-white mb-3 drop-shadow-2xl animate-bounce-slow">
-                R$ {(product.price / 12).toFixed(2)}
+                R$ {(price / 12).toFixed(2).replace('.', ',')}
               </p>
               <p className="text-2xl text-gray-200 mb-4">
-                ou R$ {product.price.toFixed(2)} à vista
+                ou R$ {price.toFixed(2).replace('.', ',')} à vista
               </p>
               {discount > 0 && (
                 <Badge className="bg-yellow-400 text-black text-2xl px-6 py-3 font-black animate-pulse">
@@ -191,15 +315,18 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
               )}
             </div>
 
-            <button className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black text-2xl md:text-3xl py-8 px-10 rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-green-500/50 animate-pulse-glow">
-              {product.ctaText || '🚀 SIM! QUERO TRANSFORMAR MINHA VIDA AGORA'}
+            <button 
+              className="w-full bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-black text-2xl md:text-3xl py-8 px-10 rounded-2xl shadow-2xl transform transition-all duration-300 hover:scale-105 hover:shadow-green-500/50 animate-pulse-glow"
+              onClick={() => checkout.url ? window.location.href = checkout.url : document.getElementById('lead-form')?.scrollIntoView({ behavior: 'smooth' })}
+            >
+              {checkout.buttonText || ctaButtonText || '🚀 SIM! QUERO TRANSFORMAR MINHA VIDA AGORA'}
             </button>
 
-            {product.garantia && (
+            {guaranteeText && (
               <div className="mt-8 flex items-center justify-center gap-3 animate-fade-in">
                 <Shield className="w-8 h-8 text-yellow-300" />
                 <p className="text-yellow-300 text-xl font-bold">
-                  {product.garantia}
+                  {guaranteeText}
                 </p>
               </div>
             )}
@@ -220,6 +347,18 @@ export function ProductTemplateVSL({ product }: ProductTemplateVSLProps) {
           </p>
         </div>
       </div>
+
+      {/* Footer */}
+      <footer className="bg-black/50 py-8 text-center text-gray-400 text-sm">
+        <div className="container mx-auto px-4">
+          <div className="flex justify-center gap-4 mb-4">
+            <a href="/termos" className="hover:text-white transition-colors">Termos de Uso</a>
+            <a href="/privacidade" className="hover:text-white transition-colors">Política de Privacidade</a>
+            <a href="#" className="hover:text-white transition-colors">Contato</a>
+          </div>
+          <p>© {new Date().getFullYear()} {projectName}. Todos os direitos reservados.</p>
+        </div>
+      </footer>
 
       {/* CSS para animações customizadas */}
       <style jsx>{`
