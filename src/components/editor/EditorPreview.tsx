@@ -6,6 +6,8 @@ import ServiceTemplate from '@/components/templates/ServiceTemplate';
 import EventTemplate from '@/components/templates/EventTemplate';
 import CourseTemplate from '@/components/templates/CourseTemplate';
 import ProductTemplateVSL from '@/components/templates/ProductTemplateVSL';
+import ProductTemplateModern from '@/components/templates/ProductTemplateModern';
+import ProductTemplateClassic from '@/components/templates/ProductTemplateClassic';
 
 interface EditorPreviewProps {
   templateData: TemplateData;
@@ -18,14 +20,20 @@ interface EditorPreviewProps {
 const EditorPreview = ({ templateData, niche, templateId, previewMode, projectName }: EditorPreviewProps) => {
   
   const renderTemplate = () => {
-    // Injetamos o templateId no templateData para que os componentes saibam qual layout usar
     const dataWithContext = { ...templateData, template_id: templateId };
 
+    // Lógica de roteamento de templates de PRODUTO
     if (niche === 'product') {
-      if (templateId === 'product_vsl') {
-        return <ProductTemplateVSL data={dataWithContext} projectName={projectName} />;
+      switch (templateId) {
+        case 'product_vsl':
+          return <ProductTemplateVSL data={dataWithContext} projectName={projectName} />;
+        case 'product_modern':
+          return <ProductTemplateModern data={dataWithContext} projectName={projectName} />;
+        case 'product_classic':
+          return <ProductTemplateClassic data={dataWithContext} projectName={projectName} />;
+        default:
+          return <ProductTemplate data={dataWithContext} projectName={projectName} />;
       }
-      return <ProductTemplate data={dataWithContext} projectName={projectName} />;
     }
 
     const templates: Record<string, React.ComponentType<any>> = {
@@ -41,7 +49,6 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
 
   return (
     <div className="flex-1 bg-secondary/30 overflow-hidden flex flex-col">
-      {/* Indicador de Modo de Preview */}
       <div className="bg-background/50 border-b border-border px-4 py-1 text-[10px] uppercase tracking-wider text-muted-foreground flex justify-between items-center">
         <span>Modo Visualização: {previewMode}</span>
         <span className="text-primary font-bold">Edição em Tempo Real</span>
@@ -55,7 +62,6 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
               : 'w-full max-w-6xl rounded-lg'
           }`}
         >
-          {/* Scroll interno para o conteúdo do template */}
           <div className={`${previewMode === 'mobile' ? 'h-[650px] overflow-y-auto' : ''}`}>
             {renderTemplate()}
           </div>

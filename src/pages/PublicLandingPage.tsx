@@ -9,6 +9,8 @@ import ServiceTemplate from "@/components/templates/ServiceTemplate";
 import EventTemplate from "@/components/templates/EventTemplate";
 import CourseTemplate from "@/components/templates/CourseTemplate";
 import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL";
+import ProductTemplateModern from "@/components/templates/ProductTemplateModern";
+import ProductTemplateClassic from "@/components/templates/ProductTemplateClassic";
 
 const PublicLandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -64,31 +66,20 @@ const PublicLandingPage = () => {
     );
   }
 
-  // Passamos o template_data diretamente como o objeto de dados principal
   const templateData = (project.template_data as Record<string, unknown>) || {};
   
   const renderTemplate = () => {
     if (project.niche === 'product') {
-      if (project.template_id === 'product_vsl') {
-        return (
-          <ProductTemplateVSL 
-            data={templateData}
-            projectName={project.name} 
-            projectId={project.id}
-            userId={project.user_id}
-            slug={project.slug}
-          />
-        );
+      switch (project.template_id) {
+        case 'product_vsl':
+          return <ProductTemplateVSL data={templateData} projectName={project.name} />;
+        case 'product_modern':
+          return <ProductTemplateModern data={templateData} projectName={project.name} />;
+        case 'product_classic':
+          return <ProductTemplateClassic data={templateData} projectName={project.name} />;
+        default:
+          return <ProductTemplate data={templateData} projectName={project.name} />;
       }
-      return (
-        <ProductTemplate 
-          data={templateData}
-          projectName={project.name} 
-          projectId={project.id}
-          userId={project.user_id}
-          slug={project.slug}
-        />
-      );
     }
 
     const nicheComponents: Record<string, React.ComponentType<any>> = {
