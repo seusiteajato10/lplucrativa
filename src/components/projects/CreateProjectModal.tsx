@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { useProjects } from "@/contexts/ProjectsContext";
 import { useSubscription } from "@/hooks/useSubscription";
-import { ProjectNiche, nicheLabels } from "@/types/project";
+import { ProjectNiche, nicheLabels, getTemplateOptionsForNiche } from "@/types/project"; // Import getTemplateOptionsForNiche
 import { toast } from "sonner";
 import { getProjectPublicPath } from "@/lib/routes";
 import { AlertTriangle, Crown } from "lucide-react";
@@ -35,14 +35,29 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
   const { limits, loading: subscriptionLoading, canCreateProject } = useSubscription();
   const [name, setName] = useState("");
   const [niche, setNiche] = useState<ProjectNiche | "">("");
+  const [selectedTemplateId, setSelectedTemplateId] = useState<string>(""); // New state for template selection
   const [slug, setSlug] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [errors, setErrors] = useState<{ name?: string; niche?: string; slug?: string }>({});
+  const [errors, setErrors] = useState<{ name?: string; niche?: string; slug?: string; template?: string }>({});
 
   const canCreate = canCreateProject();
   const currentProjects = limits?.usage?.projects_count || 0;
   const maxProjects = limits?.limits?.max_projects;
   const planName = limits?.plan || "Nenhum";
+
+  // Update available templates when niche changes
+  useEffect(() => {
+    if (niche) {
+      const options = getTemplateOptionsForNiche(niche as ProjectNiche);
+      if (options.length > 0) {
+        setSelectedTemplateId(options[0].value); // Select the first template by default
+      } else {
+        setSelectedTemplateId("");
+      }
+    } else {
+      setSelectedTemplateId("");
+    }
+  }, [niche]);
 
   const handleNameChange = (value: string) => {
     setName(value);
@@ -56,7 +71,7 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
   };
 
   const validate = (): boolean => {
-    const newErrors: { name?: string; niche?: string; slug?: string } = {};
+    const newErrors: { name?: string; niche?: string; slug?: string; template?: string } = {};
 
     if (!name.trim()) {
       newErrors.name = "Nome do projeto é obrigatório";
@@ -64,6 +79,10 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
 
     if (!niche) {
       newErrors.niche = "Selecione um nicho";
+    }
+
+    if (!selectedTemplateId) {
+      newErrors.template = "Selecione um template";
     }
 
     if (!slug.trim()) {
@@ -92,6 +111,7 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
       name: name.trim(),
       slug: slug.trim(),
       niche: niche as ProjectNiche,
+      template_id: selectedTemplateId, // Pass the selected template ID
     });
 
     setIsLoading(false);
@@ -113,10 +133,13 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
   const handleClose = () => {
     setName("");
     setNiche("");
+    setSelectedTemplateId("");
     setSlug("");
     setErrors({});
     onOpenChange(false);
   };
+
+  const templateOptions = niche ? getTemplateOptionsForNiche(niche as ProjectNiche) : [];
 
   return (
     <Dialog open={open} onOpenChange={handleClose}>
@@ -185,6 +208,26 @@ const CreateProjectModal = ({ open, onOpenChange }: CreateProjectModalProps) => 
             </Select>
             {errors.niche && <p className="text-sm text-destructive">{errors.niche}</p>}
           </div>
+
+          {/* Template Selection */}
+          {niche && templateOptions.length > 0 && (
+            <div className="space-y-2">
+              <Label>Template *</Label>
+              <Select value={selectedTemplateId} onValueChange={setSelectedTemplateId} disabled={!canCreate}>
+                <SelectTrigger className={errors.template ? "border-destructive" : ""}>
+                  <SelectValue placeholder="Selecione um template" />
+                </SelectTrigger>
+                <SelectContent>
+                  {templateOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              {errors.template && <p className="text-sm text-destructive">{errors.template}</p>}
+            </div>
+          )}
 
           {/* Slug */}
           <div className="space-y-2">

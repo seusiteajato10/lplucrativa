@@ -59,6 +59,7 @@ export const getTemplateId = (niche: ProjectNiche): string => {
     event: 'event_basic',
     course: 'course_basic',
   };
+  // Default to product_basic if niche is product, or add specific logic for VSL if needed
   return templates[niche];
 };
 
@@ -69,3 +70,22 @@ export const nicheOptions = [
   { value: 'event' as ProjectNiche, label: 'Evento' },
   { value: 'course' as ProjectNiche, label: 'Curso Online' },
 ];
+
+// Add a new function to get template options for a given niche
+export const getTemplateOptionsForNiche = (niche: ProjectNiche) => {
+  switch (niche) {
+    case 'product':
+      return [
+        { value: 'product_basic', label: 'Página de Vendas Padrão' },
+        { value: 'product_vsl', label: 'Página de Vendas com VSL' },
+      ];
+    case 'service':
+      return [{ value: 'service_basic', label: 'Página de Serviço Padrão' }];
+    case 'event':
+      return [{ value: 'event_basic', label: 'Página de Evento Padrão' }];
+    case 'course':
+      return [{ value: 'course_basic', label: 'Página de Curso Padrão' }];
+    default:
+      return [];
+  }
+};

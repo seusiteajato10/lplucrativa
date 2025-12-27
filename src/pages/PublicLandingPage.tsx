@@ -8,6 +8,7 @@ import ProductTemplate from "@/components/templates/ProductTemplate";
 import ServiceTemplate from "@/components/templates/ServiceTemplate";
 import EventTemplate from "@/components/templates/EventTemplate";
 import CourseTemplate from "@/components/templates/CourseTemplate";
+import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL"; // Import the new VSL template
 
 const PublicLandingPage = () => {
   const { slug } = useParams<{ slug: string }>();
@@ -41,14 +42,19 @@ const PublicLandingPage = () => {
 
   const templateData = project?.template_data as Record<string, unknown> || {};
   
+  // Determine which template to use based on niche and potentially a specific template_id
   const templateComponents = {
     product: ProductTemplate,
     service: ServiceTemplate,
     event: EventTemplate,
     course: CourseTemplate,
+    // Add VSL template for product niche if template_id indicates it
+    product_vsl: ProductTemplateVSL, 
   };
   
-  const TemplateComponent = templateComponents[project?.niche as keyof typeof templateComponents] || ServiceTemplate;
+  // Use template_id if available, otherwise fallback to niche
+  const componentKey = project?.template_id === 'product_vsl' ? 'product_vsl' : project?.niche;
+  const TemplateComponent = templateComponents[componentKey as keyof typeof templateComponents] || ServiceTemplate;
 
   return (
     <>
