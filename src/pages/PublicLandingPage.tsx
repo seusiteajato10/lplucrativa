@@ -68,18 +68,18 @@ const PublicLandingPage = () => {
   
   // Seleção dinâmica do componente de template
   const renderTemplate = () => {
+    // Se for produto VSL, usar template VSL
     if (project.niche === 'product' && project.template_id === 'product_vsl') {
       return (
         <ProductTemplateVSL 
-          data={templateData} 
+          data={{ templateData }}
           projectName={project.name} 
           projectId={project.id}
-          userId={project.user_id}
-          slug={slug}
         />
       );
     }
 
+    // Para outros nichos, usar templates específicos
     const nicheComponents: Record<string, React.ComponentType<any>> = {
       product: ProductTemplate,
       service: ServiceTemplate,
@@ -91,11 +91,9 @@ const PublicLandingPage = () => {
 
     return (
       <SelectedComponent 
-        data={templateData} 
+        data={{ templateData }}
         projectName={project.name} 
         projectId={project.id}
-        userId={project.user_id}
-        slug={slug}
       />
     );
   };
