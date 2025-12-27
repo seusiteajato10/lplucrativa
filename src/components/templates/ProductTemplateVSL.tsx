@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
 import { CheckCircle2, Clock, Shield, Star, Zap } from "lucide-react";
 import { TemplateData, defaultTemplateData } from "@/types/templateData";
 
@@ -44,10 +45,7 @@ const ProductTemplateVSL = ({ data, projectName, projectId, userId, slug }: Prod
   }, []);
 
   const cleanOriginalPrice = originalPrice ? parseFloat(originalPrice.replace(/[^\d,]/g, '').replace(',', '.')) : 0;
-  const discount = cleanOriginalPrice > price
-    ? Math.round(((cleanOriginalPrice - price) / cleanOriginalPrice) * 100)
-    : 30;
-
+  
   const benefits = productBenefits && productBenefits.length > 0 
     ? productBenefits 
     : ["Acesso imediato", "Suporte 24/7", "Certificado incluso"];
@@ -61,11 +59,11 @@ const ProductTemplateVSL = ({ data, projectName, projectId, userId, slug }: Prod
     <div className="min-h-screen bg-slate-900 text-slate-50 py-12 px-4" style={{ fontFamily: styles.fontFamily }}>
       <div className="max-w-4xl mx-auto text-center">
         <Badge className="bg-yellow-500 text-black mb-6">OFERTA ESPECIAL</Badge>
-        <h1 className="text-4xl md:text-6xl font-black mb-6">{headline}</h1>
+        <h1 className="text-3xl md:text-6xl font-black mb-6 leading-tight">{headline}</h1>
         <p className="text-xl text-slate-300 mb-10">{subheadline}</p>
 
         <div className="bg-red-600/20 border border-red-500 rounded-xl p-4 mb-10 inline-block">
-          <p className="text-sm font-bold uppercase tracking-widest mb-2">A oferta termina em:</p>
+          <p className="text-sm font-bold uppercase tracking-widest mb-2 text-red-400">A oferta termina em:</p>
           <p className="text-3xl font-mono">
             {String(timeLeft.hours).padStart(2, '0')}:
             {String(timeLeft.minutes).padStart(2, '0')}:
@@ -85,23 +83,34 @@ const ProductTemplateVSL = ({ data, projectName, projectId, userId, slug }: Prod
 
         <div className="grid md:grid-cols-2 gap-4 mb-12 text-left">
           {benefits.map((b, i) => (
-            <div key={i} className="flex items-center gap-3 bg-slate-800 p-4 rounded-xl">
-              <CheckCircle2 className="text-green-400" />
-              <span>{b}</span>
+            <div key={i} className="flex items-center gap-3 bg-slate-800 p-4 rounded-xl border border-slate-700">
+              <CheckCircle2 className="text-green-400 shrink-0" />
+              <span className="text-slate-200">{b}</span>
             </div>
           ))}
         </div>
 
-        <Card className="bg-slate-800 border-slate-700 p-8">
-          <CardContent className="space-y-6">
+        <Card className="bg-slate-800 border-slate-700 p-8 shadow-2xl">
+          <CardContent className="space-y-6 p-0">
             {originalPrice && <p className="text-slate-500 line-through text-xl">De {originalPrice}</p>}
-            <p className="text-6xl font-black text-white">R$ {price.toFixed(2).replace('.', ',')}</p>
-            <Button size="lg" className="w-full bg-green-500 hover:bg-green-400 text-black font-bold py-8 text-2xl">
+            <p className="text-5xl md:text-7xl font-black text-white">R$ {price.toFixed(2).replace('.', ',')}</p>
+            <Button 
+              size="lg" 
+              className="w-full bg-green-500 hover:bg-green-400 text-black font-extrabold py-8 text-xl md:text-2xl shadow-[0_0_20px_rgba(34,197,94,0.3)] transition-all hover:scale-[1.02]"
+            >
               {ctaButtonText || 'QUERO ME INSCREVER AGORA'}
             </Button>
-            {guaranteeText && <p className="text-sm text-slate-400 flex items-center justify-center gap-2 italic"><Shield className="w-4 h-4" /> {guaranteeText}</p>}
+            {guaranteeText && (
+              <p className="text-sm text-slate-400 flex items-center justify-center gap-2 italic">
+                <Shield className="w-4 h-4 text-yellow-500" /> {guaranteeText}
+              </p>
+            )}
           </CardContent>
         </Card>
+
+        <div className="mt-12 text-slate-500 text-sm">
+          <p>© {new Date().getFullYear()} {projectName}. Todos os direitos reservados.</p>
+        </div>
       </div>
     </div>
   );
