@@ -63,6 +63,17 @@ export default function Admin() {
             {/* Planos */}
             <AdminPlansSection />
 
+                  {/* Seção de Edição da Homepage */}
+      <div className="space-y-6">
+        <div>
+          <h2 className="text-2xl font-bold mb-2">Editar Homepage</h2>
+          <p className="text-muted-foreground">
+            Personalize o conteúdo exibido na página inicial
+          </p>
+        </div>
+        <HomepageContentEditor />
+      </div>
+
             {/* Relatórios */}
             <AdminReports />
           </TabsContent>
