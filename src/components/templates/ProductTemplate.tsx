@@ -16,7 +16,7 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
   const templateData = data || {};
   
   const productName = templateData.headline || projectName || "Fone de Ouvido Bluetooth Premium";
-  const productDescription = templateData.description || "Fone de ouvido wireless com cancelamento de ruído e alta qualidade de som";
+  const productDescription = templateData.description || "Fone de ouvido wireless com cancelamento de ruído ativo, bateria de 30 horas e som de alta fidelidade. Ideal para trabalho, estudo e entretenimento.";
   const productPrice = parseFloat(templateData.price) || 197;
   const productOriginalPrice = parseFloat(templateData.originalPrice) || 297;
   const productStock = templateData.stock || 47;
@@ -36,26 +36,27 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
     "Marca": "Premium Audio",
     "Modelo": "BT-2024",
     "Conectividade": "Bluetooth 5.0",
-    "Autonomia": "Até 30 horas",
+    "Autonomia da Bateria": "Até 30 horas",
+    "Tempo de Recarga": "2 horas",
     "Peso": "250g",
     "Garantia": "12 meses",
-    "Material": "Plástico ABS + Metal",
-    "Cor": "Preto"
+    "Material": "Plástico ABS + Almofadas em Couro",
+    "Cores Disponíveis": "Preto, Branco, Azul"
   };
 
   const features = [
     "Cancelamento ativo de ruído (ANC)",
-    "Bateria de longa duração (30h)",
-    "Conexão Bluetooth 5.0 estável",
-    "Almofadas macias e confortáveis",
-    "Microfone embutido para chamadas",
-    "Dobrável e portátil com estojo"
+    "Bateria de longa duração - até 30 horas",
+    "Conexão Bluetooth 5.0 ultra estável",
+    "Almofadas macias em couro sintético",
+    "Microfone HD embutido para chamadas",
+    "Design dobrável com estojo rígido incluído"
   ];
 
   const reviews = [
-    { name: "Carlos M.", city: "São Paulo - SP", rating: 5, comment: "Som excelente! Chegou em 2 dias.", verified: true },
-    { name: "Ana P.", city: "Rio de Janeiro - RJ", rating: 5, comment: "Qualidade surpreendente pelo preço. Recomendo!", verified: true },
-    { name: "João S.", city: "Belo Horizonte - MG", rating: 4, comment: "Muito bom! Só achei o frete um pouco caro.", verified: true }
+    { name: "Carlos M.", city: "São Paulo - SP", rating: 5, comment: "Som excelente! Chegou em 2 dias. Super recomendo.", verified: true },
+    { name: "Ana P.", city: "Rio de Janeiro - RJ", rating: 5, comment: "Qualidade surpreendente pelo preço. Vale cada centavo!", verified: true },
+    { name: "João S.", city: "Belo Horizonte - MG", rating: 4, comment: "Muito bom! Confortável para usar o dia todo.", verified: true }
   ];
 
   return (
@@ -71,11 +72,9 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
 
       <div className="container mx-auto px-4 py-6 md:py-10 max-w-6xl">
         
-        {/* PRODUTO - Galeria + Info */}
         <div className="bg-white rounded-lg shadow-lg p-4 md:p-8 mb-6">
           <div className="grid md:grid-cols-2 gap-8">
             
-            {/* GALERIA DE FOTOS */}
             <div>
               <div className="mb-4 rounded-lg overflow-hidden border border-gray-200">
                 <img 
@@ -102,13 +101,11 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
               ) : null}
             </div>
 
-            {/* INFO DO PRODUTO */}
             <div>
               <h1 className="text-2xl md:text-4xl font-bold text-gray-900 mb-3">
                 {productName}
               </h1>
 
-              {/* Avaliações */}
               <div className="flex items-center gap-2 mb-4 pb-4 border-b">
                 <div className="flex">
                   {[1,2,3,4,5].map((star) => (
@@ -120,7 +117,6 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
                 <Badge className="bg-green-100 text-green-700 text-xs">✓ Produto verificado</Badge>
               </div>
 
-              {/* Preço */}
               <div className="mb-6">
                 {productOriginalPrice > 0 ? (
                   <div className="flex items-center gap-3 mb-2">
@@ -143,7 +139,6 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
                 </p>
               </div>
 
-              {/* Benefícios de Compra */}
               <div className="grid grid-cols-2 gap-3 mb-6 pb-6 border-b">
                 <div className="flex items-center gap-2 text-sm">
                   <Truck className="w-5 h-5 text-green-600" />
@@ -163,24 +158,21 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
                 </div>
               </div>
 
-              {/* Estoque */}
               <div className="bg-orange-50 border border-orange-200 rounded-lg p-3 mb-4">
                 <p className="text-orange-800 font-semibold text-sm">
                   ⚠️ Apenas {productStock} unidades disponíveis em estoque
                 </p>
               </div>
 
-              {/* CTA */}
               <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold text-xl py-6 rounded-lg mb-3">
                 🛒 COMPRAR AGORA
               </Button>
 
               <div className="flex items-center justify-center gap-2 text-sm text-gray-500 mb-4">
                 <MapPin className="w-4 h-4" />
-                <span>Calcular frete</span>
+                <span>Calcular frete para sua região</span>
               </div>
 
-              {/* Descrição curta */}
               <p className="text-gray-700 text-sm leading-relaxed">
                 {productDescription}
               </p>
@@ -188,7 +180,6 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
           </div>
         </div>
 
-        {/* CARACTERÍSTICAS */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Características do Produto
@@ -203,7 +194,6 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
           </div>
         </div>
 
-        {/* ESPECIFICAÇÕES TÉCNICAS */}
         <div className="bg-white rounded-lg shadow-lg p-6 mb-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Especificações Técnicas
@@ -218,7 +208,6 @@ export default function ProductTemplate({ data, projectName }: ProductTemplatePr
           </div>
         </div>
 
-        {/* AVALIAÇÕES */}
         <div className="bg-white rounded-lg shadow-lg p-6">
           <h2 className="text-2xl font-bold text-gray-900 mb-4">
             Avaliações de Clientes Verificados
