@@ -1,77 +1,197 @@
-import React, { useState } from 'react';
-import { Button } from '@/components/ui/button';
-import { Check, Shield, Star, ChevronDown, Package } from 'lucide-react';
-import { TemplateData, defaultTemplateData } from '@/types/templateData';
-import { useNavigate } from 'react-router-dom';
-import { supabase } from '@/integrations/supabase/client';
-import { toast } from 'sonner';
-import { Input } from '@/components/ui/input';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Badge } from "@/components/ui/badge";
+import { Button } from "@/components/ui/button";
+import { Check, Star, Shield, Zap } from "lucide-react";
 
 interface ProductTemplateProps {
-  data: Record<string, unknown>;
-  projectName: string;
+  data?: any;
+  projectName?: string;
   projectId?: string;
-  userId?: string;
-  slug?: string;
 }
 
-function ProductTemplate({ data, projectName, projectId, userId, slug }: ProductTemplateProps) {
-  const navigate = useNavigate();
-  const [openFaq, setOpenFaq] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState({
-    fullName: "",
-    email: "",
-    whatsapp: "",
-  });
+const defaultTemplateData = {
+  headline: "",
+  subheadline: "",
+  price: "0",
+  originalPrice: "",
+  features: [],
+  benefits: [],
+  testimonials: [],
+  ctaText: "Comprar Agora",
+  garantia: "Garantia de 30 dias"
+};
 
-  const templateData: TemplateData = { ...defaultTemplateData, ...data } as TemplateData;
-  const { styles, formFields, ctaButtonText, headline, subheadline, videoUrl, useImageInsteadOfVideo, heroImageUrl } = templateData;
-  const checkout = templateData.integrations?.checkout || { enabled: true, type: 'external' as const };
+export default function ProductTemplate({ data, projectName }: ProductTemplateProps) {
+  const templateData = { ...defaultTemplateData, ...(data?.templateData || {}) };
+  
+  const {
+    headline,
+    subheadline,
+    price,
+    originalPrice,
+    features = [],
+    benefits = [],
+    testimonials = [],
+    ctaText,
+    garantia
+  } = templateData;
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!projectId || !userId) return;
-    setIsSubmitting(true);
-    const { error } = await supabase.from("leads_captured").insert({
-      project_id: projectId,
-      user_id: userId,
-      data: formData,
-      source_url: window.location.href,
-    });
-    setIsSubmitting(false);
-    if (error) { toast.error("Erro ao enviar."); return; }
-    if (slug && templateData.thankYouPage.enabled) {
-      navigate(`/p/${slug}/obrigado`);
-    } else if (checkout.url) {
-      window.location.href = checkout.url;
-    }
-  };
+  const productPrice = parseFloat(price) || 0;
+  const productOriginalPrice = originalPrice ? parseFloat(originalPrice) : null;
+  const discount = productOriginalPrice 
+    ? Math.round(((productOriginalPrice - productPrice) / productOriginalPrice) * 100)
+    : 0;
+
+  const displayFeatures = features.length > 0 ? features : [
+    "Acesso vitalício ao produto",
+    "Suporte prioritário",
+    "Atualizações gratuitas",
+    "Garantia de satisfação"
+  ];
+
+  const displayBenefits = benefits.length > 0 ? benefits : [
+    "Economize tempo e dinheiro",
+    "Resultados comprovados",
+    "Fácil de usar"
+  ];
 
   return (
-    <div className="min-h-screen bg-background" style={{ fontFamily: styles.fontFamily }}>
-      <header className="py-6 px-4 border-b text-center">
-        <h1 className="text-2xl font-bold" style={{ color: styles.primaryColor }}>{projectName}</h1>
-      </header>
-      <main className="container mx-auto px-4 py-12 max-w-4xl">
-        <div className="text-center mb-12">
-          <h2 className="text-4xl md:text-6xl font-black mb-4">{headline}</h2>
-          <p className="text-xl text-muted-foreground">{subheadline}</p>
-        </div>
+    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white">
+      <div className="container mx-auto px-4 py-12 max-w-5xl">
         
-        {/* Lead Form Simple */}
-        <div className="bg-card p-8 rounded-2xl border shadow-xl max-w-md mx-auto" id="lead-form">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <Input placeholder="Nome" value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} required />
-            <Input type="email" placeholder="E-mail" value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} required />
-            <Button type="submit" className="w-full py-6 text-lg" style={{ backgroundColor: styles.primaryColor }} disabled={isSubmitting}>
-              {ctaButtonText}
-            </Button>
-          </form>
+        {/* Header */}
+        <div className="text-center mb-12">
+          {discount > 0 && (
+            <Badge className="mb-4 bg-red-500 text-white px-4 py-2 text-lg">
+              {discount}% OFF - Oferta Limitada!
+            </Badge>
+          )}
+          
+          <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-4">
+            {headline || projectName || "Seu Produto Incrível"}
+          </h1>
+          
+          {subheadline && (
+            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto">
+              {subheadline}
+            </p>
+          )}
         </div>
-      </main>
+
+        {/* Preço */}
+        <Card className="mb-12 border-2 border-blue-500 shadow-xl">
+          <CardContent className="p-8 text-center">
+            {productOriginalPrice && (
+              <div className="mb-4">
+                <p className="text-gray-500 text-xl line-through">
+                  De R$ {productOriginalPrice.toFixed(2)}
+                </p>
+              </div>
+            )}
+            
+            <div className="mb-6">
+              <p className="text-blue-600 text-2xl font-semibold mb-2">Por apenas:</p>
+              <p className="text-6xl font-black text-gray-900">
+                R$ {productPrice.toFixed(2)}
+              </p>
+              <p className="text-gray-600 mt-2">
+                ou 12x de R$ {(productPrice / 12).toFixed(2)}
+              </p>
+            </div>
+
+            <Button className="w-full bg-blue-600 hover:bg-blue-700 text-white text-xl py-6 rounded-lg font-bold shadow-lg">
+              {ctaText}
+            </Button>
+
+            {garantia && (
+              <div className="mt-6 flex items-center justify-center gap-2 text-green-600">
+                <Shield className="w-5 h-5" />
+                <p className="font-semibold">{garantia}</p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
+
+        {/* Características */}
+        {displayFeatures.length > 0 && (
+          <Card className="mb-12 shadow-lg">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-3xl">
+                <Zap className="w-8 h-8 text-yellow-500" />
+                O que você vai receber
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid md:grid-cols-2 gap-4">
+                {displayFeatures.map((feature: string, index: number) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <Check className="w-6 h-6 text-green-500 flex-shrink-0 mt-1" />
+                    <p className="text-gray-700 text-lg">{feature}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Benefícios */}
+        {displayBenefits.length > 0 && (
+          <Card className="mb-12 bg-blue-50 shadow-lg">
+            <CardHeader>
+              <CardTitle className="text-3xl">Por que escolher este produto?</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                {displayBenefits.map((benefit: string, index: number) => (
+                  <div key={index} className="flex items-start gap-3">
+                    <Star className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+                    <p className="text-gray-700 text-lg">{benefit}</p>
+                  </div>
+                ))}
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Depoimentos */}
+        {testimonials.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-3xl font-bold text-center mb-8">
+              O que nossos clientes dizem
+            </h2>
+            <div className="grid md:grid-cols-2 gap-6">
+              {testimonials.map((testimonial: any, index: number) => (
+                <Card key={index} className="shadow-lg">
+                  <CardContent className="p-6">
+                    <div className="flex gap-1 mb-4">
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} className="w-5 h-5 fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </div>
+                    <p className="text-gray-700 mb-4 italic">"{testimonial.text}"</p>
+                    <p className="font-semibold text-gray-900">{testimonial.author}</p>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* CTA Final */}
+        <Card className="bg-gradient-to-r from-blue-600 to-purple-600 text-white shadow-2xl">
+          <CardContent className="p-10 text-center">
+            <h3 className="text-3xl font-bold mb-4">
+              Pronto para começar?
+            </h3>
+            <p className="text-xl mb-6 opacity-90">
+              Junte-se a milhares de clientes satisfeitos!
+            </p>
+            <Button className="bg-white text-blue-600 hover:bg-gray-100 text-xl py-6 px-12 rounded-lg font-bold shadow-lg">
+              {ctaText}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     </div>
   );
 }
-
-export default ProductTemplate;
