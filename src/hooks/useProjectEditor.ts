@@ -33,12 +33,10 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps): UseProje
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   const hasChangesRef = useRef(false);
   
-  // Undo/Redo history
   const [history, setHistory] = useState<TemplateData[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
   const isUndoRedoRef = useRef(false);
   
-  // Use refs to always have latest values in callbacks
   const templateDataRef = useRef<TemplateData>(templateData);
   const projectRef = useRef<Project | null>(project);
   const isSavingRef = useRef(false);
@@ -46,7 +44,6 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps): UseProje
   const canUndo = historyIndex > 0;
   const canRedo = historyIndex < history.length - 1;
 
-  // Keep refs in sync
   useEffect(() => {
     templateDataRef.current = templateData;
   }, [templateData]);
@@ -55,43 +52,36 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps): UseProje
     projectRef.current = project;
   }, [project]);
 
-  // Fetch project data
   useEffect(() => {
     const fetchProject = async () => {
       if (!projectId) return;
 
-      const { data, error } = await supabase
-        .from('projects')
-        .select('*')
-        .eq('id', projectId)
-        .maybeSingle();
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('id', projectId)
+          .maybeSingle();
 
-      if (error) {
-        console.error('Error fetching project:', error);
-        toast.error('Erro ao carregar projeto');
+        if (error) throw error;
+        if (!data) {
+          toast.error('Projeto não encontrado');
+          setIsLoading(false);
+          return;
+        }
+
+        setProject(data as Project);
+        const savedData = (data.template_data || {}) as Partial<TemplateData>;
+        const mergedData = { ...defaultTemplateData, ...savedData };
+        setTemplateData(mergedData);
+        templateDataRef.current = mergedData;
+        setHistory([mergedData]);
+        setHistoryIndex(0);
+      } catch (err) {
+        console.error('Error fetching project:', err);
+      } finally {
         setIsLoading(false);
-        return;
       }
-
-      if (!data) {
-        toast.error('Projeto não encontrado');
-        setIsLoading(false);
-        return;
-      }
-
-      setProject(data as Project);
-      
-      // Merge saved template_data with defaults
-      const savedData = (data.template_data || {}) as Partial<TemplateData>;
-      const mergedData = { ...defaultTemplateData, ...savedData };
-      setTemplateData(mergedData);
-      templateDataRef.current = mergedData;
-      
-      // Initialize history with the loaded data
-      setHistory([mergedData]);
-      setHistoryIndex(0);
-      
-      setIsLoading(false);
     };
 
     fetchProject();
@@ -103,37 +93,35 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps): UseProje
     
     if (!currentProject || isSavingRef.current) return;
 
-    isSavingRef.current = true;
-    setIsSaving(true);
-    
-    const { error } = await supabase
-      .from('projects')
-      .update({ 
-        template_data: currentTemplateData as unknown as Record<string, unknown>
-      })
-      .eq('id', currentProject.id);
+    try {
+      isSavingRef.current = true;
+      setIsSaving(true);
+      
+      const { error } = await supabase
+        .from('projects')
+        .update({ 
+          template_data: currentTemplateData as unknown as Record<string, unknown>
+        })
+        .eq('id', currentProject.id);
 
-    isSavingRef.current = false;
-    setIsSaving(false);
+      if (error) throw error;
 
-    if (error) {
-      console.error('Error saving:', error);
-      toast.error('Erro ao salvar alterações');
-      return;
+      hasChangesRef.current = false;
+      setLastSavedAt(new Date());
+    } catch (err: any) {
+      toast.error('Erro ao salvar: ' + err.message);
+    } finally {
+      isSavingRef.current = false;
+      setIsSaving(false);
     }
-
-    hasChangesRef.current = false;
-    setLastSavedAt(new Date());
   }, []);
 
-  // Auto-save every 30 seconds if there are changes
   useEffect(() => {
     const interval = setInterval(() => {
       if (hasChangesRef.current && projectRef.current) {
         saveNow();
       }
     }, 30000);
-    
     return () => clearInterval(interval);
   }, [saveNow]);
 
@@ -143,14 +131,10 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps): UseProje
       templateDataRef.current = newData;
       hasChangesRef.current = true;
       
-      // Add to history if not from undo/redo
       if (!isUndoRedoRef.current) {
         setHistory(prevHistory => {
-          // Remove any future states if we're in the middle of history
           const newHistory = prevHistory.slice(0, historyIndex + 1);
-          // Add new state
           newHistory.push(newData);
-          // Limit history size
           if (newHistory.length > MAX_HISTORY_SIZE) {
             newHistory.shift();
           }
@@ -158,113 +142,57 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps): UseProje
         });
         setHistoryIndex(prev => Math.min(prev + 1, MAX_HISTORY_SIZE - 1));
       }
-      
       return newData;
     });
   }, [historyIndex]);
 
   const undo = useCallback(() => {
     if (!canUndo) return;
-    
     isUndoRedoRef.current = true;
     const newIndex = historyIndex - 1;
     const previousData = history[newIndex];
-    
     setHistoryIndex(newIndex);
     setTemplateData(previousData);
     templateDataRef.current = previousData;
     hasChangesRef.current = true;
-    
-    // Reset flag after state update
-    setTimeout(() => {
-      isUndoRedoRef.current = false;
-    }, 0);
+    setTimeout(() => { isUndoRedoRef.current = false; }, 0);
   }, [canUndo, history, historyIndex]);
 
   const redo = useCallback(() => {
     if (!canRedo) return;
-    
     isUndoRedoRef.current = true;
     const newIndex = historyIndex + 1;
     const nextData = history[newIndex];
-    
     setHistoryIndex(newIndex);
     setTemplateData(nextData);
     templateDataRef.current = nextData;
     hasChangesRef.current = true;
-    
-    // Reset flag after state update
-    setTimeout(() => {
-      isUndoRedoRef.current = false;
-    }, 0);
+    setTimeout(() => { isUndoRedoRef.current = false; }, 0);
   }, [canRedo, history, historyIndex]);
-
-  // Keyboard shortcuts for undo/redo
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key === 'z') {
-        if (e.shiftKey) {
-          e.preventDefault();
-          redo();
-        } else {
-          e.preventDefault();
-          undo();
-        }
-      }
-      // Also support Ctrl+Y for redo
-      if ((e.ctrlKey || e.metaKey) && e.key === 'y') {
-        e.preventDefault();
-        redo();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [undo, redo]);
 
   const publish = useCallback(async () => {
     const currentProject = projectRef.current;
-    const currentTemplateData = templateDataRef.current;
-    
     if (!currentProject) return;
 
-    isSavingRef.current = true;
-    setIsSaving(true);
+    try {
+      setIsSaving(true);
+      const { error } = await supabase
+        .from('projects')
+        .update({
+          template_data: templateDataRef.current as unknown as Record<string, unknown>,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', currentProject.id);
 
-    const { error } = await supabase
-      .from('projects')
-      .update({
-        template_data: currentTemplateData as unknown as Record<string, unknown>,
-        updated_at: new Date().toISOString(),
-      })
-      .eq('id', currentProject.id);
-
-    isSavingRef.current = false;
-    setIsSaving(false);
-
-    if (error) {
-      console.error('Error publishing:', error);
-      toast.error('Erro ao publicar');
-      return;
+      if (error) throw error;
+      setLastSavedAt(new Date());
+      toast.success('Projeto publicado com sucesso!');
+    } catch (err: any) {
+      toast.error('Erro ao publicar: ' + err.message);
+    } finally {
+      setIsSaving(false);
     }
-
-    hasChangesRef.current = false;
-    setLastSavedAt(new Date());
-    toast.success('Projeto publicado com sucesso!');
   }, []);
 
-  return {
-    project,
-    templateData,
-    isLoading,
-    isSaving,
-    lastSavedAt,
-    canUndo,
-    canRedo,
-    updateTemplateData,
-    saveNow,
-    publish,
-    undo,
-    redo,
-  };
+  return { project, templateData, isLoading, isSaving, lastSavedAt, canUndo, canRedo, updateTemplateData, saveNow, publish, undo, redo };
 };

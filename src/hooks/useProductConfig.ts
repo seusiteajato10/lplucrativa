@@ -16,7 +16,14 @@ interface ProductConfig {
 
 export function useProductConfig(projectId: string | null) {
   const queryClient = useQueryClient();
-  const [initialLoadComplete, setInitialLoadComplete] = useState(false);
+  const [config, setConfig] = useState<ProductConfig>({
+    template_id: 'product_default',
+    videoUrl: '',
+    productBenefits: [],
+    ctaButtonText: defaultTemplateData.ctaButtonText,
+    guaranteeText: defaultTemplateData.guaranteeText,
+    originalPrice: defaultTemplateData.originalPrice || '',
+  });
 
   // Fetch project data
   const { data: project, isLoading: isLoadingProject, error: projectError } = useQuery({
@@ -32,44 +39,22 @@ export function useProductConfig(projectId: string | null) {
       return data;
     },
     enabled: !!projectId,
-    staleTime: 0, // Always refetch when modal opens
   });
 
-  // Initialize form data from project or defaults
-  const [config, setConfig] = useState<ProductConfig>({
-    template_id: 'product_default',
-    videoUrl: '',
-    productBenefits: [],
-    ctaButtonText: defaultTemplateData.ctaButtonText,
-    guaranteeText: defaultTemplateData.guaranteeText,
-    originalPrice: defaultTemplateData.originalPrice || '',
-  });
-
+  // Sincroniza o formulário sempre que o projeto carregado mudar
   useEffect(() => {
-    if (project && !initialLoadComplete) {
+    if (project) {
       const templateData = { ...defaultTemplateData, ...(project.template_data as Partial<TemplateData>) };
       setConfig({
-        template_id: project.template_id,
+        template_id: project.template_id || 'product_default',
         videoUrl: templateData.videoUrl || '',
         productBenefits: templateData.productBenefits || [],
         ctaButtonText: templateData.ctaButtonText || defaultTemplateData.ctaButtonText,
         guaranteeText: templateData.guaranteeText || defaultTemplateData.guaranteeText,
         originalPrice: templateData.originalPrice || defaultTemplateData.originalPrice || '',
       });
-      setInitialLoadComplete(true);
-    } else if (!projectId) {
-      // Reset to defaults if no project is selected
-      setConfig({
-        template_id: 'product_default',
-        videoUrl: '',
-        productBenefits: [],
-        ctaButtonText: defaultTemplateData.ctaButtonText,
-        guaranteeText: defaultTemplateData.guaranteeText,
-        originalPrice: defaultTemplateData.originalPrice || '',
-      });
-      setInitialLoadComplete(false);
     }
-  }, [project, projectId, initialLoadComplete]);
+  }, [project, projectId]);
 
   const updateConfig = useCallback((updates: Partial<ProductConfig>) => {
     setConfig(prev => ({ ...prev, ...updates }));
@@ -77,9 +62,8 @@ export function useProductConfig(projectId: string | null) {
 
   const saveConfigMutation = useMutation({
     mutationFn: async (newConfig: ProductConfig) => {
-      if (!projectId) throw new Error("Project ID is missing.");
+      if (!projectId) throw new Error("ID do projeto não encontrado.");
 
-      // Merge new config into existing template_data
       const currentTemplateData = { ...defaultTemplateData, ...(project?.template_data as Partial<TemplateData>) };
       const updatedTemplateData: Partial<TemplateData> = {
         ...currentTemplateData,
@@ -102,13 +86,12 @@ export function useProductConfig(projectId: string | null) {
       if (error) throw error;
     },
     onSuccess: () => {
-      toast.success('Configurações do produto salvas!');
+      toast.success('Configurações salvas com sucesso!');
       queryClient.invalidateQueries({ queryKey: ['projectConfig', projectId] });
-      queryClient.invalidateQueries({ queryKey: ['projects'] }); // Invalidate projects list to update template_id
+      queryClient.invalidateQueries({ queryKey: ['projects'] });
     },
-    onError: (err) => {
-      toast.error('Erro ao salvar configurações: ' + err.message);
-      console.error('Error saving product config:', err);
+    onError: (err: any) => {
+      toast.error('Erro ao salvar: ' + err.message);
     },
   });
 
