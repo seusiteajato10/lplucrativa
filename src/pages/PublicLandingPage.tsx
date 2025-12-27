@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { Helmet } from "react-helmet-async";
 import { supabase } from "@/integrations/supabase/client";
@@ -18,58 +18,95 @@ const PublicLandingPage = () => {
 
   useEffect(() => {
     const fetchProject = async () => {
-      if (!slug) { setNotFound(true); setIsLoading(false); return; }
+      if (!slug) { 
+        setNotFound(true); 
+        setIsLoading(false); 
+        return; 
+      }
       
-      const { data, error } = await supabase.from('projects').select('*').eq('slug', slug).single();
-      
-      if (error || !data) { setNotFound(true); setIsLoading(false); return; }
-      
-      setProject(data as Project);
-      setIsLoading(false);
+      try {
+        const { data, error } = await supabase
+          .from('projects')
+          .select('*')
+          .eq('slug', slug)
+          .maybeSingle();
+        
+        if (error || !data) { 
+          setNotFound(true); 
+        } else {
+          setProject(data as Project);
+        }
+      } catch (err) {
+        console.error("Error fetching project:", err);
+        setNotFound(true);
+      } finally {
+        setIsLoading(false);
+      }
     };
     fetchProject();
   }, [slug]);
 
-  if (isLoading) return <div className="min-h-screen flex items-center justify-center"><Loader2 className="w-8 h-8 animate-spin text-primary" /></div>;
+  if (isLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-background">
+        <Loader2 className="w-8 h-8 animate-spin text-primary" />
+      </div>
+    );
+  }
   
-  if (notFound) return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-background">
-      <Helmet><title>Página não encontrada</title></Helmet>
-      <h1 className="text-4xl font-bold text-foreground mb-4">404</h1>
-      <p className="text-muted-foreground">Esta página não existe.</p>
-    </div>
-  );
+  if (notFound || !project) {
+    return (
+      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+        <Helmet><title>Página não encontrada</title></Helmet>
+        <h1 className="text-4xl font-bold text-foreground mb-4">404</h1>
+        <p className="text-muted-foreground">Esta página não existe ou foi removida.</p>
+      </div>
+    );
+  }
 
-  const templateData = project?.template_data as Record<string, unknown> || {};
+  const templateData = (project.template_data as Record<string, unknown>) || {};
   
-  // Lógica de seleção de template
-  let TemplateComponent: React.ComponentType<any>;
-  
-  if (project?.niche === 'product' && project.template_id === 'product_vsl') {
-    TemplateComponent = ProductTemplateVSL;
-  } else {
-    const nicheComponents: Record<ProjectNiche, React.ComponentType<any>> = {
+  // Seleção dinâmica do componente de template
+  const renderTemplate = () => {
+    if (project.niche === 'product' && project.template_id === 'product_vsl') {
+      return (
+        <ProductTemplateVSL 
+          data={templateData} 
+          projectName={project.name} 
+          projectId={project.id}
+          userId={project.user_id}
+          slug={slug}
+        />
+      );
+    }
+
+    const nicheComponents: Record<string, React.ComponentType<any>> = {
       product: ProductTemplate,
       service: ServiceTemplate,
       event: EventTemplate,
       course: CourseTemplate,
     };
-    TemplateComponent = nicheComponents[project?.niche as ProjectNiche] || ProductTemplate;
-  }
+
+    const SelectedComponent = nicheComponents[project.niche] || ProductTemplate;
+
+    return (
+      <SelectedComponent 
+        data={templateData} 
+        projectName={project.name} 
+        projectId={project.id}
+        userId={project.user_id}
+        slug={slug}
+      />
+    );
+  };
 
   return (
     <>
       <Helmet>
-        <title>{project?.name || 'Landing Page'}</title>
-        <meta name="description" content={`${nicheLabels[project?.niche as ProjectNiche] || 'Produto'} - ${project?.name}`} />
+        <title>{project.name}</title>
+        <meta name="description" content={`${nicheLabels[project.niche as ProjectNiche] || 'Projeto'} - ${project.name}`} />
       </Helmet>
-      <TemplateComponent 
-        data={templateData} 
-        projectName={project?.name || ''} 
-        projectId={project?.id}
-        userId={project?.user_id}
-        slug={slug}
-      />
+      {renderTemplate()}
     </>
   );
 };
