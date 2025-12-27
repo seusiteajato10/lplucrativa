@@ -17,7 +17,7 @@ interface ProductTemplateVSLProps {
   slug?: string;
 }
 
-export function ProductTemplateVSL({ data, projectName, projectId, userId, slug }: ProductTemplateVSLProps) {
+function ProductTemplateVSL({ data, projectName, projectId, userId, slug }: ProductTemplateVSLProps) {
   const navigate = useNavigate();
   const [timeLeft, setTimeLeft] = useState({ hours: 2, minutes: 45, seconds: 30 });
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -131,7 +131,7 @@ export function ProductTemplateVSL({ data, projectName, projectId, userId, slug 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900 relative overflow-hidden">
       {/* Efeitos de fundo animados */}
-      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bS0yIDB2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
+      <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiNmZmYiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djItaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bTAtNHYyaDJ2LTJoLTJ6bS0yIDB2Mmgydi0yaC0yem0wIDR2Mmgydi0yaC0yem0wIDR2Mmgydi0iaC0yem0wIDR2Mmgydi0iaC0yem0wIDR2Mmgydi0iaC0yem0wIDR2Mmgydi0iaC0yem0wIDR2Mmgydi0iaC0yem0wIDR2Mmgydi0iaC0yem0wIDR2Mmgydi0iaC0yeiIvPjwvZz48L2c+PC9zdmc+')] opacity-30"></div>
       
       <div className="container mx-auto px-4 py-8 max-w-6xl relative z-10">
         
@@ -450,3 +450,5 @@ export function ProductTemplateVSL({ data, projectName, projectId, userId, slug 
     </div>
   );
 }
+
+export default ProductTemplateVSL;
