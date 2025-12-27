@@ -48,10 +48,10 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
         )}
 
         <ScrollArea className="flex-1 p-4 h-0 min-h-0">
-          <TabsContent value="content" className="mt-0">
+          <TabsContent value="content" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <ContentTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
-          <TabsContent value="images" className="mt-0">
+          <TabsContent value="images" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <ImagesTab 
               templateData={templateData} 
               onUpdate={onUpdate}
@@ -59,32 +59,32 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
               userId={userId}
             />
           </TabsContent>
-          <TabsContent value="video" className="mt-0">
+          <TabsContent value="video" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <VideoTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
-          <TabsContent value="styles" className="mt-0">
+          <TabsContent value="styles" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <StylesTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
-          <TabsContent value="form" className="mt-0">
+          <TabsContent value="form" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <FormTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
-          <TabsContent value="integrations" className="mt-0">
+          <TabsContent value="integrations" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <IntegrationsTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
-          <TabsContent value="lgpd" className="mt-0">
+          <TabsContent value="lgpd" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <LgpdTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
-          <TabsContent value="thankyou" className="mt-0">
+          <TabsContent value="thankyou" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <ThankYouTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
-          <TabsContent value="upsell" className="mt-0">
+          <TabsContent value="upsell" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <UpsellTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
-          <TabsContent value="downsell" className="mt-0">
+          <TabsContent value="downsell" className="mt-0 flex-1 flex flex-col overflow-y-auto">
             <DownsellTab templateData={templateData} onUpdate={onUpdate} />
           </TabsContent>
           {templateData.niche === 'product' && (
-            <TabsContent value="product-config" className="mt-0">
+            <TabsContent value="product-config" className="mt-0 flex-1 flex flex-col overflow-y-auto">
               <ProductConfigTab templateData={templateData} onUpdate={onUpdate} />
             </TabsContent>
           )}
