@@ -58,7 +58,12 @@ export const statusLabels: Record<ProjectStatus, string> = {
   paused: "Pausado",
 };
 
-export const getTemplateId = (niche: ProjectNiche): string => {
+export const getTemplateId = (niche: ProjectNiche, projectType?: ProjectType): string => {
+  if (projectType === 'lead_only' || projectType === 'full_funnel') {
+    // Default capture template
+    return 'capture_ebook'; 
+  }
+
   const templates: Record<ProjectNiche, string> = {
     product: 'product_default',
     service: 'service_basic',
@@ -70,7 +75,7 @@ export const getTemplateId = (niche: ProjectNiche): string => {
 
 export const getTemplateOptionsForNiche = (niche: ProjectNiche, projectType?: ProjectType) => {
   // Se for página de captura, retornamos os templates de captura independentemente do nicho
-  if (projectType === 'lead_only') {
+  if (projectType === 'lead_only' || projectType === 'full_funnel') {
     return [
       { value: 'capture_ebook', label: 'E-book / Isca Digital' },
       { value: 'capture_vsl', label: 'Vídeo (VSL) + Captura' },

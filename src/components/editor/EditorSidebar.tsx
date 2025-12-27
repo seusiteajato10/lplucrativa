@@ -11,7 +11,7 @@ import LgpdTab from './tabs/LgpdTab';
 import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
-import ProductConfigTab from './tabs/ProductConfigTab';
+import TemplateSettingsTab from './tabs/TemplateSettingsTab'; // Importar o novo tab
 
 interface EditorSidebarProps {
   templateData: TemplateData;
@@ -41,11 +41,10 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
             <TabsTrigger value="upsell" className="text-[10px] py-1">Upsell</TabsTrigger>
             <TabsTrigger value="downsell" className="text-[10px] py-1">Downsell</TabsTrigger>
           </TabsList>
-          {templateData.niche === 'product' && (
-            <TabsList className="grid grid-cols-1 w-full h-auto">
-              <TabsTrigger value="product-config" className="text-[10px] py-1 font-bold">Configuração do Produto</TabsTrigger>
-            </TabsList>
-          )}
+          {/* Novo tab de configurações de template, visível para todos */}
+          <TabsList className="grid grid-cols-1 w-full h-auto">
+            <TabsTrigger value="template-settings" className="text-[10px] py-1 font-bold">Configurações do Template</TabsTrigger>
+          </TabsList>
         </div>
 
         <div className="flex-1 overflow-y-auto">
@@ -85,11 +84,13 @@ const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSide
             <TabsContent value="downsell" className="mt-0">
               <DownsellTab templateData={templateData} onUpdate={onUpdate} />
             </TabsContent>
-            {templateData.niche === 'product' && (
-              <TabsContent value="product-config" className="mt-0">
-                <ProductConfigTab templateData={templateData} onUpdate={onUpdate} />
-              </TabsContent>
-            )}
+            {/* Renderizar o novo TemplateSettingsTab */}
+            <TabsContent value="template-settings" className="mt-0">
+              <TemplateSettingsTab 
+                templateData={templateData} 
+                onUpdate={onUpdate} 
+              />
+            </TabsContent>
           </div>
         </div>
       </Tabs>

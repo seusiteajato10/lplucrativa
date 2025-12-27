@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
-import { Project } from '@/types/project';
+import { Project, getTemplateId } from '@/types/project';
 import { TemplateData, defaultTemplateData } from '@/types/templateData';
 import { toast } from 'sonner';
 
@@ -42,14 +42,17 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
       const mergedData = { 
         ...defaultTemplateData, 
         ...dbData, 
-        niche: data.niche 
+        niche: data.niche,
+        project_type: data.project_type, // Ensure project_type is in templateData for consistency
       } as TemplateData;
       
       setProject(data as Project);
+      // Use the new getTemplateId logic here for initial templateId
+      const initialTemplateId = data.template_id || getTemplateId(data.niche, data.project_type);
+      setTemplateId(initialTemplateId);
       setTemplateData(mergedData);
-      setTemplateId(data.template_id);
       
-      setHistory([{ data: mergedData, tid: data.template_id }]);
+      setHistory([{ data: mergedData, tid: initialTemplateId }]);
       setHistoryIndex(0);
     } catch (err: any) {
       console.error('Error fetching project:', err);
