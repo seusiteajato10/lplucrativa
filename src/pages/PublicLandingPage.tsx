@@ -64,21 +64,33 @@ const PublicLandingPage = () => {
     );
   }
 
+  // Passamos o template_data diretamente como o objeto de dados principal
   const templateData = (project.template_data as Record<string, unknown>) || {};
   
   const renderTemplate = () => {
-    // TESTE: Forçar VSL para TODOS os produtos (temporário para debug)
     if (project.niche === 'product') {
+      if (project.template_id === 'product_vsl') {
+        return (
+          <ProductTemplateVSL 
+            data={templateData}
+            projectName={project.name} 
+            projectId={project.id}
+            userId={project.user_id}
+            slug={project.slug}
+          />
+        );
+      }
       return (
-        <ProductTemplateVSL 
-          data={{ templateData }}
+        <ProductTemplate 
+          data={templateData}
           projectName={project.name} 
           projectId={project.id}
+          userId={project.user_id}
+          slug={project.slug}
         />
       );
     }
 
-    // Para outros nichos, usar templates específicos
     const nicheComponents: Record<string, React.ComponentType<any>> = {
       service: ServiceTemplate,
       event: EventTemplate,
@@ -89,9 +101,11 @@ const PublicLandingPage = () => {
 
     return (
       <SelectedComponent 
-        data={{ templateData }}
+        data={templateData}
         projectName={project.name} 
         projectId={project.id}
+        userId={project.user_id}
+        slug={project.slug}
       />
     );
   };

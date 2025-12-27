@@ -3,10 +3,17 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { Project, ProjectNiche, getTemplateId } from "@/types/project";
 
+interface AddProjectData {
+  name: string;
+  slug: string;
+  niche: ProjectNiche;
+  template_id?: string;
+}
+
 interface ProjectsContextType {
   projects: Project[];
   isLoading: boolean;
-  addProject: (data: { name: string; slug: string; niche: ProjectNiche }) => Promise<{ error: Error | null }>;
+  addProject: (data: AddProjectData) => Promise<{ error: Error | null }>;
   deleteProject: (id: string) => Promise<{ error: Error | null }>;
   totalLeads: number;
   refetch: () => Promise<void>;
@@ -29,7 +36,6 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
 
     setIsLoading(true);
     
-    // Fetch projects
     const { data: projectsData, error } = await supabase
       .from('projects')
       .select('*')
@@ -42,7 +48,6 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    // Fetch leads count for each project
     const { data: leadsData, error: leadsError } = await supabase
       .from('leads_captured')
       .select('project_id')
@@ -52,7 +57,6 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
       console.error('Error fetching leads:', leadsError);
     }
 
-    // Count leads per project
     const leadsCountMap: Record<string, number> = {};
     leadsData?.forEach(lead => {
       leadsCountMap[lead.project_id] = (leadsCountMap[lead.project_id] || 0) + 1;
@@ -72,7 +76,7 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
     fetchProjects();
   }, [user]);
 
-  const addProject = async (data: { name: string; slug: string; niche: ProjectNiche }) => {
+  const addProject = async (data: AddProjectData) => {
     if (!user) {
       return { error: new Error('No user logged in') };
     }
@@ -84,14 +88,14 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
         name: data.name,
         slug: data.slug,
         niche: data.niche,
-        template_id: getTemplateId(data.niche),
+        template_id: data.template_id || getTemplateId(data.niche),
         template_data: {},
         integrations: {},
         status: 'active'
       });
 
     if (error) {
-      return { error };
+      return { error: error as any };
     }
 
     await fetchProjects();
@@ -105,7 +109,7 @@ export const ProjectsProvider = ({ children }: { children: ReactNode }) => {
       .eq('id', id);
 
     if (error) {
-      return { error };
+      return { error: error as any };
     }
 
     await fetchProjects();
