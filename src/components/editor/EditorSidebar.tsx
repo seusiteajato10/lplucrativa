@@ -11,7 +11,7 @@ import LgpdTab from './tabs/LgpdTab';
 import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
-import ProductConfigTab from './tabs/ProductConfigTab'; // Import the new tab
+import ProductConfigTab from './tabs/ProductConfigTab';
 
 interface EditorSidebarProps {
   templateData: TemplateData;
@@ -22,73 +22,76 @@ interface EditorSidebarProps {
 
 const EditorSidebar = ({ templateData, projectId, userId, onUpdate }: EditorSidebarProps) => {
   return (
-    <aside className="w-80 border-r border-border bg-background flex flex-col h-full">
-      <Tabs defaultValue="content" className="flex-1 flex flex-col">
-        <TabsList className="grid grid-cols-4 m-2 h-auto">
-          <TabsTrigger value="content" className="text-xs py-2">Conteúdo</TabsTrigger>
-          <TabsTrigger value="images" className="text-xs py-2">Imagens</TabsTrigger>
-          <TabsTrigger value="video" className="text-xs py-2">Vídeo</TabsTrigger>
-          <TabsTrigger value="styles" className="text-xs py-2">Estilos</TabsTrigger>
-        </TabsList>
-        <TabsList className="grid grid-cols-3 mx-2 h-auto">
-          <TabsTrigger value="form" className="text-xs py-2">Formulário</TabsTrigger>
-          <TabsTrigger value="integrations" className="text-xs py-2">Integrações</TabsTrigger>
-          <TabsTrigger value="lgpd" className="text-xs py-2">LGPD</TabsTrigger>
-        </TabsList>
-        <TabsList className="grid grid-cols-3 mx-2 mt-1 h-auto">
-          <TabsTrigger value="thankyou" className="text-xs py-2">Obrigado</TabsTrigger>
-          <TabsTrigger value="upsell" className="text-xs py-2">Upsell</TabsTrigger>
-          <TabsTrigger value="downsell" className="text-xs py-2">Downsell</TabsTrigger>
-        </TabsList>
-        {/* New tab for Product Config */}
-        {templateData.niche === 'product' && (
-          <TabsList className="grid grid-cols-1 mx-2 mt-1 h-auto">
-            <TabsTrigger value="product-config" className="text-xs py-2">Config. Produto</TabsTrigger>
+    <aside className="w-80 border-r border-border bg-background flex flex-col h-full overflow-hidden">
+      <Tabs defaultValue="content" className="flex flex-col h-full">
+        <div className="p-2 space-y-1 border-b bg-muted/20">
+          <TabsList className="grid grid-cols-4 w-full h-auto">
+            <TabsTrigger value="content" className="text-[10px] py-1">Conteúdo</TabsTrigger>
+            <TabsTrigger value="images" className="text-[10px] py-1">Imagens</TabsTrigger>
+            <TabsTrigger value="video" className="text-[10px] py-1">Vídeo</TabsTrigger>
+            <TabsTrigger value="styles" className="text-[10px] py-1">Estilos</TabsTrigger>
           </TabsList>
-        )}
-
-        <ScrollArea className="flex-1 p-4 h-0 min-h-0">
-          <TabsContent value="content" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <ContentTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
-          <TabsContent value="images" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <ImagesTab 
-              templateData={templateData} 
-              onUpdate={onUpdate}
-              projectId={projectId}
-              userId={userId}
-            />
-          </TabsContent>
-          <TabsContent value="video" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <VideoTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
-          <TabsContent value="styles" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <StylesTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
-          <TabsContent value="form" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <FormTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
-          <TabsContent value="integrations" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <IntegrationsTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
-          <TabsContent value="lgpd" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <LgpdTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
-          <TabsContent value="thankyou" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <ThankYouTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
-          <TabsContent value="upsell" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <UpsellTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
-          <TabsContent value="downsell" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-            <DownsellTab templateData={templateData} onUpdate={onUpdate} />
-          </TabsContent>
+          <TabsList className="grid grid-cols-3 w-full h-auto">
+            <TabsTrigger value="form" className="text-[10px] py-1">Form</TabsTrigger>
+            <TabsTrigger value="integrations" className="text-[10px] py-1">Integrar</TabsTrigger>
+            <TabsTrigger value="lgpd" className="text-[10px] py-1">LGPD</TabsTrigger>
+          </TabsList>
+          <TabsList className="grid grid-cols-3 w-full h-auto">
+            <TabsTrigger value="thankyou" className="text-[10px] py-1">Obrigado</TabsTrigger>
+            <TabsTrigger value="upsell" className="text-[10px] py-1">Upsell</TabsTrigger>
+            <TabsTrigger value="downsell" className="text-[10px] py-1">Downsell</TabsTrigger>
+          </TabsList>
           {templateData.niche === 'product' && (
-            <TabsContent value="product-config" className="mt-0 flex-1 flex flex-col overflow-y-auto">
-              <ProductConfigTab templateData={templateData} onUpdate={onUpdate} />
-            </TabsContent>
+            <TabsList className="grid grid-cols-1 w-full h-auto">
+              <TabsTrigger value="product-config" className="text-[10px] py-1 font-bold">Configuração do Produto</TabsTrigger>
+            </TabsList>
           )}
-        </ScrollArea>
+        </div>
+
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-4 pb-20"> {/* Padding bottom maior para não cortar o conteúdo final */}
+            <TabsContent value="content" className="mt-0">
+              <ContentTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            <TabsContent value="images" className="mt-0">
+              <ImagesTab 
+                templateData={templateData} 
+                onUpdate={onUpdate}
+                projectId={projectId}
+                userId={userId}
+              />
+            </TabsContent>
+            <TabsContent value="video" className="mt-0">
+              <VideoTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            <TabsContent value="styles" className="mt-0">
+              <StylesTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            <TabsContent value="form" className="mt-0">
+              <FormTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            <TabsContent value="integrations" className="mt-0">
+              <IntegrationsTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            <TabsContent value="lgpd" className="mt-0">
+              <LgpdTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            <TabsContent value="thankyou" className="mt-0">
+              <ThankYouTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            <TabsContent value="upsell" className="mt-0">
+              <UpsellTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            <TabsContent value="downsell" className="mt-0">
+              <DownsellTab templateData={templateData} onUpdate={onUpdate} />
+            </TabsContent>
+            {templateData.niche === 'product' && (
+              <TabsContent value="product-config" className="mt-0">
+                <ProductConfigTab templateData={templateData} onUpdate={onUpdate} />
+              </TabsContent>
+            )}
+          </div>
+        </div>
       </Tabs>
     </aside>
   );

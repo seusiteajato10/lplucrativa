@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { supabase } from '@/integrations/supabase/client';
 import { Project } from '@/types/project';
 import { TemplateData, defaultTemplateData } from '@/types/templateData';
@@ -18,12 +18,9 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   
-  // Gerenciamento de Histórico (Undo/Redo)
   const [history, setHistory] = useState<{data: TemplateData, tid: string}[]>([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
-  const [hasChanges, setHasChanges] = useState(false);
 
-  // Busca inicial do projeto
   const fetchProject = useCallback(async () => {
     if (!projectId) return;
 
@@ -52,10 +49,8 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
       setTemplateData(mergedData);
       setTemplateId(data.template_id);
       
-      // Inicializa histórico
       setHistory([{ data: mergedData, tid: data.template_id }]);
       setHistoryIndex(0);
-      setHasChanges(false);
     } catch (err: any) {
       console.error('Error fetching project:', err);
       toast.error('Erro ao carregar projeto');
@@ -68,25 +63,21 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
     fetchProject();
   }, [fetchProject]);
 
-  // Função centralizada para salvar
   const saveNow = useCallback(async () => {
     if (!project || isSaving) return;
 
     try {
       setIsSaving(true);
-      
       const { error } = await supabase
         .from('projects')
         .update({ 
           template_data: templateData as any,
-          template_id: templateId, // Agora salva a coluna real do banco
+          template_id: templateId,
           updated_at: new Date().toISOString()
         })
         .eq('id', project.id);
 
       if (error) throw error;
-
-      setHasChanges(false);
       setLastSavedAt(new Date());
       toast.success('Projeto salvo com sucesso!');
     } catch (err: any) {
@@ -97,28 +88,27 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
     }
   }, [project, templateData, templateId, isSaving]);
 
-  // Atualização de dados
   const updateTemplateData = useCallback((updates: Partial<TemplateData & { template_id?: string }>) => {
     const { template_id, ...rest } = updates;
     
+    // Atualiza o templateId se presente nas atualizações
+    if (template_id !== undefined) {
+      setTemplateId(template_id);
+    }
+
+    // Atualiza os dados do template
     setTemplateData(prev => {
       const newData = { ...prev, ...rest };
-      const newTid = template_id !== undefined ? template_id : templateId;
       
-      if (template_id !== undefined) {
-        setTemplateId(template_id);
-      }
-
-      setTimeout(() => {
-        setHasChanges(true);
-        setHistory(prevHistory => {
-          const newHistory = prevHistory.slice(0, historyIndex + 1);
-          newHistory.push({ data: newData, tid: newTid });
-          if (newHistory.length > MAX_HISTORY_SIZE) newHistory.shift();
-          return newHistory;
-        });
-        setHistoryIndex(prevIndex => Math.min(prevIndex + 1, MAX_HISTORY_SIZE - 1));
-      }, 0);
+      // Adiciona ao histórico de forma síncrona para evitar delays
+      const newTid = template_id !== undefined ? template_id : templateId;
+      setHistory(prevHistory => {
+        const newHistory = prevHistory.slice(0, historyIndex + 1);
+        newHistory.push({ data: newData, tid: newTid });
+        if (newHistory.length > MAX_HISTORY_SIZE) newHistory.shift();
+        return newHistory;
+      });
+      setHistoryIndex(prevIndex => Math.min(prevIndex + 1, MAX_HISTORY_SIZE - 1));
 
       return newData;
     });
@@ -131,7 +121,6 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
       setTemplateData(prevEntry.data);
       setTemplateId(prevEntry.tid);
       setHistoryIndex(newIndex);
-      setHasChanges(true);
     }
   }, [history, historyIndex]);
 
@@ -142,18 +131,13 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
       setTemplateData(nextEntry.data);
       setTemplateId(nextEntry.tid);
       setHistoryIndex(newIndex);
-      setHasChanges(true);
     }
   }, [history, historyIndex]);
-
-  const publish = useCallback(async () => {
-    await saveNow();
-  }, [saveNow]);
 
   return { 
     project, 
     templateData, 
-    templateId, // Expondo o ID dinâmico
+    templateId,
     isLoading, 
     isSaving, 
     lastSavedAt, 
@@ -161,7 +145,7 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
     canRedo: historyIndex < history.length - 1, 
     updateTemplateData, 
     saveNow, 
-    publish, 
+    publish: saveNow, 
     undo, 
     redo 
   };
