@@ -17,18 +17,20 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
   const [isSaving, setIsSaving] = useState(false);
   const [lastSavedAt, setLastSavedAt] = useState<Date | null>(null);
   
-  const historyRef = useRef<TemplateData[]>([]);
-  const historyIndexRef = useRef(-1);
-  const hasChangesRef = useRef(false);
+  // Ref para o estado de salvamento para evitar race conditions
   const isSavingRef = useRef(false);
   
-  const [canUndo, setCanUndo] = useState(false);
-  const [canRedo, setCanRedo] = useState(false);
+  // Gerenciamento de Histórico (Undo/Redo)
+  const [history, setHistory] = useState<TemplateData[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const [hasChanges, setHasChanges] = useState(false);
 
+  // Busca inicial do projeto
   const fetchProject = useCallback(async () => {
     if (!projectId) return;
 
     try {
+      setIsLoading(true);
       const { data, error } = await supabase
         .from('projects')
         .select('*')
@@ -41,16 +43,23 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
         return;
       }
 
-      setProject(data as Project);
-      const savedData = (data.template_data || {}) as Partial<TemplateData>;
-      const mergedData = { ...defaultTemplateData, ...savedData, niche: data.niche };
+      const dbData = (data.template_data || {}) as Partial<TemplateData>;
+      const mergedData = { 
+        ...defaultTemplateData, 
+        ...dbData, 
+        niche: data.niche // Garante que o nicho venha do banco
+      } as TemplateData;
       
+      setProject(data as Project);
       setTemplateData(mergedData);
-      historyRef.current = [mergedData];
-      historyIndexRef.current = 0;
-      updateUndoRedoStates();
-    } catch (err) {
+      
+      // Inicializa histórico
+      setHistory([mergedData]);
+      setHistoryIndex(0);
+      setHasChanges(false);
+    } catch (err: any) {
       console.error('Error fetching project:', err);
+      toast.error('Erro ao carregar projeto');
     } finally {
       setIsLoading(false);
     }
@@ -60,13 +69,10 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
     fetchProject();
   }, [fetchProject]);
 
-  const updateUndoRedoStates = () => {
-    setCanUndo(historyIndexRef.current > 0);
-    setCanRedo(historyIndexRef.current < historyRef.current.length - 1);
-  };
-
+  // Função centralizada para salvar
   const saveNow = useCallback(async () => {
-    if (!project || isSavingRef.current || !hasChangesRef.current) return;
+    // Se já estiver salvando ou não houver projeto/mudanças, ignora
+    if (!project || isSavingRef.current || !hasChanges) return;
 
     try {
       isSavingRef.current = true;
@@ -75,73 +81,95 @@ export const useProjectEditor = ({ projectId }: UseProjectEditorProps) => {
       const { error } = await supabase
         .from('projects')
         .update({ 
-          template_data: templateData as unknown as Record<string, unknown>
+          template_data: templateData as any,
+          updated_at: new Date().toISOString()
         })
         .eq('id', project.id);
 
       if (error) throw error;
 
-      hasChangesRef.current = false;
+      setHasChanges(false);
       setLastSavedAt(new Date());
     } catch (err: any) {
-      toast.error('Erro ao salvar: ' + err.message);
+      console.error('Erro ao salvar:', err);
+      toast.error('Erro ao salvar: ' + (err.message || 'Erro desconhecido'));
     } finally {
       isSavingRef.current = false;
       setIsSaving(false);
     }
-  }, [project, templateData]);
+  }, [project, templateData, hasChanges]);
 
+  // Atualização de dados do template
   const updateTemplateData = useCallback((updates: Partial<TemplateData>) => {
     setTemplateData(prev => {
       const newData = { ...prev, ...updates };
       
-      // Update history outside of the setter to avoid loop
-      const newHistory = historyRef.current.slice(0, historyIndexRef.current + 1);
-      newHistory.push(newData);
-      if (newHistory.length > MAX_HISTORY_SIZE) newHistory.shift();
+      // Gerencia o histórico de forma assíncrona para não travar o estado
+      setHistory(prevHistory => {
+        const newHistory = prevHistory.slice(0, historyIndex + 1);
+        newHistory.push(newData);
+        if (newHistory.length > MAX_HISTORY_SIZE) newHistory.shift();
+        return newHistory;
+      });
       
-      historyRef.current = newHistory;
-      historyIndexRef.current = newHistory.length - 1;
-      
-      hasChangesRef.current = true;
-      updateUndoRedoStates();
+      setHistoryIndex(prevIndex => {
+        const newIndex = prevIndex + 1;
+        // Limita ao tamanho máximo do histórico
+        return Math.min(newIndex, MAX_HISTORY_SIZE - 1);
+      });
+
+      setHasChanges(true);
       return newData;
     });
-  }, []);
+  }, [historyIndex]);
 
   const undo = useCallback(() => {
-    if (historyIndexRef.current > 0) {
-      historyIndexRef.current -= 1;
-      const prevData = historyRef.current[historyIndexRef.current];
+    if (historyIndex > 0) {
+      const newIndex = historyIndex - 1;
+      const prevData = history[newIndex];
       setTemplateData(prevData);
-      hasChangesRef.current = true;
-      updateUndoRedoStates();
+      setHistoryIndex(newIndex);
+      setHasChanges(true);
     }
-  }, []);
+  }, [history, historyIndex]);
 
   const redo = useCallback(() => {
-    if (historyIndexRef.current < historyRef.current.length - 1) {
-      historyIndexRef.current += 1;
-      const nextData = historyRef.current[historyIndexRef.current];
+    if (historyIndex < history.length - 1) {
+      const newIndex = historyIndex + 1;
+      const nextData = history[newIndex];
       setTemplateData(nextData);
-      hasChangesRef.current = true;
-      updateUndoRedoStates();
+      setHistoryIndex(newIndex);
+      setHasChanges(true);
     }
-  }, []);
+  }, [history, historyIndex]);
 
   const publish = useCallback(async () => {
-    hasChangesRef.current = true;
     await saveNow();
     toast.success('Projeto publicado com sucesso!');
   }, [saveNow]);
 
-  // Auto-save
+  // Auto-save a cada 60 segundos se houver mudanças
   useEffect(() => {
     const interval = setInterval(() => {
-      if (hasChangesRef.current) saveNow();
-    }, 30000);
+      if (hasChanges && !isSavingRef.current) {
+        saveNow();
+      }
+    }, 60000);
     return () => clearInterval(interval);
-  }, [saveNow]);
+  }, [hasChanges, saveNow]);
 
-  return { project, templateData, isLoading, isSaving, lastSavedAt, canUndo, canRedo, updateTemplateData, saveNow, publish, undo, redo };
+  return { 
+    project, 
+    templateData, 
+    isLoading, 
+    isSaving, 
+    lastSavedAt, 
+    canUndo: historyIndex > 0, 
+    canRedo: historyIndex < history.length - 1, 
+    updateTemplateData, 
+    saveNow, 
+    publish, 
+    undo, 
+    redo 
+  };
 };
