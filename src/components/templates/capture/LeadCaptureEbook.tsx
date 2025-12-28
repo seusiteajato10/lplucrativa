@@ -1,92 +1,118 @@
-import { CheckCircle2 } from "lucide-react";
-import { LeadForm } from "@/components/leads/LeadForm";
-import { TemplateData, defaultTemplateData } from "@/types/templateData";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
-interface LeadCaptureEbookProps {
-  data: any;
-  projectId: string;
-  userId: string;
-  projectName: string;
-}
+export default function LeadCaptureEbook({ data }: any) {
+  const [email, setEmail] = useState("");
 
-const LeadCaptureEbook = ({ data, projectId, userId, projectName }: LeadCaptureEbookProps) => {
-  const templateData: TemplateData = { ...defaultTemplateData, ...data };
-  const config = templateData.leadCapture;
-  const styles = templateData.styles;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Lead capturado:", { email });
+  };
 
   return (
-    <div className="min-h-screen flex flex-col bg-slate-50" style={{ fontFamily: styles.fontFamily }}>
-      {/* Top Banner */}
-      <div className="bg-primary/5 py-4 text-center border-b border-primary/10">
-        <span className="inline-block px-3 py-1 rounded-full bg-primary/10 text-primary text-[10px] font-bold uppercase tracking-wider">
-          Material Gratuito Exclusivo
-        </span>
-      </div>
-
-      <main className="flex-1 flex items-center py-12 md:py-20">
-        <div className="container mx-auto px-4">
-          <div className="grid md:grid-cols-2 gap-12 items-center max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="max-w-5xl w-full">
+        
+        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
+          
+          <div className="grid md:grid-cols-2 gap-8 p-8 md:p-12">
             
-            {/* Left Column: Content */}
-            <div className="text-left space-y-6 animate-fade-in">
-              <h1 className="text-4xl md:text-6xl font-black text-slate-900 leading-tight">
-                {config.headline}
-              </h1>
-              <p className="text-xl text-slate-600 leading-relaxed">
-                {config.subheadline}
-              </p>
+            <div className="flex flex-col justify-center">
               
-              <ul className="space-y-4">
-                {config.benefits.map((benefit, i) => (
-                  <li key={i} className="flex items-start gap-3">
-                    <CheckCircle2 className="w-6 h-6 text-green-500 shrink-0" />
-                    <span className="text-slate-700 font-medium">{benefit}</span>
-                  </li>
-                ))}
-              </ul>
-
-              <div className="pt-6">
-                <img 
-                  src={config.ebookCoverUrl} 
-                  alt="Ebook Mockup" 
-                  className="w-full max-w-sm rounded-lg shadow-2xl transform -rotate-2 hover:rotate-0 transition-transform duration-500"
-                />
+              <div className="inline-block bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-bold mb-4 w-fit">
+                100% GRATUITO
               </div>
-            </div>
 
-            {/* Right Column: Form Card */}
-            <div className="relative">
-              <div className="absolute inset-0 bg-primary/10 blur-3xl rounded-full" />
-              <div className="relative bg-white p-8 md:p-10 rounded-3xl shadow-soft border border-slate-100">
-                <div className="text-center mb-8">
-                  <h3 className="text-2xl font-bold text-slate-900 mb-2">{config.formTitle}</h3>
-                  <p className="text-slate-500 text-sm">Garantimos que você não receberá SPAM.</p>
+              <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
+                {data?.headline || "Guia Completo: Como Dominar [Tema] em 7 Dias"}
+              </h1>
+
+              <p className="text-lg text-gray-700 mb-6 leading-relaxed">
+                {data?.subheadline || "Descubra o passo a passo completo usado por especialistas para obter resultados rapidos e duradouros"}
+              </p>
+
+              <div className="space-y-3 mb-8">
+                <div className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <p className="text-gray-700">
+                    <strong className="text-gray-900">52 paginas</strong> de conteudo exclusivo e pratico
+                  </p>
                 </div>
+                <div className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <p className="text-gray-700">
+                    <strong className="text-gray-900">Modelos prontos</strong> para aplicar imediatamente
+                  </p>
+                </div>
+                <div className="flex items-start">
+                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
+                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <p className="text-gray-700">
+                    <strong className="text-gray-900">Bonus exclusivo:</strong> Checklist de implementacao
+                  </p>
+                </div>
+              </div>
 
-                <LeadForm 
-                  projectId={projectId}
-                  userId={userId}
-                  ctaText={config.ctaText}
-                  redirectConfig={templateData.redirectAfterCapture}
-                  fields={['name', 'email', 'phone']} // Adicionado 'phone' conforme requisito
-                />
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div>
+                  <Input
+                    type="email"
+                    placeholder="Digite seu melhor e-mail"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className="h-14 text-lg border-2 border-gray-300 focus:border-blue-500"
+                    required
+                  />
+                </div>
+                <Button 
+                  type="submit"
+                  className="w-full h-14 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  BAIXAR EBOOK GRATIS
+                </Button>
+              </form>
 
-                <p className="text-center mt-6 text-xs text-slate-400">
-                  {config.privacyText}
-                </p>
+              <p className="text-xs text-gray-500 text-center mt-4">
+                Sem spam. Cancele quando quiser. Seus dados estao seguros.
+              </p>
+
+            </div>
+
+            <div className="flex items-center justify-center">
+              <div className="relative">
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl transform rotate-3"></div>
+                <div className="relative bg-white rounded-2xl shadow-2xl p-8 transform -rotate-2 hover:rotate-0 transition-transform duration-300">
+                  <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-8 text-white">
+                    <div className="text-6xl font-black mb-4">E-BOOK</div>
+                    <div className="text-xl font-bold mb-2">{data?.headline?.substring(0, 30) || "Guia Completo"}</div>
+                    <div className="text-sm opacity-90">Por Especialistas</div>
+                  </div>
+                </div>
               </div>
             </div>
+
           </div>
         </div>
-      </main>
 
-      <footer className="py-8 border-t border-slate-200 text-center">
-        <p className="text-slate-400 text-xs uppercase tracking-widest">
-          © {new Date().getFullYear()} {templateData.footer?.companyName || projectName} • Política de Privacidade
-        </p>
-      </footer>
+        <div className="text-center mt-8">
+          <p className="text-gray-600 text-sm">
+            Ja foram baixados <strong className="text-gray-900">12.483 exemplares</strong> deste ebook
+          </p>
+        </div>
+
+      </div>
     </div>
   );
-};
-
-export default LeadCaptureEbook;
+}
