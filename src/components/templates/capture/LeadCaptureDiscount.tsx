@@ -1,66 +1,105 @@
-import { Gift, X, Sparkles } from "lucide-react";
-import { LeadForm } from "@/components/leads/LeadForm";
-import { TemplateData, defaultTemplateData } from "@/types/templateData";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
-interface LeadCaptureDiscountProps {
-  data: any;
-  projectId: string;
-  userId: string;
-}
+export default function LeadCaptureDiscount({ data }: any) {
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
 
-const LeadCaptureDiscount = ({ data, projectId, userId }: LeadCaptureDiscountProps) => {
-  const templateData: TemplateData = { ...defaultTemplateData, ...data };
-  const config = templateData.leadCapture;
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Lead capturado:", { name, email });
+  };
 
   return (
-    <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6" style={{ fontFamily: templateData.styles.fontFamily }}>
-      <div className="max-w-md w-full bg-white rounded-[40px] shadow-[0_32px_64px_-12px_rgba(0,0,0,0.15)] overflow-hidden relative border-4 border-white">
+    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 flex items-center justify-center p-4">
+      <div className="max-w-2xl w-full">
         
-        {/* Close Button UI Decorator */}
-        <button className="absolute top-6 right-6 text-slate-300 hover:text-slate-500 transition-colors">
-          <X className="w-6 h-6" />
-        </button>
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          
+          <div className="bg-yellow-400 text-center py-3 px-4">
+            <p className="text-black font-bold text-sm uppercase tracking-wider">
+              OFERTA EXCLUSIVA - APENAS HOJE
+            </p>
+          </div>
 
-        {/* Top Header Section */}
-        <div className="bg-gradient-to-br from-orange-400 to-red-500 p-10 text-white text-center relative overflow-hidden">
-          <Sparkles className="absolute top-4 left-4 w-6 h-6 opacity-30 animate-pulse" />
-          <div className="relative z-10">
-            <div className="w-16 h-16 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center mx-auto mb-6 scale-125">
-              <Gift className="w-8 h-8" />
+          <div className="p-8 md:p-12 text-center">
+            
+            <div className="mb-6">
+              <div className="inline-block bg-red-500 text-white px-6 py-2 rounded-full text-4xl font-black mb-4">
+                50% OFF
+              </div>
             </div>
-            <h1 className="text-4xl font-black mb-2 tracking-tight">
-              GANHE {config.discountPercent}% OFF
+
+            <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">
+              {data?.headline || "Transforme Sua Vida em 30 Dias"}
             </h1>
-            <p className="text-white/90 font-medium uppercase tracking-widest text-xs">
-              {config.subheadline}
+
+            <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
+              {data?.subheadline || "Descubra o metodo secreto usado por mais de 10.000 pessoas para alcancar resultados extraordinarios"}
             </p>
+
+            <div className="bg-gray-50 rounded-2xl p-6 mb-8">
+              <p className="text-sm text-gray-600 mb-4 uppercase tracking-wide font-semibold">
+                Preencha abaixo e ganhe:
+              </p>
+              
+              <ul className="text-left space-y-3 mb-6">
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-3 text-xl">✓</span>
+                  <span className="text-gray-800 font-medium">Acesso ao Ebook Exclusivo (Valor: R$ 97)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-3 text-xl">✓</span>
+                  <span className="text-gray-800 font-medium">Bonus: Video-aulas Praticas (Valor: R$ 197)</span>
+                </li>
+                <li className="flex items-start">
+                  <span className="text-green-500 mr-3 text-xl">✓</span>
+                  <span className="text-gray-800 font-medium">Cupom de 50% OFF no Programa Completo</span>
+                </li>
+              </ul>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <Input
+                  type="text"
+                  placeholder="Seu nome completo"
+                  value={name}
+                  onChange={(e) => setName(e.target.value)}
+                  className="h-14 text-lg border-2 border-gray-300 focus:border-purple-500"
+                  required
+                />
+                <Input
+                  type="email"
+                  placeholder="Seu melhor e-mail"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="h-14 text-lg border-2 border-gray-300 focus:border-purple-500"
+                  required
+                />
+                <Button 
+                  type="submit"
+                  className="w-full h-16 text-xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                >
+                  QUERO MINHA OFERTA AGORA
+                </Button>
+              </form>
+            </div>
+
+            <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
+              </svg>
+              <span>Seus dados estao 100% seguros conosco</span>
+            </div>
+
           </div>
         </div>
 
-        {/* Content Section */}
-        <div className="p-8 md:p-10 text-center">
-          <p className="text-slate-600 mb-8 font-medium">
-            Cadastre seu email abaixo e receba seu cupom de boas-vindas agora mesmo.
-          </p>
+        <p className="text-center text-white text-sm mt-6">
+          Mais de 10.000 pessoas ja aproveitaram esta oferta
+        </p>
 
-          <LeadForm 
-            projectId={projectId}
-            userId={userId}
-            ctaText={config.ctaText}
-            redirectConfig={templateData.redirectAfterCapture}
-            fields={['email']}
-            className="space-y-4"
-          />
-
-          <div className="mt-8 pt-6 border-t border-slate-100">
-            <p className="text-[10px] text-slate-400 font-bold uppercase tracking-wider">
-              {config.termsText}
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );
-};
-
-export default LeadCaptureDiscount;
+}
