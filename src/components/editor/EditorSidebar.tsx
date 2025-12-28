@@ -13,7 +13,7 @@ import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
 import TemplateSettingsTab from './tabs/TemplateSettingsTab'; // Import the component
 import { ProjectNiche, ProjectType } from '@/types/project'; // Importar tipos
-import { Card, CardHeader, CardTitle } from '@/components/ui/card'; // Import Card components for the header
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'; // Import CardContent aqui
 
 interface EditorSidebarProps {
   templateData: TemplateData;
