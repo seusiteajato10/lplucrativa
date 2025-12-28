@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { TemplateData } from '@/types/templateData';
 import { ProjectNiche } from '@/types/project';
 import ProductTemplate from '@/components/templates/ProductTemplate';
@@ -43,6 +43,16 @@ const EditorPreview = ({
   userId 
 }: EditorPreviewProps) => {
   const [currentFunnelStep, setCurrentFunnelStep] = useState<FunnelStep>('sales');
+  
+  useEffect(() => {
+    if (templateData?.funnel?.enabled) {
+      if (templateData.funnel.hasLeadCapture) {
+        setCurrentFunnelStep('capture');
+      } else {
+        setCurrentFunnelStep('sales');
+      }
+    }
+  }, [templateData?.funnel?.enabled, templateData?.funnel?.hasLeadCapture]);
   
   const renderTemplate = () => {
     const dataWithContext = { ...templateData, template_id: templateId };
