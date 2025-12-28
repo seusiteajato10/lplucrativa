@@ -1,199 +1,180 @@
-import { CheckCircle, Calendar, ArrowRight, Star, Clock, Phone, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ThankYouPageConfig, UpsellPageConfig, TemplateStyles } from "@/types/templateData";
+import { Check, Calendar, Mail, Phone, Clock } from "lucide-react";
 
-interface ServiceThankYouProps {
-  config?: ThankYouPageConfig;
-  upsellConfig?: UpsellPageConfig;
-  styles?: TemplateStyles;
-  leadName?: string;
-  leadEmail?: string;
-  onUpsellClick?: () => void;
-  showCheckoutButton?: boolean;
-  checkoutButtonText?: string;
-  onCheckoutClick?: () => void;
-}
-
-const ServiceThankYou = ({
-  config,
-  upsellConfig,
-  styles,
-  leadName,
-  leadEmail,
-  onUpsellClick,
-  showCheckoutButton,
-  checkoutButtonText,
-  onCheckoutClick,
-}: ServiceThankYouProps) => {
-  const primaryColor = styles?.primaryColor || "#3B82F6";
-  const secondaryColor = styles?.secondaryColor || "#60A5FA";
-
+export default function ServiceThankYou({ data }: any) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Success Header */}
-      <div 
-        className="py-16 text-center"
-        style={{ background: `linear-gradient(135deg, ${primaryColor}15, ${secondaryColor}10)` }}
-      >
-        <div className="container mx-auto px-4">
-          <div 
-            className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ backgroundColor: `${primaryColor}20` }}
-          >
-            <CheckCircle className="w-10 h-10" style={{ color: primaryColor }} />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            {config?.title || "Solicitação Recebida!"}
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {config?.subtitle || "Entraremos em contato em breve para agendar sua consulta."}
-          </p>
-          {leadName && (
-            <p className="text-lg text-muted-foreground mt-4">
-              Obrigado, <span className="font-semibold text-foreground">{leadName}</span>!
+    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
+      <div className="max-w-4xl w-full">
+        
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          
+          <div className="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-12 px-8 text-center">
+            <div className="inline-block bg-white rounded-full p-4 mb-6">
+              <Check className="w-16 h-16 text-blue-600" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black mb-4">
+              Solicitacao Recebida Com Sucesso!
+            </h1>
+            <p className="text-xl text-blue-100">
+              Em breve entraremos em contato para agendar
             </p>
-          )}
-        </div>
-      </div>
+          </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto space-y-8">
-          {/* Checkout Button (for after_lead type) */}
-          {showCheckoutButton && (
-            <Card 
-              className="border-2 shadow-xl"
-              style={{ borderColor: primaryColor }}
-            >
-              <CardContent className="p-8 text-center">
-                <ShoppingCart className="w-12 h-12 mx-auto mb-4" style={{ color: primaryColor }} />
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  Finalize sua contratação agora!
+          <div className="p-8 md:p-12">
+            
+            <div className="bg-green-50 border-2 border-green-300 rounded-xl p-6 mb-8">
+              <div className="flex items-start space-x-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-bold text-green-900 mb-2">Recebemos Sua Solicitacao</h3>
+                  <p className="text-green-700 text-sm">
+                    Protocolo: <strong>#{data?.protocolId || "SRV-2024-001"}</strong>
+                    <br />
+                    Nossa equipe entrara em contato em ate <strong>24 horas</strong>
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-2 gap-6 mb-8">
+              
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+                  <Mail className="w-5 h-5 mr-2 text-blue-600" />
+                  Seus Dados
                 </h3>
-                <p className="text-muted-foreground mb-6">
-                  Clique no botão abaixo para garantir seu serviço com condições especiais.
-                </p>
-                <Button 
-                  size="lg" 
-                  className="text-white text-lg px-8 py-6"
-                  style={{ backgroundColor: primaryColor }}
-                  onClick={onCheckoutClick}
-                >
-                  {checkoutButtonText || "Contratar Agora"}
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+                <div className="space-y-2 text-sm">
+                  <p className="text-gray-600">
+                    <strong>Nome:</strong> {data?.name || "Cliente"}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>E-mail:</strong> {data?.email || "cliente@email.com"}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Telefone:</strong> {data?.phone || "(11) 99999-9999"}
+                  </p>
+                </div>
+              </div>
 
-          {/* What happens next */}
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
-                <Calendar className="w-6 h-6" style={{ color: primaryColor }} />
-                O Que Acontece Agora
+              <div className="bg-gray-50 rounded-xl p-6">
+                <h3 className="font-bold text-gray-900 mb-4 flex items-center">
+                  <Calendar className="w-5 h-5 mr-2 text-blue-600" />
+                  Servico Solicitado
+                </h3>
+                <div className="space-y-2 text-sm">
+                  <p className="text-gray-600">
+                    <strong>Servico:</strong> {data?.serviceName || "Consultoria Premium"}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Data:</strong> {data?.date || "A combinar"}
+                  </p>
+                  <p className="text-gray-600">
+                    <strong>Status:</strong> <span className="text-green-600 font-bold">Aguardando Contato</span>
+                  </p>
+                </div>
+              </div>
+
+            </div>
+
+            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-8 mb-8">
+              <h2 className="text-2xl font-black text-gray-900 mb-6 text-center">
+                O Que Acontece Agora:
               </h2>
+              
               <div className="space-y-4">
-                {(config?.nextSteps || [
-                  "Nossa equipe analisará sua solicitação",
-                  "Entraremos em contato em até 24 horas",
-                  "Agendaremos uma consulta no melhor horário para você"
-                ]).map((step, index) => (
-                  <div key={index} className="flex items-start gap-4">
-                    <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold shrink-0"
-                      style={{ backgroundColor: primaryColor }}
-                    >
-                      {index + 1}
-                    </div>
-                    <p className="text-muted-foreground pt-1">{step}</p>
+                <div className="flex items-start space-x-4">
+                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    1
                   </div>
-                ))}
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Analise da Solicitacao</h3>
+                    <p className="text-gray-600 text-sm">
+                      Nossa equipe vai analisar seu pedido e preparar uma proposta personalizada
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Contato Inicial</h3>
+                    <p className="text-gray-600 text-sm">
+                      Entraremos em contato por e-mail ou telefone em ate 24 horas
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    3
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Agendamento</h3>
+                    <p className="text-gray-600 text-sm">
+                      Vamos agendar uma data e horario conveniente para voce
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="bg-blue-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    4
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Inicio do Servico</h3>
+                    <p className="text-gray-600 text-sm">
+                      Comecaremos o trabalho conforme combinado
+                    </p>
+                  </div>
+                </div>
               </div>
-            </CardContent>
-          </Card>
+            </div>
 
-          {/* Upsell - Priority Service */}
-          {upsellConfig?.enabled && !showCheckoutButton && (
-            <Card 
-              className="border-2 shadow-xl overflow-hidden"
-              style={{ borderColor: primaryColor }}
-            >
-              <div 
-                className="py-3 px-6 text-center text-white font-semibold"
-                style={{ backgroundColor: primaryColor }}
-              >
-                <Star className="w-5 h-5 inline-block mr-2" />
-                ATENDIMENTO PRIORITÁRIO
+            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 mb-8">
+              <div className="flex items-start space-x-3">
+                <Clock className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-bold text-yellow-900 mb-2">Urgencia?</h3>
+                  <p className="text-yellow-800 text-sm mb-3">
+                    Se seu caso e urgente, entre em contato direto conosco:
+                  </p>
+                  <div className="flex flex-wrap gap-4">
+                    <Button 
+                      variant="outline"
+                      className="border-2 border-yellow-600 text-yellow-700 hover:bg-yellow-50"
+                    >
+                      <Phone className="w-4 h-4 mr-2" />
+                      Ligar Agora
+                    </Button>
+                    <Button 
+                      variant="outline"
+                      className="border-2 border-green-600 text-green-700 hover:bg-green-50"
+                    >
+                      WhatsApp
+                    </Button>
+                  </div>
+                </div>
               </div>
-              <CardContent className="p-8">
-                <div className="flex items-center gap-2 text-orange-500 mb-4">
-                  <Clock className="w-5 h-5" />
-                  <span className="font-semibold">Vagas limitadas para hoje!</span>
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  {upsellConfig.title || "Quer atendimento imediato?"}
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  {upsellConfig.description || "Pule a fila e garanta sua consulta ainda hoje com desconto especial."}
-                </p>
-                
-                <div className="grid md:grid-cols-3 gap-4 mb-6">
-                  {(upsellConfig.benefits || ["Atendimento em até 2h", "Consultor sênior dedicado", "Suporte prioritário"]).map((benefit, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5" style={{ color: primaryColor }} />
-                      <span className="text-sm text-muted-foreground">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
+            </div>
 
-                <div className="flex items-center gap-4 mb-6">
-                  {upsellConfig.originalPrice && (
-                    <span className="text-xl text-muted-foreground line-through">
-                      R$ {upsellConfig.originalPrice}
-                    </span>
-                  )}
-                  <span className="text-3xl font-bold" style={{ color: primaryColor }}>
-                    R$ {upsellConfig.price || "197"}
-                  </span>
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    size="lg" 
-                    className="flex-1 text-white"
-                    style={{ backgroundColor: primaryColor }}
-                    onClick={onUpsellClick}
-                  >
-                    <Phone className="w-5 h-5 mr-2" />
-                    QUERO ATENDIMENTO PRIORITÁRIO
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="lg"
-                    className="text-muted-foreground"
-                  >
-                    Não, vou aguardar
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
-
-          {/* Contact Info */}
-          <div className="text-center text-muted-foreground">
-            <p>Fique de olho no seu email e telefone</p>
-            {leadEmail && (
-              <p className="text-sm mt-2">
-                Confirmação enviada para: <span className="font-medium">{leadEmail}</span>
+            <div className="text-center">
+              <p className="text-gray-600 mb-4">
+                Enviamos uma copia desta confirmacao para seu e-mail
               </p>
-            )}
+              <Button 
+                variant="outline"
+                className="border-2 rounded-xl"
+              >
+                Voltar para a Pagina Inicial
+              </Button>
+            </div>
+
           </div>
         </div>
+
       </div>
     </div>
   );
-};
-
-export default ServiceThankYou;
+}
