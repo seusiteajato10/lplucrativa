@@ -4,13 +4,13 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import {
-  LayoutTemplate,
   MousePointer2,
   ShoppingCart,
   BookOpen,
   PlayCircle,
   HelpCircle,
   Ticket,
+  LayoutTemplate,
 } from "lucide-react";
 
 type TemplateCategory = "captura" | "vendas";
@@ -22,10 +22,10 @@ type TemplateCard = {
   tag: string;
   description: string;
   bestFor: string;
+  image: string;
 };
 
 const templates: TemplateCard[] = [
-  // CAPTURA
   {
     id: "capture_ebook",
     name: "Captura E-book",
@@ -33,6 +33,7 @@ const templates: TemplateCard[] = [
     tag: "Lista / Isca Digital",
     description: "Página de captura focada em e-book gratuito em troca do e-mail.",
     bestFor: "Construir lista de e-mails.",
+    image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=800&h=600&fit=crop",
   },
   {
     id: "capture_vsl",
@@ -41,6 +42,7 @@ const templates: TemplateCard[] = [
     tag: "Vídeo / Aula",
     description: "Landing com vídeo e formulário simples para eventos online.",
     bestFor: "Webinars e masterclasses.",
+    image: "https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=800&h=600&fit=crop",
   },
   {
     id: "capture_quiz",
@@ -49,6 +51,7 @@ const templates: TemplateCard[] = [
     tag: "Interativo",
     description: "Quiz que qualifica leads por perfil ou interesse.",
     bestFor: "Segmentação avançada.",
+    image: "https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop",
   },
   {
     id: "capture_discount",
@@ -57,8 +60,8 @@ const templates: TemplateCard[] = [
     tag: "Cupom",
     description: "Página oferecendo cupom em troca do cadastro.",
     bestFor: "E-commerce e promoções.",
+    image: "https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=800&h=600&fit=crop",
   },
-  // VENDAS
   {
     id: "product_vsl",
     name: "Produto VSL",
@@ -66,6 +69,7 @@ const templates: TemplateCard[] = [
     tag: "Vídeo de Vendas",
     description: "Página centrada em vídeo com prova social e FAQ.",
     bestFor: "Infoprodutos e cursos.",
+    image: "https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=800&h=600&fit=crop",
   },
   {
     id: "product_modern",
@@ -74,6 +78,7 @@ const templates: TemplateCard[] = [
     tag: "Design Clean",
     description: "Layout minimalista focado em benefícios.",
     bestFor: "SaaS e serviços premium.",
+    image: "https://images.unsplash.com/photo-1551676925-579b9726a763?w=800&h=600&fit=crop",
   },
   {
     id: "product_classic",
@@ -82,6 +87,7 @@ const templates: TemplateCard[] = [
     tag: "Carta Longa",
     description: "Estrutura tradicional com storytelling extenso.",
     bestFor: "Lançamentos de ticket alto.",
+    image: "https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&h=600&fit=crop",
   },
 ];
 
@@ -107,7 +113,7 @@ const TemplateGallery: React.FC = () => {
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-12">
               Escolha o layout perfeito para seu negócio. Todos os templates são responsivos e otimizados para conversão.
             </p>
-            <Link to="/auth/signup" className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-primary/25 transition-all">
+            <Link to="/signup" className="inline-flex items-center gap-3 bg-primary hover:bg-primary/90 text-primary-foreground px-8 py-4 rounded-2xl font-bold text-lg shadow-2xl hover:shadow-primary/25 transition-all">
               <LayoutTemplate className="w-5 h-5" />
               Começar Agora Grátis
             </Link>
@@ -134,19 +140,23 @@ const TemplateGallery: React.FC = () => {
                 {groupedByCategory[category].map((tpl) => (
                   <Link
                     key={tpl.id}
-                    to={`/template-preview?templateId=${tpl.id}`}
+                    to={`/templates/${tpl.id}`}
                     className="group block bg-card border border-border rounded-3xl overflow-hidden hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 h-full"
                   >
-                    {/* Thumbnail */}
-                    <div className="h-48 bg-gradient-to-br from-muted to-muted-foreground/20 flex items-center justify-center relative overflow-hidden">
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent" />
-                      {tpl.id === "capture_ebook" && <BookOpen className="w-16 h-16 text-primary/80 group-hover:scale-110 transition-transform" />}
-                      {tpl.id === "capture_vsl" && <PlayCircle className="w-16 h-16 text-primary/80 group-hover:scale-110 transition-transform" />}
-                      {tpl.id === "capture_quiz" && <HelpCircle className="w-16 h-16 text-primary/80 group-hover:scale-110 transition-transform" />}
-                      {tpl.id === "capture_discount" && <Ticket className="w-16 h-16 text-primary/80 group-hover:scale-110 transition-transform" />}
-                      {tpl.id === "product_vsl" && <PlayCircle className="w-16 h-16 text-primary/80 group-hover:scale-110 transition-transform" />}
-                      {tpl.id === "product_modern" && <LayoutTemplate className="w-16 h-16 text-primary/80 group-hover:scale-110 transition-transform" />}
-                      {tpl.id === "product_classic" && <BookOpen className="w-16 h-16 text-primary/80 group-hover:scale-110 transition-transform" />}
+                    {/* IMAGEM REAL COM OVERLAY */}
+                    <div className="h-48 relative overflow-hidden">
+                      <img 
+                        src={tpl.image} 
+                        alt={tpl.name}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                        loading="lazy"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+                      <div className="absolute bottom-3 left-3 right-3">
+                        <Badge className="bg-white/95 backdrop-blur-sm text-black font-bold text-xs px-3 py-1 shadow-lg">
+                          Preview Completo
+                        </Badge>
+                      </div>
                     </div>
 
                     {/* Content */}
