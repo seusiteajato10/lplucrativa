@@ -35,11 +35,13 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
     try {
       const { data, error } = await supabase
         .from('projects')
-        .select('id, name, type')
+        .select('id, name, type, project_type')
         .eq('user_id', user?.id)
         .order('created_at', { ascending: false });
 
       if (error) throw error;
+      
+      console.log('Projetos encontrados:', data);
       setAvailableProjects(data || []);
     } catch (error) {
       console.error('Erro ao buscar projetos:', error);
@@ -150,18 +152,21 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
                 <SelectTrigger><SelectValue placeholder="Selecione o produto" /></SelectTrigger>
                 <SelectContent>
                   {availableProjects.length === 0 ? (
-                    <SelectItem value="none" disabled>Nenhum produto disponivel</SelectItem>
+                    <SelectItem value="none" disabled>Nenhum projeto cadastrado</SelectItem>
                   ) : (
-                    availableProjects
-                      .filter(p => p.type === 'product')
-                      .map((project) => (
-                        <SelectItem key={project.id} value={project.id}>
-                          {project.name}
-                        </SelectItem>
-                      ))
+                    availableProjects.map((project) => (
+                      <SelectItem key={project.id} value={project.id}>
+                        {project.name} ({project.project_type || project.type || 'projeto'})
+                      </SelectItem>
+                    ))
                   )}
                 </SelectContent>
               </Select>
+              {availableProjects.length > 0 && (
+                <p className="text-xs text-muted-foreground mt-1">
+                  {availableProjects.length} projeto(s) disponivel(is)
+                </p>
+              )}
             </div>
 
             <div>
