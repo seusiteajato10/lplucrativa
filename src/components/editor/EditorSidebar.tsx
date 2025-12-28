@@ -11,22 +11,19 @@ import LgpdTab from './tabs/LgpdTab';
 import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
-import TemplateSettingsTab from './tabs/TemplateSettingsTab';
+import TemplateSettingsTab from './tabs/TemplateSettingsTab'; // Este componente agora será renderizado fora dos TabsContent
 import { ProjectNiche, ProjectType } from '@/types/project'; // Importar tipos
 
 interface EditorSidebarProps {
   templateData: TemplateData;
   projectId: string;
   userId: string;
-  projectNiche: ProjectNiche; // Novo prop
-  projectType: ProjectType; // Novo prop
+  projectNiche: ProjectNiche;
+  projectType: ProjectType;
   onUpdate: (updates: Partial<TemplateData>) => void;
 }
 
 const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectType, onUpdate }: EditorSidebarProps) => {
-  // A lógica de isCapturePage e isProductSalesPage agora será tratada dentro de TemplateSettingsTab
-  // para evitar a criação de tabs condicionais aqui, conforme sua instrução.
-
   return (
     <aside className="w-80 border-r border-border bg-background flex flex-col h-full overflow-hidden">
       <Tabs defaultValue="content" className="flex flex-col h-full">
@@ -38,18 +35,14 @@ const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectT
             <TabsTrigger value="styles" className="text-[10px] py-1">Estilos</TabsTrigger>
           </TabsList>
           <TabsList className="grid grid-cols-3 w-full h-auto">
-            <TabsTrigger value="form" className="text-[10px] py-1">Form</TabsTrigger>
-            <TabsTrigger value="integrations" className="text-[10px] py-1">Integrar</TabsTrigger>
+            <TabsTrigger value="form" className="text-[10px] py-1">Formulário</TabsTrigger>
+            <TabsTrigger value="integrations" className="text-[10px] py-1">Integrações</TabsTrigger>
             <TabsTrigger value="lgpd" className="text-[10px] py-1">LGPD</TabsTrigger>
           </TabsList>
           <TabsList className="grid grid-cols-3 w-full h-auto">
             <TabsTrigger value="thankyou" className="text-[10px] py-1">Obrigado</TabsTrigger>
             <TabsTrigger value="upsell" className="text-[10px] py-1">Upsell</TabsTrigger>
             <TabsTrigger value="downsell" className="text-[10px] py-1">Downsell</TabsTrigger>
-          </TabsList>
-          {/* O tab de configurações gerais agora incluirá as configurações de funil/produto/captura */}
-          <TabsList className="grid grid-cols-1 w-full h-auto">
-            <TabsTrigger value="template-settings" className="text-[10px] py-1 font-bold">Configurações Gerais</TabsTrigger>
           </TabsList>
         </div>
 
@@ -90,12 +83,14 @@ const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectT
             <TabsContent value="downsell" className="mt-0">
               <DownsellTab templateData={templateData} onUpdate={onUpdate} />
             </TabsContent>
-            <TabsContent value="template-settings" className="mt-0">
+            
+            {/* Renderiza TemplateSettingsTab como um componente separado, fora dos TabsContent */}
+            <div className="mt-6">
               <TemplateSettingsTab 
                 templateData={{ ...templateData, niche: projectNiche, project_type: projectType }} 
                 onUpdate={onUpdate} 
               />
-            </TabsContent>
+            </div>
           </div>
         </div>
       </Tabs>
