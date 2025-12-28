@@ -204,6 +204,54 @@ export interface LeadCaptureConfig {
   }>;
 }
 
+// Configurações do Funil
+export interface FunnelConfig {
+  enabled: boolean;
+  leadCaptureTemplate?: string;
+  salesPageTemplate?: string;
+  upsellTemplate?: string;
+  thankyouTemplate?: string;
+  
+  // Captura
+  capture_title?: string;
+  capture_subtitle?: string;
+  capture_button?: string;
+  capture_waitTime?: number;
+  
+  // Vendas
+  productName?: string;
+  productDescription?: string;
+  currentPrice?: string;
+  originalPrice?: string;
+  warranty?: string;
+  sales_button?: string;
+  
+  // Upsell
+  upsell_title?: string;
+  upsell_productName?: string;
+  upsell_price?: string;
+  upsell_originalPrice?: string;
+  upsell_acceptButton?: string;
+  upsell_declineButton?: string;
+  
+  // Downsell
+  downsell_title?: string;
+  downsell_subtitle?: string;
+  downsell_price?: string;
+  downsell_originalPrice?: string;
+  downsell_button?: string;
+  
+  // Thank You
+  thankyou_title?: string;
+  thankyou_message?: string;
+  thankyou_button?: string;
+  
+  // Rodapé
+  companyName?: string;
+  contactEmail?: string;
+  whatsapp?: string;
+}
+
 export interface TemplateData {
   headline: string;
   subheadline: string;
@@ -263,8 +311,11 @@ export interface TemplateData {
   footer?: FooterConfig;
   redirectAfterCapture?: RedirectAfterCaptureConfig;
   
-  // Novo campo de captura
+  // Captura de Lead
   leadCapture: LeadCaptureConfig;
+  
+  // Configurações do Funil Completo
+  funnel?: FunnelConfig;
 
   niche?: string;
   template_id?: string;
@@ -393,5 +444,41 @@ export const defaultTemplateData: TemplateData = {
         ]
       }
     ]
+  },
+  
+  // Default Funnel Config
+  funnel: {
+    enabled: false,
+    leadCaptureTemplate: 'LeadCaptureDiscount',
+    salesPageTemplate: 'ProductTemplate',
+    upsellTemplate: 'ProductUpsell',
+    thankyouTemplate: 'ProductThankYou',
+    capture_title: 'Ganhe 50% de Desconto Agora!',
+    capture_subtitle: 'Preencha o formulário e receba sua oferta exclusiva',
+    capture_button: 'QUERO MEU DESCONTO',
+    capture_waitTime: 3,
+    productName: 'Meu Produto Incrível',
+    productDescription: 'Transforme sua vida com este produto',
+    currentPrice: '197,00',
+    originalPrice: '497,00',
+    warranty: '7 dias',
+    sales_button: 'COMPRAR AGORA',
+    upsell_title: 'Espere! Temos Uma Oferta Especial',
+    upsell_productName: 'Produto Premium',
+    upsell_price: '247,00',
+    upsell_originalPrice: '497,00',
+    upsell_acceptButton: 'SIM! QUERO APROVEITAR',
+    upsell_declineButton: 'Não, obrigado',
+    downsell_title: 'Espere! Temos Uma Proposta Melhor',
+    downsell_subtitle: 'Que tal começar com uma versão mais acessível?',
+    downsell_price: '97,00',
+    downsell_originalPrice: '197,00',
+    downsell_button: 'SIM! ACEITO ESTA OFERTA',
+    thankyou_title: 'Parabéns! Sua Compra Foi Confirmada',
+    thankyou_message: 'Enviamos um e-mail com todas as informações',
+    thankyou_button: 'ACESSAR ÁREA DE MEMBROS',
+    companyName: 'LP Lucrativa',
+    contactEmail: 'contato@lplucrativa.com.br',
+    whatsapp: '(11) 99999-9999'
   }
 };
