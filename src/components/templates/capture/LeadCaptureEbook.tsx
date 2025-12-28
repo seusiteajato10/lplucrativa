@@ -1,118 +1,138 @@
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-export default function LeadCaptureEbook({ data }: any) {
+type LeadCaptureEbookProps = {
+  data: Record<string, any>;
+  projectName: string;
+  projectId: string;
+  userId: string;
+  slug: string;
+};
+
+const LeadCaptureEbook: React.FC<LeadCaptureEbookProps> = ({
+  data,
+  projectName,
+  projectId,
+  userId,
+  slug,
+}) => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Lead capturado:", { email });
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!name.trim() || !email.trim()) {
+      toast.error("Preencha Nome e E‑mail para continuar.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.from("leads").insert({
+        project_id: projectId,
+        user_id: userId,
+        name,
+        email,
+        whatsapp,
+        source_slug: slug,
+      });
+
+      if (error) {
+        console.error("Erro ao salvar lead:", error);
+        toast.error("Não foi possível salvar seu cadastro. Tente novamente.");
+        return;
+      }
+
+      toast.success("Cadastro realizado com sucesso! Confira seu e‑mail.");
+      // Se quiser, aqui dá para redirecionar para a página de vendas do funil
+      // window.location.href = `/p/${slug}?step=sales`;
+    } catch (err) {
+      console.error("Erro inesperado ao salvar lead:", err);
+      toast.error("Ocorreu um erro inesperado. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <div className="max-w-5xl w-full">
-        
-        <div className="bg-white rounded-2xl shadow-2xl overflow-hidden">
-          
-          <div className="grid md:grid-cols-2 gap-8 p-8 md:p-12">
-            
-            <div className="flex flex-col justify-center">
-              
-              <div className="inline-block bg-blue-500 text-white px-4 py-1 rounded-full text-sm font-bold mb-4 w-fit">
-                100% GRATUITO
-              </div>
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="w-full max-w-5xl bg-card rounded-2xl shadow-lg p-8 md:p-10 flex flex-col md:flex-row gap-8">
+        {/* Lado esquerdo: texto + formulário */}
+        <div className="flex-1">
+          <p className="inline-block px-4 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary mb-4">
+            {data.badge || "100% GRATUITO"}
+          </p>
 
-              <h1 className="text-3xl md:text-4xl font-black text-gray-900 mb-4 leading-tight">
-                {data?.headline || "Guia Completo: Como Dominar [Tema] em 7 Dias"}
-              </h1>
+          <h1 className="text-3xl md:text-4xl font-bold mb-4">
+            {data.headline || projectName}
+          </h1>
 
-              <p className="text-lg text-gray-700 mb-6 leading-relaxed">
-                {data?.subheadline || "Descubra o passo a passo completo usado por especialistas para obter resultados rapidos e duradouros"}
-              </p>
+          <p className="text-muted-foreground mb-6">
+            {data.subheadline ||
+              "A solução perfeita para quem busca resultados reais e duradouros."}
+          </p>
 
-              <div className="space-y-3 mb-8">
-                <div className="flex items-start">
-                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
-                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                  </div>
-                  <p className="text-gray-700">
-                    <strong className="text-gray-900">52 paginas</strong> de conteudo exclusivo e pratico
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
-                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                  </div>
-                  <p className="text-gray-700">
-                    <strong className="text-gray-900">Modelos prontos</strong> para aplicar imediatamente
-                  </p>
-                </div>
-                <div className="flex items-start">
-                  <div className="bg-green-100 rounded-full p-1 mr-3 mt-1">
-                    <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
-                    </svg>
-                  </div>
-                  <p className="text-gray-700">
-                    <strong className="text-gray-900">Bonus exclusivo:</strong> Checklist de implementacao
-                  </p>
-                </div>
-              </div>
+          <ul className="space-y-2 mb-6 text-sm text-muted-foreground">
+            <li>{data.benefit1 || "Conteúdo direto ao ponto para aplicar hoje mesmo."}</li>
+            <li>{data.benefit2 || "Modelos prontos para acelerar seus resultados."}</li>
+            <li>{data.benefit3 || "Checklist exclusivo para você não esquecer nada."}</li>
+          </ul>
 
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div>
-                  <Input
-                    type="email"
-                    placeholder="Digite seu melhor e-mail"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="h-14 text-lg border-2 border-gray-300 focus:border-blue-500"
-                    required
-                  />
-                </div>
-                <Button 
-                  type="submit"
-                  className="w-full h-14 text-lg font-bold bg-blue-600 hover:bg-blue-700 text-white rounded-lg shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                >
-                  BAIXAR EBOOK GRATIS
-                </Button>
-              </form>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <Input
+              type="text"
+              placeholder="Digite seu nome completo"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <Input
+              type="email"
+              placeholder="Digite seu melhor e‑mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              type="tel"
+              placeholder="WhatsApp (opcional)"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+            />
 
-              <p className="text-xs text-gray-500 text-center mt-4">
-                Sem spam. Cancele quando quiser. Seus dados estao seguros.
-              </p>
+            <Button
+              type="submit"
+              className="w-full mt-2"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Enviando..."
+                : data.buttonLabel || "BAIXAR EBOOK GRÁTIS"}
+            </Button>
+          </form>
 
-            </div>
-
-            <div className="flex items-center justify-center">
-              <div className="relative">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-400 to-purple-500 rounded-2xl transform rotate-3"></div>
-                <div className="relative bg-white rounded-2xl shadow-2xl p-8 transform -rotate-2 hover:rotate-0 transition-transform duration-300">
-                  <div className="bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl p-8 text-white">
-                    <div className="text-6xl font-black mb-4">E-BOOK</div>
-                    <div className="text-xl font-bold mb-2">{data?.headline?.substring(0, 30) || "Guia Completo"}</div>
-                    <div className="text-sm opacity-90">Por Especialistas</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-          </div>
-        </div>
-
-        <div className="text-center mt-8">
-          <p className="text-gray-600 text-sm">
-            Ja foram baixados <strong className="text-gray-900">12.483 exemplares</strong> deste ebook
+          <p className="mt-3 text-xs text-muted-foreground">
+            {data.privacyText ||
+              "Sem spam. Cancele quando quiser. Seus dados estão seguros."}
           </p>
         </div>
 
+        {/* Lado direito: mock da capa do ebook */}
+        <div className="flex-1 flex items-center justify-center">
+          <div className="w-full h-48 md:h-64 bg-gradient-to-tr from-purple-500 to-blue-500 rounded-xl shadow-xl flex items-center justify-center text-white font-bold text-xl text-center px-4">
+            {data.ebook_cover_text || "E‑BOOK\nProduto Físico 2"}
+          </div>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default LeadCaptureEbook;
