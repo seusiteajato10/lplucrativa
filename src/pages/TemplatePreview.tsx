@@ -1,135 +1,296 @@
-"use client";
+import React from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import { Helmet } from "react-helmet-async";
+import { ArrowLeft, Eye } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
-import React, { useState } from 'react';
-import { Helmet } from 'react-helmet-async';
-import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/button';
-import { ArrowLeft, Check, Play, Monitor, Smartphone, Layout } from 'lucide-react';
-import { nicheLabels, getTemplateOptionsForNiche, ProjectNiche } from '@/types/project';
-import EditorPreview from '@/components/editor/EditorPreview';
-import { defaultTemplateData } from '@/types/templateData';
+import ProductTemplate from "@/components/templates/ProductTemplate";
+import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL";
+import ProductTemplateModern from "@/components/templates/ProductTemplateModern";
+import ProductTemplateClassic from "@/components/templates/ProductTemplateClassic";
 
-const TemplatePreview = () => {
-  const navigate = useNavigate();
-  const [selectedNiche, setSelectedNiche] = useState<ProjectNiche>('product');
-  const [selectedTemplate, setSelectedTemplate] = useState<string>('product_default');
-  const [previewMode, setPreviewMode] = useState<'desktop' | 'mobile'>('desktop');
+import LeadCaptureEbook from "@/components/templates/capture/LeadCaptureEbook";
+import LeadCaptureVSL from "@/components/templates/capture/LeadCaptureVSL";
+import LeadCaptureQuiz from "@/components/templates/capture/LeadCaptureQuiz";
+import LeadCaptureDiscount from "@/components/templates/capture/LeadCaptureDiscount";
 
-  const templates = getTemplateOptionsForNiche(selectedNiche);
+type TemplateCard = {
+  id: string;
+  name: string;
+  category: string;
+  description: string;
+};
+
+const templates: TemplateCard[] = [
+  {
+    id: "capture_ebook",
+    name: "Captura E-book",
+    category: "Captura de Leads",
+    description:
+      "Página de captura com oferta de e-book gratuito. Ideal para construir lista de e-mails.",
+  },
+  {
+    id: "capture_vsl",
+    name: "Captura VSL",
+    category: "Captura de Leads",
+    description:
+      "Captura com vídeo de vendas (VSL). Perfeita para aulas gratuitas e webinars.",
+  },
+  {
+    id: "capture_quiz",
+    name: "Captura Quiz",
+    category: "Captura de Leads",
+    description:
+      "Quiz interativo que qualifica leads e entrega resultado personalizado.",
+  },
+  {
+    id: "capture_discount",
+    name: "Captura Desconto",
+    category: "Captura de Leads",
+    description:
+      "Oferta de cupom exclusivo com prazo limitado para gerar urgência.",
+  },
+  {
+    id: "product_vsl",
+    name: "Produto VSL",
+    category: "Página de Vendas",
+    description:
+      "Landing page focada em vídeo de vendas com copy persuasiva e CTA forte.",
+  },
+  {
+    id: "product_modern",
+    name: "Produto Moderno",
+    category: "Página de Vendas",
+    description:
+      "Design clean e minimalista, ideal para produtos digitais e SaaS.",
+  },
+  {
+    id: "product_classic",
+    name: "Produto Clássico",
+    category: "Página de Vendas",
+    description:
+      "Carta de vendas longa, com estrutura testada para infoprodutos.",
+  },
+];
+
+const TemplatePreview: React.FC = () => {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const templateId = searchParams.get("templateId") || "";
+  const previewMode = (searchParams.get("mode") as "desktop" | "mobile") || "desktop";
+
+  const demoData: Record<string, any> = {
+    headline: "Transforme Seus Resultados em 30 Dias",
+    subheadline:
+      "A estratégia comprovada que já ajudou milhares de pessoas a alcançarem resultados reais e duradouros.",
+    benefit1: "✓ Método validado com casos reais de sucesso.",
+    benefit2: "✓ Passo a passo simples para aplicar ainda hoje.",
+    benefit3: "✓ Suporte e garantia para você testar sem risco.",
+    buttonLabel: "QUERO COMEÇAR AGORA",
+    ctaButtonText: "GARANTIR MINHA VAGA",
+    ebook_cover_text: "E-BOOK\nGuia Completo",
+    badge: "OFERTA ESPECIAL • VAGAS LIMITADAS",
+    discountBadge: "DESCONTO EXCLUSIVO",
+    discountValue: "30% OFF",
+    deadlineText: "Válido somente para os cadastrados de hoje.",
+    formTitle: "Preencha para receber acesso imediato:",
+    formSubtitle: "Enviaremos tudo diretamente no seu e-mail.",
+    privacyText: "Seus dados estão protegidos. Sem spam.",
+    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ",
+    price: "197",
+    originalPrice: "497",
+    questions: [
+      {
+        id: "q1",
+        question: "Qual é o seu nível de experiência com este tema?",
+        options: [
+          { label: "Iniciante - estou começando agora", value: "iniciante" },
+          { label: "Intermediário - já tenho alguma base", value: "intermediario" },
+          { label: "Avançado - quero me especializar", value: "avancado" },
+        ],
+      },
+      {
+        id: "q2",
+        question: "Qual é o seu principal objetivo nos próximos 30 dias?",
+        options: [
+          { label: "Captar mais leads qualificados", value: "leads" },
+          { label: "Aumentar minhas vendas diretas", value: "vendas" },
+          { label: "Organizar minha estratégia completa", value: "estrategia" },
+        ],
+      },
+    ],
+  };
+
+  const commonProps = {
+    data: demoData,
+    projectName: "Nome do Produto (Preview)",
+    projectId: "preview-id",
+    userId: "preview-user",
+    slug: "preview-slug",
+  };
+
+  const renderTemplate = () => {
+    if (!templateId) {
+      return (
+        <div className="flex items-center justify-center h-full p-8">
+          <p className="text-muted-foreground text-sm text-center">
+            Selecione um template na lista para visualizar o preview.
+          </p>
+        </div>
+      );
+    }
+
+    if (templateId.startsWith("capture_")) {
+      switch (templateId) {
+        case "capture_ebook":
+          return <LeadCaptureEbook {...commonProps} />;
+        case "capture_vsl":
+          return <LeadCaptureVSL {...commonProps} />;
+        case "capture_quiz":
+          return <LeadCaptureQuiz {...commonProps} />;
+        case "capture_discount":
+          return <LeadCaptureDiscount {...commonProps} />;
+        default:
+          return <LeadCaptureEbook {...commonProps} />;
+      }
+    }
+
+    switch (templateId) {
+      case "product_vsl":
+        return (
+          <ProductTemplateVSL
+            data={demoData}
+            projectName="Produto VSL (Preview)"
+          />
+        );
+      case "product_modern":
+        return (
+          <ProductTemplateModern
+            data={demoData}
+            projectName="Produto Moderno (Preview)"
+          />
+        );
+      case "product_classic":
+        return (
+          <ProductTemplateClassic
+            data={demoData}
+            projectName="Produto Clássico (Preview)"
+          />
+        );
+      default:
+        return (
+          <ProductTemplate
+            data={demoData}
+            projectName="Produto Padrão (Preview)"
+          />
+        );
+    }
+  };
+
+  const handleSelectTemplate = (id: string) => {
+    setSearchParams({ templateId: id, mode: previewMode });
+  };
+
+  const handleModeChange = (mode: "desktop" | "mobile") => {
+    const params: Record<string, string> = {};
+    if (templateId) params.templateId = templateId;
+    params.mode = mode;
+    setSearchParams(params);
+  };
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
+    <>
       <Helmet>
-        <title>Preview de Templates | LP Lucrativa</title>
+        <title>Preview de Templates</title>
       </Helmet>
-
-      {/* Header */}
-      <header className="h-16 border-b border-border bg-background flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
-        <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={() => navigate(-1)}>
-            <ArrowLeft className="w-5 h-5" />
-          </Button>
-          <div>
-            <h1 className="font-bold text-lg leading-none">Galeria de Templates</h1>
-            <p className="text-[11px] text-muted-foreground mt-1 uppercase tracking-wider font-semibold">Visualize e escolha seu modelo</p>
-          </div>
-        </div>
-
-        <div className="flex items-center gap-4">
-          <div className="flex bg-muted p-1 rounded-lg border border-border">
-            <Button 
-              variant={previewMode === 'desktop' ? 'secondary' : 'ghost'} 
-              size="sm" 
-              className="h-8 w-10 p-0"
-              onClick={() => setPreviewMode('desktop')}
-            >
-              <Monitor className="w-4 h-4" />
-            </Button>
-            <Button 
-              variant={previewMode === 'mobile' ? 'secondary' : 'ghost'} 
-              size="sm" 
-              className="h-8 w-10 p-0"
-              onClick={() => setPreviewMode('mobile')}
-            >
-              <Smartphone className="w-4 h-4" />
-            </Button>
-          </div>
-          <Button variant="accent" size="sm" onClick={() => navigate('/dashboard/projetos?criar=true')}>
-            <Layout className="w-4 h-4 mr-2" />
-            Usar Template
-          </Button>
-        </div>
-      </header>
-
-      <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
-        <aside className="w-80 border-r border-border bg-muted/20 overflow-y-auto p-6 hidden lg:block">
-          <div className="space-y-8">
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4 block">Categorias</label>
-              <div className="grid gap-2">
-                {(Object.entries(nicheLabels) as [ProjectNiche, string][]).map(([key, label]) => (
-                  <button
-                    key={key}
-                    onClick={() => {
-                      setSelectedNiche(key);
-                      const firstTpl = getTemplateOptionsForNiche(key)[0];
-                      if (firstTpl) setSelectedTemplate(firstTpl.value);
-                    }}
-                    className={`flex items-center justify-between px-4 py-3 rounded-xl border text-sm font-semibold transition-all ${
-                      selectedNiche === key 
-                        ? 'border-primary bg-primary/5 text-primary shadow-sm' 
-                        : 'border-transparent hover:bg-secondary text-muted-foreground'
-                    }`}
-                  >
-                    {label}
-                    {selectedNiche === key && <Check className="w-4 h-4" />}
-                  </button>
-                ))}
+      <div className="min-h-screen bg-background flex flex-col">
+        <header className="border-b border-border bg-card/60 backdrop-blur">
+          <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <Link to="/dashboard/projetos">
+                <Button variant="outline" size="sm">
+                  <ArrowLeft className="w-4 h-4 mr-2" />
+                  Voltar
+                </Button>
+              </Link>
+              <div>
+                <p className="text-xs text-muted-foreground uppercase tracking-wide">
+                  Galeria de Templates
+                </p>
+                <h1 className="text-lg font-semibold">
+                  Visualize o modelo antes de criar seu projeto
+                </h1>
               </div>
             </div>
-
-            <div>
-              <label className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-4 block">Variações do Template</label>
-              <div className="grid gap-3">
-                {templates.map((tpl) => (
-                  <button
-                    key={tpl.value}
-                    onClick={() => setSelectedTemplate(tpl.value)}
-                    className={`group relative overflow-hidden rounded-xl border-2 transition-all p-4 text-left ${
-                      selectedTemplate === tpl.value
-                        ? 'border-primary bg-background shadow-md ring-4 ring-primary/5'
-                        : 'border-border bg-background hover:border-muted-foreground/30'
-                    }`}
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className={`w-10 h-10 rounded-lg flex items-center justify-center transition-colors ${selectedTemplate === tpl.value ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
-                        <Play className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <p className={`text-sm font-bold ${selectedTemplate === tpl.value ? 'text-primary' : 'text-foreground'}`}>{tpl.label}</p>
-                        <p className="text-[9px] text-muted-foreground uppercase font-mono mt-0.5">{tpl.value}</p>
-                      </div>
-                    </div>
-                  </button>
-                ))}
-              </div>
+            <div className="flex items-center gap-2">
+              <Button
+                size="sm"
+                variant={previewMode === "desktop" ? "default" : "outline"}
+                onClick={() => handleModeChange("desktop")}
+              >
+                Desktop
+              </Button>
+              <Button
+                size="sm"
+                variant={previewMode === "mobile" ? "default" : "outline"}
+                onClick={() => handleModeChange("mobile")}
+              >
+                Mobile
+              </Button>
             </div>
           </div>
-        </aside>
+        </header>
 
-        {/* Preview Area */}
-        <main className="flex-1 bg-secondary/10 overflow-hidden flex flex-col">
-          <EditorPreview
-            templateData={defaultTemplateData}
-            niche={selectedNiche}
-            templateId={selectedTemplate}
-            previewMode={previewMode}
-            projectName={templates.find(t => t.value === selectedTemplate)?.label || "Preview"}
-          />
-        </main>
+        <div className="flex flex-1 max-w-7xl mx-auto w-full px-4 py-4 gap-4">
+          <aside className="w-80 border border-border rounded-lg bg-card p-3 flex flex-col">
+            <h2 className="text-sm font-semibold mb-3 flex items-center gap-2">
+              <Eye className="w-4 h-4" />
+              Escolha um template
+            </h2>
+            <div className="flex-1 overflow-y-auto space-y-2">
+              {templates.map((tpl) => (
+                <button
+                  key={tpl.id}
+                  onClick={() => handleSelectTemplate(tpl.id)}
+                  className={`w-full text-left border rounded-md p-3 text-sm transition-colors ${
+                    templateId === tpl.id
+                      ? "border-primary bg-primary/5"
+                      : "border-border hover:bg-muted/60"
+                  }`}
+                >
+                  <p className="text-[11px] text-primary font-semibold uppercase tracking-wide mb-1">
+                    {tpl.category}
+                  </p>
+                  <p className="font-medium mb-1">{tpl.name}</p>
+                  <p className="text-xs text-muted-foreground">
+                    {tpl.description}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </aside>
+
+          <main className="flex-1 border border-border rounded-lg bg-card overflow-hidden flex items-center justify-center">
+            <div
+              className={`bg-white shadow-2xl transition-all duration-300 origin-top ${
+                previewMode === "mobile"
+                  ? "w-[375px] min-h-[667px] rounded-[32px] border-[8px] border-slate-900"
+                  : "w-full max-w-5xl rounded-lg"
+              }`}
+            >
+              <div
+                className={
+                  previewMode === "mobile"
+                    ? "h-[650px] overflow-y-auto"
+                    : "min-h-[500px]"
+                }
+              >
+                {renderTemplate()}
+              </div>
+            </div>
+          </main>
+        </div>
       </div>
-    </div>
+    </>
   );
 };
 
