@@ -52,81 +52,94 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
     if (templateData?.funnel?.enabled) {
       const funnel = templateData.funnel;
       
-      // Mapear templates de CAPTURA
-      const captureTemplates: Record<string, React.ComponentType<any>> = {
-        'LeadCaptureDiscount': LeadCaptureDiscount,
-        'LeadCaptureEbook': LeadCaptureEbook,
-        'LeadCaptureQuiz': LeadCaptureQuiz,
-        'LeadCaptureVSL': LeadCaptureVSL,
-      };
-
-      // Mapear templates de VENDAS
-      const salesTemplates: Record<string, React.ComponentType<any>> = {
-        'ProductTemplate': ProductTemplate,
-        'ProductTemplateVSL': ProductTemplateVSL,
-        'ServiceTemplate': ServiceTemplate,
-        'CourseTemplate': CourseTemplate,
-        'EventTemplate': EventTemplate,
-      };
-
-      // Mapear templates de UPSELL
-      const upsellTemplates: Record<string, React.ComponentType<any>> = {
-        'ProductUpsell': ProductUpsell,
-        'ServiceUpsell': ProductUpsell,
-        'EventUpsell': ProductUpsell,
-        'CourseUpsell': ProductUpsell,
-      };
-
-      // Mapear templates de THANK YOU
-      const thankyouTemplates: Record<string, React.ComponentType<any>> = {
-        'ProductThankYou': ProductThankYou,
-        'ServiceThankYou': ServiceThankYou,
-        'EventThankYou': EventThankYou,
-        'CourseThankYou': CourseThankYou,
-      };
-
-      // Renderizar o template de CAPTURA (se configurado)
-      if (funnel.leadCaptureTemplate && captureTemplates[funnel.leadCaptureTemplate]) {
-        const CaptureComponent = captureTemplates[funnel.leadCaptureTemplate];
-        return <CaptureComponent {...commonProps} />;
+      // Renderizar template de CAPTURA
+      if (funnel.leadCaptureTemplate) {
+        switch (funnel.leadCaptureTemplate) {
+          case 'LeadCaptureDiscount':
+            return <LeadCaptureDiscount {...commonProps} />;
+          case 'LeadCaptureEbook':
+            return <LeadCaptureEbook {...commonProps} />;
+          case 'LeadCaptureQuiz':
+            return <LeadCaptureQuiz {...commonProps} />;
+          case 'LeadCaptureVSL':
+            return <LeadCaptureVSL {...commonProps} />;
+          default:
+            return <LeadCaptureDiscount {...commonProps} />;
+        }
       }
 
-      // Renderizar o template de VENDAS (se configurado)
-      if (funnel.salesPageTemplate && salesTemplates[funnel.salesPageTemplate]) {
-        const SalesComponent = salesTemplates[funnel.salesPageTemplate];
-        return <SalesComponent {...commonProps} />;
+      // Renderizar template de VENDAS
+      if (funnel.salesPageTemplate) {
+        switch (funnel.salesPageTemplate) {
+          case 'ProductTemplate':
+            return <ProductTemplate {...commonProps} />;
+          case 'ProductTemplateVSL':
+            return <ProductTemplateVSL {...commonProps} />;
+          case 'ServiceTemplate':
+            return <ServiceTemplate {...commonProps} />;
+          case 'CourseTemplate':
+            return <CourseTemplate {...commonProps} />;
+          case 'EventTemplate':
+            return <EventTemplate {...commonProps} />;
+          default:
+            return <ProductTemplate {...commonProps} />;
+        }
       }
 
-      // Renderizar o template de UPSELL (se configurado)
-      if (funnel.upsellTemplate && upsellTemplates[funnel.upsellTemplate]) {
-        const UpsellComponent = upsellTemplates[funnel.upsellTemplate];
-        return <UpsellComponent {...commonProps} />;
+      // Renderizar template de UPSELL
+      if (funnel.upsellTemplate) {
+        return <ProductUpsell {...commonProps} />;
       }
 
-      // Renderizar o template de THANK YOU (se configurado)
-      if (funnel.thankyouTemplate && thankyouTemplates[funnel.thankyouTemplate]) {
-        const ThankYouComponent = thankyouTemplates[funnel.thankyouTemplate];
-        return <ThankYouComponent {...commonProps} />;
+      // Renderizar template de DOWNSELL
+      if (funnel.downsellTemplate) {
+        return <GenericDownsell {...commonProps} />;
+      }
+
+      // Renderizar template de THANK YOU
+      if (funnel.thankyouTemplate) {
+        switch (funnel.thankyouTemplate) {
+          case 'ProductThankYou':
+            return <ProductThankYou {...commonProps} />;
+          case 'ServiceThankYou':
+            return <ServiceThankYou {...commonProps} />;
+          case 'EventThankYou':
+            return <EventThankYou {...commonProps} />;
+          case 'CourseThankYou':
+            return <CourseThankYou {...commonProps} />;
+          default:
+            return <ProductThankYou {...commonProps} />;
+        }
       }
     }
 
     // Lógica de templates de CAPTURA (modo antigo)
     if (templateId.startsWith('capture_')) {
       switch (templateId) {
-        case 'capture_ebook': return <LeadCaptureEbook {...commonProps} />;
-        case 'capture_vsl': return <LeadCaptureVSL {...commonProps} />;
-        case 'capture_quiz': return <LeadCaptureQuiz {...commonProps} />;
-        case 'capture_discount': return <LeadCaptureDiscount {...commonProps} />;
+        case 'capture_ebook': 
+          return <LeadCaptureEbook {...commonProps} />;
+        case 'capture_vsl': 
+          return <LeadCaptureVSL {...commonProps} />;
+        case 'capture_quiz': 
+          return <LeadCaptureQuiz {...commonProps} />;
+        case 'capture_discount': 
+          return <LeadCaptureDiscount {...commonProps} />;
+        default:
+          return <LeadCaptureDiscount {...commonProps} />;
       }
     }
 
     // Lógica de templates de PRODUTO (modo antigo)
     if (niche === 'product') {
       switch (templateId) {
-        case 'product_vsl': return <ProductTemplateVSL {...commonProps} />;
-        case 'product_modern': return <ProductTemplateModern {...commonProps} />;
-        case 'product_classic': return <ProductTemplateClassic {...commonProps} />;
-        default: return <ProductTemplate {...commonProps} />;
+        case 'product_vsl': 
+          return <ProductTemplateVSL {...commonProps} />;
+        case 'product_modern': 
+          return <ProductTemplateModern {...commonProps} />;
+        case 'product_classic': 
+          return <ProductTemplateClassic {...commonProps} />;
+        default: 
+          return <ProductTemplate {...commonProps} />;
       }
     }
 
