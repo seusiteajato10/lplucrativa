@@ -43,7 +43,7 @@ type FunnelStep = 'capture' | 'sales' | 'upsell' | 'downsell' | 'thankyou';
 
 const EditorPreview = ({ templateData, niche, templateId, previewMode, projectName, projectId, userId }: EditorPreviewProps) => {
   
-  const [currentFunnelStep, setCurrentFunnelStep] = useState<FunnelStep>('capture');
+  const [currentFunnelStep, setCurrentFunnelStep] = useState<FunnelStep>('sales');
   
   const renderTemplate = () => {
     const dataWithContext = { ...templateData, template_id: templateId };
@@ -59,7 +59,7 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
       const funnel = templateData.funnel;
       
       // ETAPA: CAPTURA
-      if (currentFunnelStep === 'capture' && funnel.leadCaptureTemplate) {
+      if (currentFunnelStep === 'capture' && funnel.hasLeadCapture && funnel.leadCaptureTemplate) {
         switch (funnel.leadCaptureTemplate) {
           case 'LeadCaptureDiscount':
             return <LeadCaptureDiscount {...commonProps} />;
@@ -93,17 +93,17 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
       }
 
       // ETAPA: UPSELL
-      if (currentFunnelStep === 'upsell' && funnel.upsellTemplate) {
+      if (currentFunnelStep === 'upsell' && funnel.hasUpsell && funnel.upsellTemplate) {
         return <ProductUpsell {...commonProps} />;
       }
 
       // ETAPA: DOWNSELL
-      if (currentFunnelStep === 'downsell') {
+      if (currentFunnelStep === 'downsell' && funnel.hasDownsell) {
         return <GenericDownsell {...commonProps} />;
       }
 
       // ETAPA: THANK YOU
-      if (currentFunnelStep === 'thankyou' && funnel.thankyouTemplate) {
+      if (currentFunnelStep === 'thankyou' && funnel.hasThankYou && funnel.thankyouTemplate) {
         switch (funnel.thankyouTemplate) {
           case 'ProductThankYou':
             return <ProductThankYou {...commonProps} />;
@@ -177,19 +177,20 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
     const funnel = templateData.funnel;
     const steps: Array<{ key: FunnelStep; label: string; active: boolean }> = [];
     
-    if (funnel.leadCaptureTemplate) {
+    if (funnel.hasLeadCapture) {
       steps.push({ key: 'capture', label: 'Captura', active: true });
     }
-    if (funnel.salesPageTemplate) {
-      steps.push({ key: 'sales', label: 'Vendas', active: true });
-    }
-    if (funnel.upsellTemplate) {
+    
+    // Vendas sempre está ativo
+    steps.push({ key: 'sales', label: 'Vendas', active: true });
+    
+    if (funnel.hasUpsell) {
       steps.push({ key: 'upsell', label: 'Upsell', active: true });
     }
-    if (funnel.downsellTemplate) {
+    if (funnel.hasDownsell) {
       steps.push({ key: 'downsell', label: 'Downsell', active: true });
     }
-    if (funnel.thankyouTemplate) {
+    if (funnel.hasThankYou) {
       steps.push({ key: 'thankyou', label: 'Obrigado', active: true });
     }
     
