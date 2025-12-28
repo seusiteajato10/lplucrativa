@@ -5,15 +5,14 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TemplateData } from "@/types/templateData";
-import { useProjects } from "@/contexts/ProjectsContext"; // Importar useProjects
-import { ProjectNiche, ProjectType } from "@/types/project"; // Importar tipos
+import { useProjects } from "@/contexts/ProjectsContext";
 
 interface TemplateSettingsTabProps {
   templateData: TemplateData;
   onUpdate: (data: Partial<TemplateData>) => void;
-  projectType?: ProjectType; // Usar o tipo correto
-  projectNiche?: ProjectNiche; // Usar o tipo correto
-  currentProjectId: string; // Adicionar o ID do projeto atual
+  projectType?: string;
+  projectNiche?: string;
+  projectId?: string;
 }
 
 export default function TemplateSettingsTab({ 
@@ -21,25 +20,22 @@ export default function TemplateSettingsTab({
   onUpdate,
   projectType,
   projectNiche,
-  currentProjectId
+  projectId
 }: TemplateSettingsTabProps) {
   
-  const { projects } = useProjects(); // Obter todos os projetos do usuário
-
+  const { projects } = useProjects();
+  
   const isCapturePage = projectType === 'lead_only' || projectType === 'full_funnel';
-  const isProductSalesPage = projectNiche === 'product' && projectType !== 'lead_only'; // Corrigido 'produto' para 'product'
-
-  // Filtrar projetos que podem ser páginas de vendas para o funil
-  const salesPages = projects.filter(p => 
-    p.id !== currentProjectId && // Não incluir o próprio projeto atual
-    (p.project_type === 'sales_only' || p.funnel_position === 'sales') && // Apenas páginas de vendas
-    p.niche === projectNiche // Opcional: apenas do mesmo nicho
+  const isProductSalesPage = projectNiche === 'product' && projectType !== 'lead_only';
+  
+  const salesPageProjects = projects.filter(p => 
+    p.id !== projectId && 
+    (p.project_type === 'sales_only' || p.funnel_position === 'sales')
   );
 
   return (
     <div className="space-y-4">
       
-      {/* CARD: FUNIL CONECTADO */}
       {isCapturePage && (
         <Card className="bg-blue-50 border-blue-200">
           <CardHeader>
@@ -48,11 +44,12 @@ export default function TemplateSettingsTab({
             </CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            
             <div className="flex items-center justify-between">
               <div className="flex-1">
                 <Label className="font-semibold">Redirecionar após captura</Label>
                 <p className="text-sm text-gray-600">
-                  Enviar o lead para página de vendas automaticamente
+                  Redirecione o lead para sua página de vendas imediatamente após a captura
                 </p>
               </div>
               <Switch 
@@ -88,19 +85,22 @@ export default function TemplateSettingsTab({
                       <SelectValue placeholder="Escolha a página de vendas" />
                     </SelectTrigger>
                     <SelectContent>
-                      {salesPages.length === 0 ? (
-                        <SelectItem value="no-sales-pages" disabled>
-                          Nenhuma página de vendas disponível
-                        </SelectItem>
-                      ) : (
-                        salesPages.map(page => (
-                          <SelectItem key={page.id} value={page.id}>
-                            {page.name}
+                      {salesPageProjects.length > 0 ? (
+                        salesPageProjects.map(project => (
+                          <SelectItem key={project.id} value={project.id}>
+                            {project.name}
                           </SelectItem>
                         ))
+                      ) : (
+                        <SelectItem value="sem-projetos" disabled>
+                          Nenhuma página de vendas disponível
+                        </SelectItem>
                       )}
                     </SelectContent>
                   </Select>
+                  <p className="text-xs text-gray-500">
+                    Escolha para qual página o lead será redirecionado após preencher o formulário
+                  </p>
                 </div>
 
                 <div className="space-y-2">
@@ -114,20 +114,23 @@ export default function TemplateSettingsTab({
                       onUpdate({
                         redirectAfterCapture: {
                           ...templateData.redirectAfterCapture,
-                          delay: parseInt(e.target.value),
+                          delay: parseInt(e.target.value) || 3,
                           enabled: true
                         }
                       })
                     }
                   />
+                  <p className="text-xs text-gray-500">
+                    Tempo de espera antes de redirecionar (0 = imediato)
+                  </p>
                 </div>
               </>
             )}
+            
           </CardContent>
         </Card>
       )}
 
-      {/* CARD: TEMPLATE DA PÁGINA */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">📄 Template da Página</CardTitle>
@@ -142,22 +145,33 @@ export default function TemplateSettingsTab({
               <SelectValue />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="padrao">Padrão</SelectItem>
-              <SelectItem value="moderno">Moderno</SelectItem>
-              <SelectItem value="classico">Clássico</SelectItem>
-              <SelectItem value="vsl">VSL</SelectItem>
+              {isCapturePage ? (
+                <>
+                  <SelectItem value="capture_ebook">E-book / Material Gratuito</SelectItem>
+                  <SelectItem value="capture_vsl">Vídeo + Captura (VSL)</SelectItem>
+                  <SelectItem value="capture_quiz">Quiz Interativo</SelectItem>
+                  <SelectItem value="capture_discount">Cupom de Desconto</SelectItem>
+                </>
+              ) : (
+                <>
+                  <SelectItem value="padrao">Padrão</SelectItem>
+                  <SelectItem value="moderno">Moderno</SelectItem>
+                  <SelectItem value="classico">Clássico</SelectItem>
+                  <SelectItem value="vsl">VSL (Video Sales Letter)</SelectItem>
+                </>
+              )}
             </SelectContent>
           </Select>
         </CardContent>
       </Card>
 
-      {/* CARD: CONFIGURAÇÕES DE CAPTURA */}
       {isCapturePage && (
         <Card>
           <CardHeader>
             <CardTitle className="text-lg">📝 Configurações da Página de Captura</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            
             <div className="space-y-2">
               <Label>Título da Isca</Label>
               <Input
@@ -170,12 +184,12 @@ export default function TemplateSettingsTab({
                     }
                   })
                 }
-                placeholder="Ex: Ganhe 10% OFF Agora"
+                placeholder="Ex: Ganhe 10% OFF na Primeira Compra"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Descrição</Label>
+              <Label>Subtítulo / Descrição</Label>
               <Textarea
                 value={templateData.leadCapture?.subheadline || ''}
                 onChange={(e) =>
@@ -186,12 +200,13 @@ export default function TemplateSettingsTab({
                     }
                   })
                 }
-                placeholder="Cadastre-se e receba benefícios exclusivos"
+                placeholder="Cadastre-se agora e receba um cupom exclusivo por email"
+                rows={3}
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Texto do Botão</Label>
+              <Label>Texto do Botão CTA</Label>
               <Input
                 value={templateData.leadCapture?.ctaText || 'QUERO RECEBER'}
                 onChange={(e) =>
@@ -202,56 +217,127 @@ export default function TemplateSettingsTab({
                     }
                   })
                 }
+                placeholder="QUERO RECEBER"
               />
             </div>
+
+            <div className="space-y-2">
+              <Label>URL da Imagem (E-book/Produto)</Label>
+              <Input
+                type="url"
+                value={templateData.leadCapture?.ebookCoverUrl || ''}
+                onChange={(e) =>
+                  onUpdate({
+                    leadCapture: {
+                      ...templateData.leadCapture,
+                      ebookCoverUrl: e.target.value
+                    }
+                  })
+                }
+                placeholder="https://exemplo.com/imagem.jpg"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label>URL do Vídeo (YouTube/Vimeo - opcional)</Label>
+              <Input
+                type="url"
+                value={templateData.leadCapture?.videoUrl || ''}
+                onChange={(e) =>
+                  onUpdate({
+                    leadCapture: {
+                      ...templateData.leadCapture,
+                      videoUrl: e.target.value
+                    }
+                  })
+                }
+                placeholder="https://youtube.com/watch?v=..."
+              />
+            </div>
+
           </CardContent>
         </Card>
       )}
 
-      {/* CARD: CONFIGURAÇÕES DE VENDAS */}
       {isProductSalesPage && (
         <Card>
           <CardHeader>
-            <CardTitle className="text-lg">💰 Configurações de Vendas</CardTitle>
+            <CardTitle className="text-lg">💰 Configurações de Vendas do Produto</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
+            
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Preço Atual (R$)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={templateData.price || 0}
+                  onChange={(e) =>
+                    onUpdate({
+                      price: parseFloat(e.target.value) || 0
+                    })
+                  }
+                  placeholder="197.00"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Preço Original (De:)</Label>
+                <Input
+                  type="number"
+                  step="0.01"
+                  min="0"
+                  value={templateData.originalPrice || 0}
+                  onChange={(e) =>
+                    onUpdate({
+                      originalPrice: parseFloat(e.target.value) || 0
+                    })
+                  }
+                  placeholder="297.00"
+                />
+              </div>
+            </div>
+
             <div className="space-y-2">
-              <Label>Preço Atual</Label>
+              <Label>Garantia</Label>
               <Input
-                type="number"
-                value={templateData.price || 0}
+                value={templateData.garantia || ''}
                 onChange={(e) =>
                   onUpdate({
-                    price: parseFloat(e.target.value)
+                    garantia: e.target.value
                   })
                 }
-                placeholder="197.00"
+                placeholder="Ex: 12 meses de garantia"
               />
             </div>
 
             <div className="space-y-2">
-              <Label>Preço Original</Label>
+              <Label>Estoque Disponível</Label>
               <Input
                 type="number"
-                value={templateData.originalPrice || 0}
+                min="0"
+                value={templateData.estoque || 0}
                 onChange={(e) =>
                   onUpdate({
-                    originalPrice: parseFloat(e.target.value)
+                    estoque: parseInt(e.target.value) || 0
                   })
                 }
-                placeholder="297.00"
+                placeholder="47"
               />
             </div>
+
           </CardContent>
         </Card>
       )}
 
-      {/* CARD: RODAPÉ */}
       <Card>
         <CardHeader>
           <CardTitle className="text-lg">🔗 Rodapé</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
+          
           <div className="space-y-2">
             <Label>Nome da Empresa</Label>
             <Input
@@ -264,12 +350,12 @@ export default function TemplateSettingsTab({
                   }
                 })
               }
-              placeholder="Minha Empresa"
+              placeholder="Minha Empresa LTDA"
             />
           </div>
 
           <div className="space-y-2">
-            <Label>Email</Label>
+            <Label>Email de Contato</Label>
             <Input
               type="email"
               value={templateData.footer?.email || ''}
@@ -281,11 +367,29 @@ export default function TemplateSettingsTab({
                   }
                 })
               }
-              placeholder="contato@exemplo.com"
+              placeholder="contato@minhaempresa.com"
             />
           </div>
+
+          <div className="space-y-2">
+            <Label>WhatsApp</Label>
+            <Input
+              value={templateData.footer?.phone || ''}
+              onChange={(e) =>
+                onUpdate({
+                  footer: {
+                    ...templateData.footer,
+                    phone: e.target.value
+                  }
+                })
+              }
+              placeholder="(11) 99999-9999"
+            />
+          </div>
+
         </CardContent>
       </Card>
+
     </div>
   );
 }
