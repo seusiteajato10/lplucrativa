@@ -21,7 +21,8 @@ export default function TemplateSettingsTab({
 }: TemplateSettingsTabProps) {
   
   const isCapturePage = projectType === 'lead_only' || projectType === 'full_funnel';
-  const isProductSalesPage = projectNiche === 'produto' && projectType !== 'lead_only';
+  // Correção: 'produto' deve ser 'product' conforme o tipo ProjectNiche
+  const isProductSalesPage = projectNiche === 'product' && projectType !== 'lead_only';
 
   return (
     <div className="space-y-4">
