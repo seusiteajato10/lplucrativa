@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TemplateData } from '@/types/templateData';
 import { ProjectNiche } from '@/types/project';
 import ProductTemplate from '@/components/templates/ProductTemplate';
@@ -8,6 +8,8 @@ import CourseTemplate from '@/components/templates/CourseTemplate';
 import ProductTemplateVSL from '@/components/templates/ProductTemplateVSL';
 import ProductTemplateModern from '@/components/templates/ProductTemplateModern';
 import ProductTemplateClassic from '@/components/templates/ProductTemplateClassic';
+import { Button } from '@/components/ui/button';
+import { ChevronRight } from 'lucide-react';
 
 // Capture Templates
 import LeadCaptureEbook from '@/components/templates/capture/LeadCaptureEbook';
@@ -37,7 +39,11 @@ interface EditorPreviewProps {
   userId?: string;
 }
 
+type FunnelStep = 'capture' | 'sales' | 'upsell' | 'downsell' | 'thankyou';
+
 const EditorPreview = ({ templateData, niche, templateId, previewMode, projectName, projectId, userId }: EditorPreviewProps) => {
+  
+  const [currentFunnelStep, setCurrentFunnelStep] = useState<FunnelStep>('capture');
   
   const renderTemplate = () => {
     const dataWithContext = { ...templateData, template_id: templateId };
@@ -48,12 +54,12 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
       userId: userId || "preview" 
     };
 
-    // Se o funil está ativado, renderiza baseado na configuração
+    // Se o funil está ativado, renderiza baseado na etapa selecionada
     if (templateData?.funnel?.enabled) {
       const funnel = templateData.funnel;
       
-      // Renderizar template de CAPTURA
-      if (funnel.leadCaptureTemplate) {
+      // ETAPA: CAPTURA
+      if (currentFunnelStep === 'capture' && funnel.leadCaptureTemplate) {
         switch (funnel.leadCaptureTemplate) {
           case 'LeadCaptureDiscount':
             return <LeadCaptureDiscount {...commonProps} />;
@@ -68,8 +74,8 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
         }
       }
 
-      // Renderizar template de VENDAS
-      if (funnel.salesPageTemplate) {
+      // ETAPA: VENDAS
+      if (currentFunnelStep === 'sales' && funnel.salesPageTemplate) {
         switch (funnel.salesPageTemplate) {
           case 'ProductTemplate':
             return <ProductTemplate {...commonProps} />;
@@ -86,18 +92,18 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
         }
       }
 
-      // Renderizar template de UPSELL
-      if (funnel.upsellTemplate) {
+      // ETAPA: UPSELL
+      if (currentFunnelStep === 'upsell' && funnel.upsellTemplate) {
         return <ProductUpsell {...commonProps} />;
       }
 
-      // Renderizar template de DOWNSELL
-      if (funnel.downsellTemplate) {
+      // ETAPA: DOWNSELL
+      if (currentFunnelStep === 'downsell') {
         return <GenericDownsell {...commonProps} />;
       }
 
-      // Renderizar template de THANK YOU
-      if (funnel.thankyouTemplate) {
+      // ETAPA: THANK YOU
+      if (currentFunnelStep === 'thankyou' && funnel.thankyouTemplate) {
         switch (funnel.thankyouTemplate) {
           case 'ProductThankYou':
             return <ProductThankYou {...commonProps} />;
@@ -111,9 +117,21 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
             return <ProductThankYou {...commonProps} />;
         }
       }
+
+      // Se nenhuma etapa foi configurada, mostra mensagem
+      return (
+        <div className="flex items-center justify-center h-full p-8">
+          <div className="text-center">
+            <h3 className="text-xl font-bold mb-2">Configure as etapas do funil</h3>
+            <p className="text-muted-foreground">
+              Selecione os templates nas abas ao lado para visualizar cada etapa
+            </p>
+          </div>
+        </div>
+      );
     }
 
-    // Lógica de templates de CAPTURA (modo antigo)
+    // Lógica de templates de CAPTURA (modo antigo - por templateId)
     if (templateId.startsWith('capture_')) {
       switch (templateId) {
         case 'capture_ebook': 
@@ -153,11 +171,61 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
     return <SelectedComponent {...commonProps} />;
   };
 
+  const getFunnelSteps = () => {
+    if (!templateData?.funnel?.enabled) return [];
+    
+    const funnel = templateData.funnel;
+    const steps: Array<{ key: FunnelStep; label: string; active: boolean }> = [];
+    
+    if (funnel.leadCaptureTemplate) {
+      steps.push({ key: 'capture', label: 'Captura', active: true });
+    }
+    if (funnel.salesPageTemplate) {
+      steps.push({ key: 'sales', label: 'Vendas', active: true });
+    }
+    if (funnel.upsellTemplate) {
+      steps.push({ key: 'upsell', label: 'Upsell', active: true });
+    }
+    if (funnel.downsellTemplate) {
+      steps.push({ key: 'downsell', label: 'Downsell', active: true });
+    }
+    if (funnel.thankyouTemplate) {
+      steps.push({ key: 'thankyou', label: 'Obrigado', active: true });
+    }
+    
+    return steps;
+  };
+
+  const funnelSteps = getFunnelSteps();
+
   return (
     <div className="flex-1 bg-secondary/30 overflow-hidden flex flex-col">
-      <div className="bg-background/50 border-b border-border px-4 py-1 text-[10px] uppercase tracking-wider text-muted-foreground flex justify-between items-center">
-        <span>Modo Visualização: {previewMode}</span>
-        <span className="text-primary font-bold">Edição em Tempo Real</span>
+      <div className="bg-background/50 border-b border-border px-4 py-2 text-[10px] uppercase tracking-wider text-muted-foreground">
+        <div className="flex justify-between items-center mb-2">
+          <span>Modo Visualização: {previewMode}</span>
+          <span className="text-primary font-bold">Edição em Tempo Real</span>
+        </div>
+        
+        {templateData?.funnel?.enabled && funnelSteps.length > 0 && (
+          <div className="flex items-center gap-2 py-2 border-t border-border/50">
+            <span className="text-[9px] font-semibold mr-2">FLUXO DO FUNIL:</span>
+            {funnelSteps.map((step, index) => (
+              <React.Fragment key={step.key}>
+                <Button
+                  size="sm"
+                  variant={currentFunnelStep === step.key ? 'default' : 'outline'}
+                  onClick={() => setCurrentFunnelStep(step.key)}
+                  className="h-7 text-[10px] px-3"
+                >
+                  {step.label}
+                </Button>
+                {index < funnelSteps.length - 1 && (
+                  <ChevronRight className="w-3 h-3 text-muted-foreground" />
+                )}
+              </React.Fragment>
+            ))}
+          </div>
+        )}
       </div>
       
       <div className="flex-1 overflow-auto p-4 md:p-8 flex justify-center items-start">
