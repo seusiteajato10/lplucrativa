@@ -3,50 +3,37 @@ import { Helmet } from "react-helmet-async";
 
 const TemplateGallery = () => {
   const [showPreview, setShowPreview] = useState(false);
-  const [previewImage, setPreviewImage] = useState("");
-
-  const openPreview = (image) => {
-    setPreviewImage(image);
-    setShowPreview(true);
-  };
+  const [activeTemplate, setActiveTemplate] = useState(0);
 
   const templates = [
     {
       name: "ProductTemplate",
-      category: "Páginas de Captura",
-      thumb: "https://via.placeholder.com/400x250/1e40af/ffffff?text=ProductTemplate",
-      preview: "https://via.placeholder.com/1200x800/1e40af/ffffff?text=PRODUCT+TEMPLATE%0A%0AP%C3%A1gina+de+Captura%0ASimples+e+Eficaz%0A%0A%E2%9C%94+Formul%C3%A1rio%0A%E2%9C%94+Depoimentos%0A%E2%9C%94+Pre%C3%A7o+R$197",
-      description: "Página simples de captura"
+      title: "Captura Simples",
+      description: "Página de captura com formulário otimizado, depoimentos e CTA irresistível"
     },
     {
       name: "ProductTemplateVSL", 
-      category: "Páginas de Captura",
-      thumb: "https://via.placeholder.com/400x250/dc2626/ffffff?text=VSL+Template",
-      preview: "https://via.placeholder.com/1200x800/dc2626/ffffff?text=VSL+TEMPLATE%0A%0AV%C3%ADdeo+Persuasivo%0A%2B+Captura%0A%0A%E2%9C%94+Player+de+V%C3%ADdeo%0A%E2%9C%94+Formul%C3%A1rio%0A%E2%9C%94+Alta+Convers%C3%A3o",
-      description: "Página VSL com vídeo"
+      title: "VSL + Captura",
+      description: "Player de vídeo persuasivo + formulário de alta conversão"
     },
     {
       name: "ThankYouPage",
-      category: "Páginas de Venda", 
-      thumb: "https://via.placeholder.com/400x250/7c3aed/ffffff?text=Obrigado",
-      preview: "https://via.placeholder.com/1200x800/7c3aed/ffffff?text=THANK+YOU+PAGE%0A%0AP%C3%A1gina+de+Obrigado%0AP%C3%B3s-Compra%0A%0A%E2%9C%94+Confirma%C3%A7%C3%A3o%0A%E2%9C%94+Pr%C3%B3ximos+Passos%0A%E2%9C%94+Upsell",
-      description: "Página de agradecimento"
+      title: "Página Obrigado",
+      description: "Confirmação de compra + próximos passos + upsell automático"
     },
     {
       name: "UpsellPage",
-      category: "Upsell",
-      thumb: "https://via.placeholder.com/400x250/059669/ffffff?text=Upsell",
-      preview: "https://via.placeholder.com/1200x800/059669/ffffff?text=UPSELL+PAGE%0A%0AOferta+Irresist%C3%ADvel%0A%2BR$97+S%C3%B3+Agora%0A%0A%E2%9C%94+Aumenta+Ticket%0A%E2%9C%94+Autom%C3%A1tico%0A%E2%9C%94+67%25+Convers%C3%A3o",
-      description: "Página upsell automático"
+      title: "Upsell Automático",
+      description: "Oferta irresistível pós-venda que aumenta ticket médio"
     },
     {
       name: "DownsellPage",
-      category: "Downsell",
-      thumb: "https://via.placeholder.com/400x250/f59e0b/ffffff?text=Downsell",
-      preview: "https://via.placeholder.com/1200x800/f59e0b/ffffff?text=DOWNSELL+PAGE%0A%0A%C3%9Altima+Chance%0AR$47+Desconto%0A%0A%E2%9C%94+Recupera+Carrinho%0A%E2%9C%94+Convers%C3%A3o+Final%0A%E2%9C%94+Alta+Taxa",
-      description: "Página de recuperação"
+      title: "Downsell Desconto",
+      description: "Recuperação de carrinho com oferta final de conversão"
     }
   ];
+
+  const colors = ['from-blue-500 to-blue-600', 'from-red-500 to-red-600', 'from-purple-500 to-purple-600', 'from-emerald-500 to-emerald-600', 'from-orange-500 to-orange-600'];
 
   return (
     <>
@@ -54,72 +41,105 @@ const TemplateGallery = () => {
         <title>Galeria de Templates | LP Lucrativa</title>
       </Helmet>
 
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50">
-        {/* Header */}
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+        {/* HEADER */}
         <section className="pt-24 pb-20 text-center max-w-6xl mx-auto px-6">
-          <h1 className="text-6xl md:text-7xl font-black text-slate-900 mb-8 leading-tight">
-            Galeria de Templates
+          <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-6 leading-tight">
+            Galeria de 
+            <span className="bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 bg-clip-text text-transparent block">
+              Templates Profissionais
+            </span>
           </h1>
-          <p className="text-2xl text-slate-600 max-w-3xl mx-auto">
-            Clique para ver preview completo do template
+          <p className="text-xl md:text-2xl text-slate-600 max-w-3xl mx-auto">
+            Clique nos cards para ver preview do template
           </p>
         </section>
 
-        {/* Grid */}
+        {/* GALERIA */}
         <section className="px-6 pb-24 max-w-6xl mx-auto">
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {templates.map((template) => (
+            {templates.map((template, index) => (
               <div
                 key={template.name}
-                className="group bg-white border border-slate-200 rounded-3xl p-8 hover:shadow-2xl hover:-translate-y-4 hover:border-blue-300 transition-all duration-500 cursor-pointer h-full"
-                onClick={() => openPreview(template.preview)}
+                className="group bg-white/90 backdrop-blur-xl border border-white/50 rounded-3xl p-8 shadow-xl hover:shadow-2xl hover:-translate-y-4 hover:border-indigo-300 transition-all duration-500 cursor-pointer h-full"
+                onClick={() => {
+                  setActiveTemplate(index);
+                  setShowPreview(true);
+                }}
               >
-                <div className="h-64 rounded-2xl overflow-hidden mb-6 shadow-lg group-hover:shadow-xl transition-all">
-                  <img
-                    src={template.thumb}
-                    alt={template.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
+                <div className={`h-72 rounded-2xl mb-8 overflow-hidden shadow-xl group-hover:scale-[1.02] transition-transform duration-500 bg-gradient-to-br ${colors[index]}`}>
+                  <div className="h-full flex flex-col items-center justify-center text-white p-8 text-center">
+                    <div className="text-5xl mb-6">🎨</div>
+                    <div className="text-2xl font-black mb-4">{template.name}</div>
+                    <div className="text-lg font-semibold">{template.title}</div>
+                  </div>
                 </div>
                 <div className="space-y-3">
-                  <h3 className="text-2xl font-bold text-slate-900">{template.name}</h3>
-                  <p className="text-slate-600 text-lg">{template.category}</p>
-                  <p className="text-slate-500 text-sm">{template.description}</p>
-                  <button className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 px-6 rounded-2xl font-bold text-lg hover:shadow-xl hover:-translate-y-1 transition-all group-hover:scale-105">
-                    Ver Preview →
-                  </button>
+                  <h3 className="font-black text-2xl text-slate-900">{template.title}</h3>
+                  <p className="text-slate-600 text-lg leading-relaxed">{template.description}</p>
+                  <div className="pt-4">
+                    <div className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-8 py-4 rounded-2xl font-bold hover:shadow-xl hover:-translate-y-1 transition-all">
+                      Ver Preview →
+                    </div>
+                  </div>
                 </div>
               </div>
             ))}
           </div>
         </section>
 
-        {/* Modal */}
+        {/* MODAL */}
         {showPreview && (
-          <div
-            className="fixed inset-0 bg-black/90 z-50 flex items-center justify-center p-6"
+          <div 
+            className="fixed inset-0 bg-black/95 z-50 flex items-center justify-center p-8"
             onClick={() => setShowPreview(false)}
           >
-            <div
-              className="bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-auto relative mx-auto"
+            <div 
+              className="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto relative mx-auto border border-white/50"
               onClick={(e) => e.stopPropagation()}
             >
-              <button
-                onClick={() => setShowPreview(false)}
-                className="absolute top-6 right-6 bg-white rounded-2xl p-4 shadow-2xl hover:shadow-3xl transition-all z-10"
-              >
-                <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                </svg>
-              </button>
-              <img
-                src={previewImage}
-                alt="Preview"
-                className="w-full h-auto max-h-[85vh] object-contain rounded-2xl mx-auto block p-8"
-              />
+              {/* HEADER MODAL */}
+              <div className="sticky top-0 bg-white/100 z-10 border-b border-slate-200 p-8 rounded-t-3xl">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-3xl font-black text-slate-900">{templates[activeTemplate].name}</h2>
+                    <p className="text-xl text-slate-600 mt-2">{templates[activeTemplate].title}</p>
+                  </div>
+                  <button
+                    onClick={() => setShowPreview(false)}
+                    className="bg-slate-100 hover:bg-slate-200 p-4 rounded-2xl shadow-lg hover:shadow-xl transition-all"
+                  >
+                    <svg className="w-6 h-6 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              {/* PREVIEW */}
+              <div className="p-12">
+                <div className={`w-full h-96 rounded-3xl shadow-2xl bg-gradient-to-br ${colors[activeTemplate]} flex flex-col items-center justify-center text-white p-12 text-center`}>
+                  <div className="text-6xl mb-8">📱</div>
+                  <div className="text-4xl font-black mb-6">{templates[activeTemplate].name}</div>
+                  <div className="text-2xl font-bold mb-8 max-w-2xl leading-relaxed">
+                    {templates[activeTemplate].description}
+                  </div>
+                  <div className="bg-white/20 backdrop-blur-xl px-12 py-6 rounded-3xl">
+                    <div className="text-3xl font-black">READY TO USE</div>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
         )}
+
+        {/* CTA */}
+        <section className="text-center py-24">
+          <h2 className="text-4xl font-black text-slate-900 mb-6">Comece agora mesmo</h2>
+          <a href="#/dashboard/projetos?criar=true" className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-16 py-8 rounded-3xl font-bold text-2xl shadow-2xl hover:shadow-3xl hover:-translate-y-2 transition-all">
+            Criar Landing Page →
+          </a>
+        </section>
       </div>
     </>
   );
