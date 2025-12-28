@@ -42,10 +42,11 @@ const App = () => {
             <ProjectsProvider>
               <HashRouter>
                 <Routes>
-                  {/* PÚBLICAS - SEM LOGIN (GALERIA NO TOPO) */}
+                  {/* PÚBLICAS - SEM LOGIN (CORRIGIDO) */}
                   <Route path="/" element={<Index />} />
                   <Route path="/templates/galeria" element={<TemplateGallery />} />
-                  <Route path="/templates" element={<TemplatePreview />} />
+                  <Route path="/templates/:templateId?" element={<TemplatePreview />} />
+                  <Route path="/template-preview" element={<TemplatePreview />} />
                   
                   {/* AUTENTICAÇÃO */}
                   <Route path="/login" element={<Login />} />
