@@ -33,7 +33,15 @@ interface EditorPreviewProps {
 
 type FunnelStep = 'capture' | 'sales' | 'upsell' | 'downsell' | 'thankyou';
 
-const EditorPreview = ({ templateData, niche, templateId, previewMode, projectName, projectId, userId }: EditorPreviewProps) => {
+const EditorPreview = ({ 
+  templateData, 
+  niche, 
+  templateId, 
+  previewMode, 
+  projectName, 
+  projectId, 
+  userId 
+}: EditorPreviewProps) => {
   const [currentFunnelStep, setCurrentFunnelStep] = useState<FunnelStep>('sales');
   
   const renderTemplate = () => {
@@ -41,8 +49,8 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
     const commonProps = { 
       data: dataWithContext, 
       projectName, 
-      projectId: projectId || "preview", 
-      userId: userId || "preview" 
+      projectId: projectId || 'preview', 
+      userId: userId || 'preview' 
     };
 
     if (templateData?.funnel?.enabled) {
@@ -107,7 +115,9 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
         <div className="flex items-center justify-center h-full p-8">
           <div className="text-center">
             <h3 className="text-xl font-bold mb-2">Configure as etapas do funil</h3>
-            <p className="text-muted-foreground">Selecione os templates nas abas ao lado para visualizar cada etapa</p>
+            <p className="text-muted-foreground">
+              Selecione os templates nas abas ao lado para visualizar cada etapa
+            </p>
           </div>
         </div>
       );
