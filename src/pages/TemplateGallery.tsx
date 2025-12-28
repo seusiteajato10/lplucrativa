@@ -12,9 +12,10 @@ import {
   Ticket,
   LayoutTemplate,
   ArrowRight,
+  Repeat,
 } from "lucide-react";
 
-type TemplateCategory = "captura" | "vendas";
+type TemplateCategory = "captura" | "vendas" | "funil";
 
 type TemplateCard = {
   id: string;
@@ -26,6 +27,7 @@ type TemplateCard = {
 };
 
 const templates: TemplateCard[] = [
+  // CAPTURA
   {
     id: "capture_ebook",
     name: "Captura E-book",
@@ -58,6 +60,7 @@ const templates: TemplateCard[] = [
     benefit: "Gera vendas imediatas com cupom exclusivo",
     icon: <Ticket className="w-8 h-8" />,
   },
+  // VENDAS
   {
     id: "product_vsl",
     name: "Venda VSL Longa",
@@ -82,12 +85,38 @@ const templates: TemplateCard[] = [
     benefit: "Storytelling clássico que vende todo dia",
     icon: <BookOpen className="w-8 h-8" />,
   },
+  // FUNIL COMPLETO ✅ DOWNSell/UPSell/OBRIGADA
+  {
+    id: "upsell_offer",
+    name: "Upsell Automático",
+    category: "funil",
+    tag: "Oferta extra",
+    benefit: "Aumenta ticket médio em 67% pós-venda",
+    icon: <ArrowRight className="w-8 h-8" />,
+  },
+  {
+    id: "downsell_discount",
+    name: "Downsell Desconto",
+    category: "funil",
+    tag: "Recuperação",
+    benefit: "Recupera 23% dos carrinhos abandonados",
+    icon: <Ticket className="w-8 h-8" />,
+  },
+  {
+    id: "thankyou_page",
+    name: "Página Obrigado",
+    category: "funil",
+    tag: "Pós-venda",
+    benefit: "Nutre cliente + coleta feedback",
+    icon: <LayoutTemplate className="w-8 h-8" />,
+  },
 ];
 
 const TemplateGallery: React.FC = () => {
   const groupedByCategory = {
     captura: templates.filter(t => t.category === "captura"),
     vendas: templates.filter(t => t.category === "vendas"),
+    funil: templates.filter(t => t.category === "funil"),
   };
 
   return (
@@ -97,7 +126,7 @@ const TemplateGallery: React.FC = () => {
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-        {/* HERO PREMIUM */}
+        {/* HERO */}
         <section className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-1.5 rounded-full text-sm font-medium mb-8">
@@ -112,7 +141,7 @@ const TemplateGallery: React.FC = () => {
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto mb-12 leading-relaxed">
-              Escolha o layout perfeito para seu funil. Otimizados para máxima conversão.
+              Captura → Vendas → Funil completo. Otimizados para máxima conversão.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <Link 
@@ -132,21 +161,24 @@ const TemplateGallery: React.FC = () => {
           </div>
         </section>
 
-        {/* TEMPLATES */}
+        {/* TEMPLATES - 3 SEÇÕES */}
         <section className="px-6 pb-32 max-w-7xl mx-auto space-y-24">
           {Object.entries(groupedByCategory).map(([category, categoryTemplates]: [string, TemplateCard[]]) => (
             <div key={category} id={category}>
               <div className="flex items-center gap-4 mb-16">
-                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center">
+                <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
                   {category === "captura" ? (
                     <MousePointer2 className="w-6 h-6 text-white" />
-                  ) : (
+                  ) : category === "vendas" ? (
                     <ShoppingCart className="w-6 h-6 text-white" />
+                  ) : (
+                    <Repeat className="w-6 h-6 text-white" />
                   )}
                 </div>
                 <div>
-                  <h2 className="text-4xl font-black text-slate-900">
-                    {category === "captura" ? "Captura de leads" : "Páginas de vendas"}
+                  <h2 className="text-4xl font-black text-slate-900 capitalize">
+                    {category === "captura" ? "Captura de leads" : 
+                     category === "vendas" ? "Páginas de vendas" : "Funil completo"}
                   </h2>
                   <p className="text-lg text-slate-600 mt-2">Modelos testados em campanhas reais</p>
                 </div>
