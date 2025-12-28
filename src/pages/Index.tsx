@@ -4,15 +4,13 @@ import {
   LayoutTemplate, 
   MousePointer2, 
   ShoppingCart, 
-  Shield, 
-  Zap, 
-  ArrowRight 
-} from "react-icons/lu";
+  Zap 
+} from "lucide-react";
 
 const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 to-white dark:from-slate-900 dark:to-slate-800">
-      {/* HERO - COM BOTÃO TEMPLATES (PASSO 4) */}
+      {/* HERO */}
       <section className="pt-24 pb-20 px-4">
         <div className="max-w-7xl mx-auto text-center">
           <h1 className="text-5xl md:text-7xl font-black bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-6 leading-tight">
@@ -24,7 +22,6 @@ const Index = () => {
           <p className="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-12 max-w-3xl mx-auto leading-relaxed">
             Templates profissionais, editor visual drag-and-drop e integração completa com WhatsApp, Hotmart e Stripe.
           </p>
-          {/* HERO CTAs - PASSO 4 */}
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mb-20">
             <Link 
               to="/signup"
