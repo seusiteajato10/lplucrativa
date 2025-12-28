@@ -19,7 +19,10 @@ const TemplateGallery = () => {
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 mb-20">
             {/* ProductTemplate */}
-            <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-blue-400 h-full" onClick={() => setShowPreview(true)}>
+            <div 
+              className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-blue-400 h-full" 
+              onClick={() => setShowPreview(true)}
+            >
               <div className="h-64 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-6 flex items-center justify-center text-white">
                 <div className="text-center">
                   <div className="text-4xl mb-4">🚀</div>
@@ -32,7 +35,10 @@ const TemplateGallery = () => {
             </div>
 
             {/* ProductTemplateVSL */}
-            <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-red-400 h-full" onClick={() => setShowPreview(true)}>
+            <div 
+              className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-red-400 h-full" 
+              onClick={() => setShowPreview(true)}
+            >
               <div className="h-64 bg-gradient-to-br from-red-500 to-pink-600 rounded-2xl mb-6 flex items-center justify-center text-white">
                 <div className="text-center">
                   <div className="text-4xl mb-4">🎥</div>
@@ -45,6 +51,40 @@ const TemplateGallery = () => {
             </div>
 
             {/* ThankYouPage */}
-            <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-purple-400 h-full" onClick={() => setShowPreview(true)}>
+            <div 
+              className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-purple-400 h-full" 
+              onClick={() => setShowPreview(true)}
+            >
               <div className="h-64 bg-gradient-to-br from-purple-500 to-purple-700 rounded-2xl mb-6 flex items-center justify-center text-white">
-                <div className="text
+                <div className="text-center">
+                  <div className="text-4xl mb-4">✅</div>
+                  <div className="text-2xl font-bold">ThankYouPage</div>
+                  <div className="text-lg">Página de Agradecimento</div>
+                </div>
+              </div>
+              <h3 className="text-2xl font-bold text-slate-900 mb-2">ThankYouPage</h3>
+              <p className="text-slate-600">Confirmação de compra</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {showPreview && (
+        <div className="fixed inset-0 bg-black bg-opacity-75 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-4xl max-h-[90vh] overflow-auto relative">
+            <button 
+              onClick={() => setShowPreview(false)}
+              className="absolute top-4 right-4 text-2xl text-gray-500 hover:text-black"
+            >
+              ×
+            </button>
+            <h2 className="text-3xl font-bold mb-6">Preview do Template</h2>
+            <p>Template selecionado aparecerá aqui</p>
+          </div>
+        </div>
+      )}
+    </>
+  );
+};
+
+export default TemplateGallery;
