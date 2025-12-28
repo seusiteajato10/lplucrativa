@@ -12,17 +12,6 @@ type LeadCaptureQuizProps = {
   slug: string;
 };
 
-type QuizOption = {
-  label: string;
-  value: string;
-};
-
-type QuizQuestion = {
-  id: string;
-  question: string;
-  options: QuizOption[];
-};
-
 const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
   data,
   projectName,
@@ -36,8 +25,13 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const questions: QuizQuestion[] =
-    data.questions ||
+  // Perguntas padrão, caso não venham do data
+  const questions =
+    (data.questions as Array<{
+      id: string;
+      question: string;
+      options: { label: string; value: string }[];
+    }>) ||
     [
       {
         id: "q1",
@@ -60,7 +54,10 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
     ];
 
   const handleAnswerChange = (questionId: string, value: string) => {
-    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+    setAnswers((prev) => ({
+      ...prev,
+      [questionId]: value,
+    }));
   };
 
   const handleSubmit = async (event: React.FormEvent) => {
@@ -91,7 +88,7 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
       }
 
       toast.success("Respostas enviadas! Em instantes você recebe o resultado.");
-      // opcional: redirecionar para página de resultado / próxima etapa
+      // Se quiser, aqui pode redirecionar para a próxima etapa do funil
       // window.location.href = `/p/${slug}?step=sales`;
     } catch (err) {
       console.error("Erro inesperado ao salvar lead:", err);
@@ -104,7 +101,7 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
   return (
     <div className="min-h-screen bg-background flex items-center justify-center">
       <div className="w-full max-w-5xl bg-card rounded-2xl shadow-lg p-6 md:p-10 grid md:grid-cols-2 gap-8">
-        {/* Coluna esquerda: promessa do quiz */}
+        {/* Coluna esquerda: copy do quiz */}
         <div className="space-y-4">
           <p className="inline-block px-4 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary">
             {data.badge || "QUIZ RÁPIDO • 1 MINUTO"}
@@ -140,7 +137,10 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="space-y-4">
               {questions.map((q) => (
-                <div key={q.id} className="border border-border rounded-lg p-3">
+                <div
+                  key={q.id}
+                  className="border border-border rounded-lg p-3"
+                >
                   <p className="text-sm font-medium mb-2">{q.question}</p>
                   <div className="space-y-1">
                     {q.options.map((opt) => (
@@ -200,7 +200,7 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
 
               <p className="mt-1 text-xs text-muted-foreground">
                 {data.privacyText ||
-                  "Suas respostas são confidenciais. Enviaremos o resultado no seu e‑mail e, se desejar, também no WhatsApp."}
+                  "Suas respostas são confidenciais. Enviaremos o resultado no seu e‑mail e, se quiser, também no WhatsApp."}
               </p>
             </div>
           </form>
