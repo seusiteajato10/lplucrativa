@@ -15,41 +15,39 @@ import {
   Repeat,
 } from "lucide-react";
 
-type TemplateCategory = "captura" | "vendas" | "funil";
-
 type TemplateCard = {
   id: string;
   name: string;
-  category: TemplateCategory;
+  category: string;
   tag: string;
   benefit: string;
   icon: React.ReactNode;
 };
 
 const templates: TemplateCard[] = [
-  // CAPTURA
+  // SEUS TEMPLATES REAIS DO PROJETO [file:140]
   {
     id: "capture_ebook",
     name: "Captura E-book",
     category: "captura",
-    tag: "Lista de e-mails",
-    benefit: "Coleta 3x mais leads que formulários comuns",
+    tag: "Lista / Isca Digital",
+    benefit: "Página clean para coletar e-mails com e-book gratuito",
     icon: <BookOpen className="w-8 h-8" />,
   },
   {
     id: "capture_vsl",
-    name: "Captura VSL", 
+    name: "Captura VSL",
     category: "captura",
-    tag: "Webinars ao vivo",
-    benefit: "Converte 40% dos visitantes em inscritos",
+    tag: "Vídeo / Aula",
+    benefit: "Landing com player de vídeo + formulário simples",
     icon: <PlayCircle className="w-8 h-8" />,
   },
   {
     id: "capture_quiz",
     name: "Captura Quiz",
     category: "captura",
-    tag: "Qualificação automática",
-    benefit: "Segmenta leads por interesse em 90s",
+    tag: "Interativo",
+    benefit: "Quiz gamificado que qualifica leads automaticamente",
     icon: <HelpCircle className="w-8 h-8" />,
   },
   {
@@ -57,41 +55,40 @@ const templates: TemplateCard[] = [
     name: "Captura Cupom",
     category: "captura",
     tag: "E-commerce",
-    benefit: "Gera vendas imediatas com cupom exclusivo",
+    benefit: "Página com contador + cupom exclusivo por tempo limitado",
     icon: <Ticket className="w-8 h-8" />,
   },
-  // VENDAS
   {
     id: "product_vsl",
-    name: "Venda VSL Longa",
+    name: "Produto VSL",
     category: "vendas",
-    tag: "Ticket alto",
-    benefit: "Estrutura comprovada para R$5k+ por venda",
+    tag: "Vídeo de Vendas",
+    benefit: "Página com VSL longa + prova social + FAQ completa",
     icon: <PlayCircle className="w-8 h-8" />,
   },
   {
     id: "product_modern",
-    name: "Venda Moderna",
+    name: "Produto Moderno",
     category: "vendas",
-    tag: "SaaS/Services",
-    benefit: "Checkout otimizado + benefícios visuais",
+    tag: "Design Clean",
+    benefit: "Layout minimalista com cards de benefícios + checkout",
     icon: <LayoutTemplate className="w-8 h-8" />,
   },
   {
     id: "product_classic",
-    name: "Carta de Vendas",
+    name: "Produto Clássico",
     category: "vendas",
-    tag: "Lançamentos",
-    benefit: "Storytelling clássico que vende todo dia",
+    tag: "Carta Longa",
+    benefit: "Estrutura clássica com storytelling + objeções + garantia",
     icon: <BookOpen className="w-8 h-8" />,
   },
-  // FUNIL
+  // FUNIL - SEUS TEMPLATES EXISTENTES
   {
     id: "upsell_offer",
     name: "Upsell Automático",
     category: "funil",
-    tag: "Oferta extra",
-    benefit: "Aumenta ticket médio em 67% pós-venda",
+    tag: "Oferta Extra",
+    benefit: "Página pós-venda que aumenta ticket médio em 67%",
     icon: <ArrowRight className="w-8 h-8" />,
   },
   {
@@ -99,7 +96,7 @@ const templates: TemplateCard[] = [
     name: "Downsell Desconto",
     category: "funil",
     tag: "Recuperação",
-    benefit: "Recupera 23% dos carrinhos abandonados",
+    benefit: "Recupera carrinhos abandonados com oferta irresistível",
     icon: <Ticket className="w-8 h-8" />,
   },
   {
@@ -107,7 +104,7 @@ const templates: TemplateCard[] = [
     name: "Página Obrigado",
     category: "funil",
     tag: "Pós-venda",
-    benefit: "Nutre cliente + coleta feedback",
+    benefit: "Nutre cliente + upsell sutil + coleta feedback",
     icon: <LayoutTemplate className="w-8 h-8" />,
   },
 ];
@@ -122,26 +119,25 @@ const TemplateGallery: React.FC = () => {
   return (
     <>
       <Helmet>
-        <title>Templates que Convertem | LP Lucrativa</title>
+        <title>Seus Templates Profissionais | LP Lucrativa</title>
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-white">
-        {/* HERO */}
         <section className="pt-32 pb-24 px-6 max-w-7xl mx-auto">
           <div className="text-center">
             <div className="inline-flex items-center gap-2 bg-slate-100 text-slate-700 px-4 py-1.5 rounded-full text-sm font-medium mb-8">
               <LayoutTemplate className="w-4 h-4" />
-              +50 templates profissionais inclusos
+              Seus templates reais inclusos
             </div>
             <h1 className="text-5xl md:text-7xl font-black text-slate-900 mb-6 leading-tight">
-              Templates que 
+              Escolha seu 
               <br />
               <span className="bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent">
-                realmente convertem
+                template perfeito
               </span>
             </h1>
             <p className="text-xl md:text-2xl text-slate-600 max-w-2xl mx-auto mb-12 leading-relaxed">
-              Captura → Vendas → Funil completo. Otimizados para máxima conversão.
+              Clique em qualquer template para ver o preview completo com seus dados reais.
             </p>
             <div className="flex flex-col sm:flex-row gap-6 justify-center items-center">
               <Link 
@@ -151,19 +147,12 @@ const TemplateGallery: React.FC = () => {
                 Começar grátis
                 <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
-              <Link 
-                to="#captura"
-                className="border-2 border-slate-200 text-slate-900 hover:border-slate-300 px-10 py-6 rounded-2xl font-bold text-xl hover:bg-slate-50 transition-all duration-300"
-              >
-                Ver templates
-              </Link>
             </div>
           </div>
         </section>
 
-        {/* TEMPLATES - 3 SEÇÕES */}
         <section className="px-6 pb-32 max-w-7xl mx-auto space-y-24">
-          {Object.entries(groupedByCategory).map(([category, categoryTemplates]: [string, TemplateCard[]]) => (
+          {Object.entries(groupedByCategory).map(([category, categoryTemplates]) => (
             <div key={category} id={category}>
               <div className="flex items-center gap-4 mb-16">
                 <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-2xl flex items-center justify-center shadow-lg">
@@ -180,7 +169,7 @@ const TemplateGallery: React.FC = () => {
                     {category === "captura" ? "Captura de leads" : 
                      category === "vendas" ? "Páginas de vendas" : "Funil completo"}
                   </h2>
-                  <p className="text-lg text-slate-600 mt-2">Modelos testados em campanhas reais</p>
+                  <p className="text-lg text-slate-600 mt-2">Seus templates reais otimizados para conversão</p>
                 </div>
               </div>
 
@@ -191,14 +180,12 @@ const TemplateGallery: React.FC = () => {
                     to={`/templates/${tpl.id}`}
                     className="group bg-white border border-slate-200 rounded-2xl p-8 hover:border-slate-300 hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 h-full flex flex-col"
                   >
-                    {/* ICON */}
                     <div className="w-16 h-16 bg-gradient-to-br from-slate-100 to-slate-200 rounded-xl flex items-center justify-center mb-6 group-hover:bg-indigo-100 transition-colors">
                       {React.cloneElement(tpl.icon as React.ReactElement, {
                         className: "w-8 h-8 text-slate-600 group-hover:text-indigo-600 transition-colors"
                       })}
                     </div>
 
-                    {/* CONTENT */}
                     <div className="flex-1 space-y-4">
                       <div className="flex items-center justify-between">
                         <h3 className="font-bold text-xl text-slate-900 leading-tight">{tpl.name}</h3>
@@ -209,13 +196,12 @@ const TemplateGallery: React.FC = () => {
                       <p className="text-slate-600 text-sm leading-relaxed">{tpl.benefit}</p>
                     </div>
 
-                    {/* CTA */}
                     <Button 
                       variant="ghost" 
                       className="w-full justify-start h-12 mt-4 text-slate-700 hover:text-indigo-600 hover:bg-slate-50 group-hover:translate-x-2 transition-all duration-300"
                     >
                       <span className="flex items-center gap-2">
-                        Ver demo
+                        Ver demo completa
                         <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                       </span>
                     </Button>
