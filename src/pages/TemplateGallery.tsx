@@ -38,19 +38,20 @@ const TemplateGallery: React.FC = () => {
                 <div className="h-64 bg-gradient-to-br from-slate-50 to-blue-50 rounded-2xl mb-6 overflow-hidden shadow-xl group-hover:scale-[1.02] transition-transform duration-500">
                   <div className="h-full bg-gradient-to-b from-white via-blue-50 to-indigo-100 p-8 flex flex-col justify-between">
                     <div>
-                      <h3 class="text-2xl font-bold text-slate-900 mb-4">🚀 ProductTemplate</h3>
-                      <p class="text-slate-600 text-sm">Página de captura simples e eficaz</p>
+                      <h3 className="text-2xl font-bold text-slate-900 mb-4">🚀 ProductTemplate</h3>
+                      <p className="text-slate-600 text-sm">Página de captura simples e eficaz</p>
                     </div>
-                    <div class="text-center py-4 bg-white/50 rounded-xl">
-                      <div class="text-4xl font-bold text-indigo-600">R$197</div>
-                      <div class="text-sm text-slate-500">por mês</div>
+                    <div className="text-center py-4 bg-white/50 rounded-xl">
+                      <div className="text-4xl font-bold text-indigo-600">R$197</div>
+                      <div className="text-sm text-slate-500">por mês</div>
                     </div>
                   </div>
                 </div>
-                <div class="space-y-3">
-                  <h4 class="font-bold text-xl text-slate-900">Captura Produto</h4>
-                  <p class="text-slate-600 text-sm">Formulário clean + depoimentos + CTA forte</p>
-                  <a href="/#" class="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all group-hover:-translate-x-2">
+                <div className="space-y-3">
+                  <h4 className="font-bold text-xl text-slate-900">Captura Produto</h4>
+                  <p className="text-slate-600 text-sm">Formulário clean + depoimentos + CTA forte</p>
+                  <a href="#/dashboard/projetos?criar=true&template=ProductTemplate" target="_blank" rel="noopener noreferrer" 
+                     className="inline-flex items-center gap-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all group-hover:-translate-x-2 block">
                     Ver Demo Completa →
                   </a>
                 </div>
@@ -73,7 +74,8 @@ const TemplateGallery: React.FC = () => {
                 <div className="space-y-3">
                   <h4 className="font-bold text-xl text-slate-900">Captura VSL</h4>
                   <p className="text-slate-600 text-sm">Player de vídeo + formulário otimizado</p>
-                  <a href="/#" className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all group-hover:-translate-x-2">
+                  <a href="#/dashboard/projetos?criar=true&template=ProductTemplateVSL" target="_blank" rel="noopener noreferrer" 
+                     className="inline-flex items-center gap-2 bg-gradient-to-r from-purple-600 to-pink-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all group-hover:-translate-x-2 block">
                     Ver Demo Completa →
                   </a>
                 </div>
@@ -108,7 +110,8 @@ const TemplateGallery: React.FC = () => {
                 <div className="space-y-3">
                   <h4 className="font-bold text-xl text-slate-900">Upsell Automático</h4>
                   <p className="text-slate-600 text-sm">Aumenta ticket médio automaticamente</p>
-                  <a href="/#" className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all group-hover:-translate-x-2">
+                  <a href="#/dashboard/projetos?criar=true&template=UpsellPage" target="_blank" rel="noopener noreferrer" 
+                     className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-600 to-green-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all group-hover:-translate-x-2 block">
                     Ver Demo Completa →
                   </a>
                 </div>
@@ -131,7 +134,8 @@ const TemplateGallery: React.FC = () => {
                 <div className="space-y-3">
                   <h4 className="font-bold text-xl text-slate-900">Downsell Desconto</h4>
                   <p className="text-slate-600 text-sm">Oferta de recuperação de carrinho</p>
-                  <a href="/#" className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all group-hover:-translate-x-2">
+                  <a href="#/dashboard/projetos?criar=true&template=DownsellPage" target="_blank" rel="noopener noreferrer" 
+                     className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-600 to-red-600 text-white px-6 py-3 rounded-2xl font-semibold hover:shadow-xl transition-all group-hover:-translate-x-2 block">
                     Ver Demo Completa →
                   </a>
                 </div>
@@ -143,9 +147,9 @@ const TemplateGallery: React.FC = () => {
           <div className="text-center py-24">
             <h2 className="text-4xl font-black text-slate-900 mb-6">Gostou dos templates?</h2>
             <p className="text-xl text-slate-600 mb-8 max-w-2xl mx-auto">Comece agora mesmo criando sua primeira landing page</p>
-            <a href="/#/dashboard/projetos?criar=true" className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-12 py-6 rounded-3xl font-bold text-xl shadow-2xl hover:shadow-3xl hover:-translate-y-2 transition-all duration-300">
-              Criar Minha Landing Page
-              <span>→</span>
+            <a href="#/dashboard/projetos?criar=true" target="_blank" rel="noopener noreferrer" 
+               className="inline-flex items-center gap-3 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-12 py-6 rounded-3xl font-bold text-xl shadow-2xl hover:shadow-3xl hover:-translate-y-2 transition-all duration-300">
+              Criar Minha Landing Page →
             </a>
           </div>
         </section>
