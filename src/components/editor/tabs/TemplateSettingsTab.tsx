@@ -11,6 +11,7 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
   const [funnelEnabled, setFunnelEnabled] = useState(templateData?.funnelEnabled || false);
   const [hasLeadCapture, setHasLeadCapture] = useState(templateData?.hasLeadCapture || false);
   const [leadCaptureTemplate, setLeadCaptureTemplate] = useState(templateData?.leadCaptureTemplate || "");
+  const [salesPageTemplate, setSalesPageTemplate] = useState(templateData?.salesPageTemplate || "");
   const [selectedDestination, setSelectedDestination] = useState(templateData?.selectedDestination || "");
   const [waitTime, setWaitTime] = useState(templateData?.waitTime || 3);
   const [availableProjects, setAvailableProjects] = useState<any[]>([]);
@@ -19,6 +20,7 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
     setFunnelEnabled(templateData?.funnelEnabled || false);
     setHasLeadCapture(templateData?.hasLeadCapture || false);
     setLeadCaptureTemplate(templateData?.leadCaptureTemplate || "");
+    setSalesPageTemplate(templateData?.salesPageTemplate || "");
     setSelectedDestination(templateData?.selectedDestination || "");
     setWaitTime(templateData?.waitTime || 3);
   }, [templateData]);
@@ -106,9 +108,10 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
                   >
                     <SelectTrigger><SelectValue placeholder="Escolha o modelo" /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="form">Formulario Simples</SelectItem>
-                      <SelectItem value="integrar">Integrar Lead</SelectItem>
-                      <SelectItem value="lgpd">LGPD Compliant</SelectItem>
+                      <SelectItem value="LeadCaptureDiscount">Desconto Exclusivo</SelectItem>
+                      <SelectItem value="LeadCaptureEbook">E-book Gratuito</SelectItem>
+                      <SelectItem value="LeadCaptureQuiz">Quiz Interativo</SelectItem>
+                      <SelectItem value="LeadCaptureVSL">Video + Captura</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -116,9 +119,27 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
             )}
 
             <div>
-              <Label className="text-xs text-muted-foreground">
-                {hasLeadCapture ? 'Pagina de Vendas (Apos Captura)' : 'Pagina de Vendas (Destino Direto)'}
-              </Label>
+              <Label className="text-xs text-muted-foreground">Template da Pagina de Vendas</Label>
+              <Select 
+                value={salesPageTemplate} 
+                onValueChange={(value) => {
+                  setSalesPageTemplate(value);
+                  onUpdate({ salesPageTemplate: value });
+                }}
+              >
+                <SelectTrigger><SelectValue placeholder="Selecione o template" /></SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="ProductTemplate">Produto (E-commerce)</SelectItem>
+                  <SelectItem value="ProductTemplateVSL">Produto com VSL</SelectItem>
+                  <SelectItem value="ServiceTemplate">Servico/Consultoria</SelectItem>
+                  <SelectItem value="CourseTemplate">Curso Online</SelectItem>
+                  <SelectItem value="EventTemplate">Evento/Workshop</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label className="text-xs text-muted-foreground">Produto Associado</Label>
               <Select 
                 value={selectedDestination} 
                 onValueChange={(value) => {
@@ -126,10 +147,10 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
                   onUpdate({ selectedDestination: value });
                 }}
               >
-                <SelectTrigger><SelectValue placeholder="Selecione o projeto" /></SelectTrigger>
+                <SelectTrigger><SelectValue placeholder="Selecione o produto" /></SelectTrigger>
                 <SelectContent>
                   {availableProjects.length === 0 ? (
-                    <SelectItem value="none" disabled>Nenhum projeto disponivel</SelectItem>
+                    <SelectItem value="none" disabled>Nenhum produto disponivel</SelectItem>
                   ) : (
                     availableProjects
                       .filter(p => p.type === 'product')
