@@ -15,6 +15,18 @@ import LeadCaptureVSL from '@/components/templates/capture/LeadCaptureVSL';
 import LeadCaptureQuiz from '@/components/templates/capture/LeadCaptureQuiz';
 import LeadCaptureDiscount from '@/components/templates/capture/LeadCaptureDiscount';
 
+// Upsell Templates
+import ProductUpsell from '@/components/templates/upsell/ProductUpsell';
+
+// Downsell Templates
+import GenericDownsell from '@/components/templates/downsell/GenericDownsell';
+
+// Thank You Templates
+import ProductThankYou from '@/components/templates/thankyou/ProductThankYou';
+import ServiceThankYou from '@/components/templates/thankyou/ServiceThankYou';
+import EventThankYou from '@/components/templates/thankyou/EventThankYou';
+import CourseThankYou from '@/components/templates/thankyou/CourseThankYou';
+
 interface EditorPreviewProps {
   templateData: TemplateData;
   niche: ProjectNiche;
@@ -36,7 +48,69 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
       userId: userId || "preview" 
     };
 
-    // Lógica de templates de CAPTURA
+    // Se o funil está ativado, renderiza baseado na configuração
+    if (templateData?.funnel?.enabled) {
+      const funnel = templateData.funnel;
+      
+      // Mapear templates de CAPTURA
+      const captureTemplates: Record<string, React.ComponentType<any>> = {
+        'LeadCaptureDiscount': LeadCaptureDiscount,
+        'LeadCaptureEbook': LeadCaptureEbook,
+        'LeadCaptureQuiz': LeadCaptureQuiz,
+        'LeadCaptureVSL': LeadCaptureVSL,
+      };
+
+      // Mapear templates de VENDAS
+      const salesTemplates: Record<string, React.ComponentType<any>> = {
+        'ProductTemplate': ProductTemplate,
+        'ProductTemplateVSL': ProductTemplateVSL,
+        'ServiceTemplate': ServiceTemplate,
+        'CourseTemplate': CourseTemplate,
+        'EventTemplate': EventTemplate,
+      };
+
+      // Mapear templates de UPSELL
+      const upsellTemplates: Record<string, React.ComponentType<any>> = {
+        'ProductUpsell': ProductUpsell,
+        'ServiceUpsell': ProductUpsell,
+        'EventUpsell': ProductUpsell,
+        'CourseUpsell': ProductUpsell,
+      };
+
+      // Mapear templates de THANK YOU
+      const thankyouTemplates: Record<string, React.ComponentType<any>> = {
+        'ProductThankYou': ProductThankYou,
+        'ServiceThankYou': ServiceThankYou,
+        'EventThankYou': EventThankYou,
+        'CourseThankYou': CourseThankYou,
+      };
+
+      // Renderizar o template de CAPTURA (se configurado)
+      if (funnel.leadCaptureTemplate && captureTemplates[funnel.leadCaptureTemplate]) {
+        const CaptureComponent = captureTemplates[funnel.leadCaptureTemplate];
+        return <CaptureComponent {...commonProps} />;
+      }
+
+      // Renderizar o template de VENDAS (se configurado)
+      if (funnel.salesPageTemplate && salesTemplates[funnel.salesPageTemplate]) {
+        const SalesComponent = salesTemplates[funnel.salesPageTemplate];
+        return <SalesComponent {...commonProps} />;
+      }
+
+      // Renderizar o template de UPSELL (se configurado)
+      if (funnel.upsellTemplate && upsellTemplates[funnel.upsellTemplate]) {
+        const UpsellComponent = upsellTemplates[funnel.upsellTemplate];
+        return <UpsellComponent {...commonProps} />;
+      }
+
+      // Renderizar o template de THANK YOU (se configurado)
+      if (funnel.thankyouTemplate && thankyouTemplates[funnel.thankyouTemplate]) {
+        const ThankYouComponent = thankyouTemplates[funnel.thankyouTemplate];
+        return <ThankYouComponent {...commonProps} />;
+      }
+    }
+
+    // Lógica de templates de CAPTURA (modo antigo)
     if (templateId.startsWith('capture_')) {
       switch (templateId) {
         case 'capture_ebook': return <LeadCaptureEbook {...commonProps} />;
@@ -46,7 +120,7 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
       }
     }
 
-    // Lógica de templates de PRODUTO
+    // Lógica de templates de PRODUTO (modo antigo)
     if (niche === 'product') {
       switch (templateId) {
         case 'product_vsl': return <ProductTemplateVSL {...commonProps} />;
