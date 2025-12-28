@@ -45,12 +45,16 @@ const EditorPreview = ({
   const [currentFunnelStep, setCurrentFunnelStep] = useState<FunnelStep>('sales');
   
   useEffect(() => {
-    if (templateData?.funnel?.enabled) {
-      if (templateData.funnel.hasLeadCapture) {
-        setCurrentFunnelStep('capture');
-      } else {
-        setCurrentFunnelStep('sales');
-      }
+    console.log('🔍 DEBUGANDO FUNIL:', {
+      enabled: templateData?.funnel?.enabled,
+      hasLeadCapture: templateData?.funnel?.hasLeadCapture,
+      leadCaptureTemplate: templateData?.funnel?.leadCaptureTemplate,
+      currentStep: currentFunnelStep
+    });
+    
+    if (templateData?.funnel?.enabled && templateData?.funnel?.hasLeadCapture) {
+      console.log('✅ MUDANDO PARA CAPTURE');
+      setCurrentFunnelStep('capture');
     }
   }, [templateData?.funnel?.enabled, templateData?.funnel?.hasLeadCapture]);
   
@@ -63,10 +67,18 @@ const EditorPreview = ({
       userId: userId || 'preview' 
     };
 
+    console.log('🎯 RENDERIZANDO:', {
+      funnelEnabled: templateData?.funnel?.enabled,
+      currentStep: currentFunnelStep,
+      hasLeadCapture: templateData?.funnel?.hasLeadCapture,
+      leadCaptureTemplate: templateData?.funnel?.leadCaptureTemplate
+    });
+
     if (templateData?.funnel?.enabled) {
       const funnel = templateData.funnel;
       
       if (currentFunnelStep === 'capture' && funnel.hasLeadCapture && funnel.leadCaptureTemplate) {
+        console.log('🎉 RENDERIZANDO CAPTURA:', funnel.leadCaptureTemplate);
         switch (funnel.leadCaptureTemplate) {
           case 'LeadCaptureDiscount':
             return <LeadCaptureDiscount {...commonProps} />;
@@ -82,6 +94,7 @@ const EditorPreview = ({
       }
 
       if (currentFunnelStep === 'sales' && funnel.salesPageTemplate) {
+        console.log('📄 RENDERIZANDO VENDAS:', funnel.salesPageTemplate);
         switch (funnel.salesPageTemplate) {
           case 'ProductTemplate':
             return <ProductTemplate {...commonProps} />;
@@ -121,6 +134,7 @@ const EditorPreview = ({
         }
       }
 
+      console.log('⚠️ NENHUMA CONDIÇÃO ATENDIDA - MOSTRANDO PLACEHOLDER');
       return (
         <div className="flex items-center justify-center h-full p-8">
           <div className="text-center">
