@@ -3,50 +3,21 @@ import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/contexts/AuthContext";
 
-export default function TemplateSettingsTab({ templateData, onUpdate, projectType, projectNiche, projectId }: any) {
-  const { user } = useAuth();
+export default function TemplateSettingsTab({ templateData, onUpdate }: any) {
   const [funnelEnabled, setFunnelEnabled] = useState(templateData?.funnelEnabled || false);
   const [hasLeadCapture, setHasLeadCapture] = useState(templateData?.hasLeadCapture || false);
   const [leadCaptureTemplate, setLeadCaptureTemplate] = useState(templateData?.leadCaptureTemplate || "");
   const [salesPageTemplate, setSalesPageTemplate] = useState(templateData?.salesPageTemplate || "");
-  const [selectedDestination, setSelectedDestination] = useState(templateData?.selectedDestination || "");
   const [waitTime, setWaitTime] = useState(templateData?.waitTime || 3);
-  const [availableProjects, setAvailableProjects] = useState<any[]>([]);
 
   useEffect(() => {
     setFunnelEnabled(templateData?.funnelEnabled || false);
     setHasLeadCapture(templateData?.hasLeadCapture || false);
     setLeadCaptureTemplate(templateData?.leadCaptureTemplate || "");
     setSalesPageTemplate(templateData?.salesPageTemplate || "");
-    setSelectedDestination(templateData?.selectedDestination || "");
     setWaitTime(templateData?.waitTime || 3);
   }, [templateData]);
-
-  useEffect(() => {
-    if (user?.id) {
-      fetchUserProjects();
-    }
-  }, [user?.id]);
-
-  const fetchUserProjects = async () => {
-    try {
-      const { data, error } = await supabase
-        .from('projects')
-        .select('id, name, type, project_type')
-        .eq('user_id', user?.id)
-        .order('created_at', { ascending: false });
-
-      if (error) throw error;
-      
-      console.log('Projetos encontrados:', data);
-      setAvailableProjects(data || []);
-    } catch (error) {
-      console.error('Erro ao buscar projetos:', error);
-    }
-  };
 
   return (
     <div className="space-y-6">
@@ -69,7 +40,7 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
         <div className="flex items-center justify-between">
           <div>
             <h4 className="text-sm font-medium">Funil Conectado</h4>
-            <p className="text-xs text-muted-foreground mt-1">Ative o fluxo completo do funil</p>
+            <p className="text-xs text-muted-foreground mt-1">Redirecione a lead para sua pagina de vendas apos a captura</p>
           </div>
           <Switch 
             checked={funnelEnabled} 
@@ -121,7 +92,7 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
             )}
 
             <div>
-              <Label className="text-xs text-muted-foreground">Template da Pagina de Vendas</Label>
+              <Label className="text-xs text-muted-foreground">Template da Pagina de Vendas (Destino)</Label>
               <Select 
                 value={salesPageTemplate} 
                 onValueChange={(value) => {
@@ -131,42 +102,13 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
               >
                 <SelectTrigger><SelectValue placeholder="Selecione o template" /></SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="ProductTemplate">Produto (E-commerce)</SelectItem>
-                  <SelectItem value="ProductTemplateVSL">Produto com VSL</SelectItem>
+                  <SelectItem value="ProductTemplate">Produto (Padrao)</SelectItem>
+                  <SelectItem value="ProductTemplateVSL">Produto (Com VSL)</SelectItem>
                   <SelectItem value="ServiceTemplate">Servico/Consultoria</SelectItem>
                   <SelectItem value="CourseTemplate">Curso Online</SelectItem>
                   <SelectItem value="EventTemplate">Evento/Workshop</SelectItem>
                 </SelectContent>
               </Select>
-            </div>
-
-            <div>
-              <Label className="text-xs text-muted-foreground">Produto Associado</Label>
-              <Select 
-                value={selectedDestination} 
-                onValueChange={(value) => {
-                  setSelectedDestination(value);
-                  onUpdate({ selectedDestination: value });
-                }}
-              >
-                <SelectTrigger><SelectValue placeholder="Selecione o produto" /></SelectTrigger>
-                <SelectContent>
-                  {availableProjects.length === 0 ? (
-                    <SelectItem value="none" disabled>Nenhum projeto cadastrado</SelectItem>
-                  ) : (
-                    availableProjects.map((project) => (
-                      <SelectItem key={project.id} value={project.id}>
-                        {project.name} ({project.project_type || project.type || 'projeto'})
-                      </SelectItem>
-                    ))
-                  )}
-                </SelectContent>
-              </Select>
-              {availableProjects.length > 0 && (
-                <p className="text-xs text-muted-foreground mt-1">
-                  {availableProjects.length} projeto(s) disponivel(is)
-                </p>
-              )}
             </div>
 
             <div>
