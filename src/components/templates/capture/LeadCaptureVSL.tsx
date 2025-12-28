@@ -1,156 +1,156 @@
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-export default function LeadCaptureVSL({ data }: any) {
+type LeadCaptureVSLProps = {
+  data: Record<string, any>;
+  projectName: string;
+  projectId: string;
+  userId: string;
+  slug: string;
+};
+
+const LeadCaptureVSL: React.FC<LeadCaptureVSLProps> = ({
+  data,
+  projectName,
+  projectId,
+  userId,
+  slug,
+}) => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
-  const [showForm, setShowForm] = useState(false);
+  const [whatsapp, setWhatsapp] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Lead capturado:", { email });
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!name.trim() || !email.trim()) {
+      toast.error("Preencha Nome e E‑mail para continuar.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.from("leads").insert({
+        project_id: projectId,
+        user_id: userId,
+        name,
+        email,
+        whatsapp,
+        source_slug: slug,
+      });
+
+      if (error) {
+        console.error("Erro ao salvar lead:", error);
+        toast.error("Não foi possível salvar seu cadastro. Tente novamente.");
+        return;
+      }
+
+      toast.success("Cadastro realizado com sucesso! Confira seu e‑mail.");
+      // opcional: redirecionar para a VSL de vendas
+      // window.location.href = `/p/${slug}?step=sales`;
+    } catch (err) {
+      console.error("Erro inesperado ao salvar lead:", err);
+      toast.error("Ocorreu um erro inesperado. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  const videoUrl = data.videoUrl || data.vslUrl;
+
   return (
-    <div className="min-h-screen bg-black text-white">
-      
-      <div className="max-w-4xl mx-auto px-4 py-12">
-        
-        <div className="text-center mb-8">
-          <div className="inline-block bg-red-600 text-white px-4 py-2 rounded-full text-sm font-bold mb-4 animate-pulse">
-            🔴 AO VIVO AGORA
-          </div>
-          <h1 className="text-3xl md:text-5xl font-black mb-4 leading-tight">
-            {data?.headline || "Descubra o Metodo Secreto que Esta Mudando Vidas"}
-          </h1>
-          <p className="text-lg md:text-xl text-gray-300 mb-8">
-            {data?.subheadline || "Assista este video ate o final para ter acesso a uma oferta exclusiva"}
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="w-full max-w-6xl bg-card rounded-2xl shadow-lg p-6 md:p-10 grid md:grid-cols-2 gap-8">
+        {/* Coluna esquerda: VSL */}
+        <div className="space-y-4">
+          <p className="inline-block px-4 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary">
+            {data.badge || "AULA GRATUITA • VAGAS LIMITADAS"}
           </p>
-        </div>
 
-        <div className="bg-gray-900 rounded-2xl overflow-hidden shadow-2xl mb-8">
-          <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center relative">
-            
-            <div className="absolute inset-0 flex items-center justify-center">
-              <button 
-                onClick={() => setShowForm(true)}
-                className="bg-red-600 hover:bg-red-700 rounded-full w-24 h-24 flex items-center justify-center shadow-2xl transform hover:scale-110 transition-all duration-200"
-              >
-                <svg className="w-12 h-12 text-white ml-1" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M6.3 2.841A1.5 1.5 0 004 4.11V15.89a1.5 1.5 0 002.3 1.269l9.344-5.89a1.5 1.5 0 000-2.538L6.3 2.84z"/>
-                </svg>
-              </button>
-            </div>
+          <h1 className="text-3xl md:text-4xl font-bold">
+            {data.headline || projectName}
+          </h1>
 
-            <div className="absolute top-4 left-4 bg-red-600 text-white px-3 py-1 rounded-full text-xs font-bold">
-              GRAVACAO EXCLUSIVA
-            </div>
+          <p className="text-muted-foreground">
+            {data.subheadline ||
+              "Assista à apresentação completa e descubra como aplicar essa estratégia ainda hoje."}
+          </p>
 
-            <div className="absolute bottom-4 left-4 bg-black/70 text-white px-3 py-1 rounded text-sm font-mono">
-              38:42
-            </div>
-
-            {data?.videoUrl && (
-              <video 
-                src={data.videoUrl}
-                className="w-full h-full object-cover"
-                controls
-                poster={data?.posterUrl}
+          <div className="mt-4 aspect-video w-full rounded-xl overflow-hidden bg-muted flex items-center justify-center">
+            {videoUrl ? (
+              <iframe
+                src={videoUrl}
+                className="w-full h-full"
+                title={data.videoTitle || "VSL"}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
               />
+            ) : (
+              <div className="w-full h-full flex items-center justify-center text-muted-foreground">
+                Vídeo da VSL não configurado.
+              </div>
             )}
           </div>
         </div>
 
-        {showForm && (
-          <div className="bg-gradient-to-br from-purple-900 to-blue-900 rounded-2xl p-8 md:p-12 shadow-2xl border-2 border-purple-500">
-            
-            <div className="text-center mb-8">
-              <h2 className="text-2xl md:text-4xl font-black mb-3">
-                Liberado! Assista Agora
-              </h2>
-              <p className="text-lg text-gray-300">
-                Digite seu e-mail para liberar o acesso completo ao video
-              </p>
-            </div>
-
-            <div className="bg-white/10 backdrop-blur-sm rounded-xl p-6 mb-6">
-              <p className="text-sm text-gray-300 mb-4 text-center uppercase tracking-wide font-semibold">
-                Ao assistir voce vai descobrir:
-              </p>
-              
-              <ul className="space-y-3 mb-6">
-                <li className="flex items-start">
-                  <span className="text-yellow-400 mr-3 text-xl">►</span>
-                  <span className="text-gray-200">O erro numero 1 que impede seu sucesso</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-yellow-400 mr-3 text-xl">►</span>
-                  <span className="text-gray-200">A estrategia exata usada por profissionais</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-yellow-400 mr-3 text-xl">►</span>
-                  <span className="text-gray-200">Como aplicar isso em menos de 24 horas</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-yellow-400 mr-3 text-xl">►</span>
-                  <span className="text-gray-200">BONUS: Material complementar em PDF</span>
-                </li>
-              </ul>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  type="email"
-                  placeholder="Digite seu melhor e-mail"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-14 text-lg bg-white text-gray-900 border-2 border-white focus:border-yellow-400"
-                  required
-                />
-                <Button 
-                  type="submit"
-                  className="w-full h-16 text-xl font-bold bg-gradient-to-r from-yellow-400 to-orange-500 hover:from-yellow-500 hover:to-orange-600 text-black rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-200"
-                >
-                  LIBERAR ACESSO COMPLETO AGORA
-                </Button>
-              </form>
-            </div>
-
-            <div className="flex items-center justify-center space-x-4 text-sm text-gray-400">
-              <div className="flex items-center space-x-1">
-                <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
-                  <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
-                </svg>
-                <span>100% Seguro</span>
-              </div>
-              <span>•</span>
-              <span>Sem spam</span>
-              <span>•</span>
-              <span>Cancele quando quiser</span>
-            </div>
-
+        {/* Coluna direita: formulário */}
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-1">
+              {data.formTitle || "Inscreva‑se para assistir:"}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {data.formSubtitle ||
+                "Informe seus dados para liberar o acesso imediato à aula completa."}
+            </p>
           </div>
-        )}
 
-        <div className="mt-12 grid md:grid-cols-3 gap-6 text-center">
-          <div className="bg-gray-900 rounded-xl p-6">
-            <div className="text-4xl font-black text-yellow-400 mb-2">15.847</div>
-            <div className="text-gray-400 text-sm">Pessoas ja assistiram</div>
-          </div>
-          <div className="bg-gray-900 rounded-xl p-6">
-            <div className="text-4xl font-black text-yellow-400 mb-2">4.9/5</div>
-            <div className="text-gray-400 text-sm">Avaliacao media</div>
-          </div>
-          <div className="bg-gray-900 rounded-xl p-6">
-            <div className="text-4xl font-black text-yellow-400 mb-2">92%</div>
-            <div className="text-gray-400 text-sm">Taxa de satisfacao</div>
-          </div>
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <Input
+              type="text"
+              placeholder="Digite seu nome completo"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <Input
+              type="email"
+              placeholder="Digite seu melhor e‑mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              type="tel"
+              placeholder="WhatsApp (opcional)"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+            />
+
+            <Button
+              type="submit"
+              className="w-full mt-2"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Enviando..."
+                : data.buttonLabel || "QUERO LIBERAR MEU ACESSO"}
+            </Button>
+          </form>
+
+          <p className="mt-2 text-xs text-muted-foreground">
+            {data.privacyText ||
+              "Sem spam. Você pode sair da lista quando quiser. Seus dados estão protegidos."}
+          </p>
         </div>
-
-        <div className="mt-12 text-center text-gray-500 text-sm">
-          <p>Este video sera removido em breve. Assista enquanto esta disponivel.</p>
-        </div>
-
       </div>
     </div>
   );
-}
+};
+
+export default LeadCaptureVSL;
