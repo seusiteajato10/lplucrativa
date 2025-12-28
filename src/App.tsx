@@ -42,33 +42,38 @@ const App = () => {
             <ProjectsProvider>
               <HashRouter>
                 <Routes>
+                  {/* PÚBLICAS - SEM LOGIN (GALERIA NO TOPO) */}
                   <Route path="/" element={<Index />} />
+                  <Route path="/templates/galeria" element={<TemplateGallery />} />
+                  <Route path="/templates" element={<TemplatePreview />} />
+                  
+                  {/* AUTENTICAÇÃO */}
                   <Route path="/login" element={<Login />} />
                   <Route path="/signup" element={<Signup />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/update-password" element={<UpdatePassword />} />
+                  
+                  {/* DASHBOARD - PROTEGIDO */}
                   <Route path="/dashboard" element={<Dashboard />} />
                   <Route path="/dashboard/projetos" element={<Projetos />} />
                   <Route path="/dashboard/projetos/:id/editar" element={<ProjectEditor />} />
                   <Route path="/dashboard/leads" element={<Leads />} />
-                  <Route
-                    path="/dashboard/configuracoes"
-                    element={<Configuracoes />}
-                  />
+                  <Route path="/dashboard/configuracoes" element={<Configuracoes />} />
+                  
+                  {/* PÚBLICAS */}
                   <Route path="/termos" element={<Termos />} />
                   <Route path="/privacidade" element={<Privacidade />} />
                   <Route path="/pricing" element={<Pricing />} />
                   <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
-                  <Route path="/templates" element={<TemplatePreview />} />
-                  <Route path="/templates/galeria" element={<TemplateGallery />} />
-                  {/* Rotas públicas de projetos */}
+                  
+                  {/* ROTAS PÚBLICAS DE PROJETOS */}
                   <Route path="/p/:slug" element={<PublicLandingPage />} />
                   <Route path="/p/:slug/obrigado" element={<ThankYouPage />} />
                   <Route path="/p/:slug/upsell" element={<UpsellPage />} />
                   <Route path="/p/:slug/downsell" element={<DownsellPage />} />
-                  {/* Rota alias para compatibilidade */}
                   <Route path="/:slug" element={<PublicLandingPage />} />
-                  {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+                  
+                  {/* CATCH-ALL */}
                   <Route path="*" element={<NotFound />} />
                 </Routes>
               </HashRouter>
