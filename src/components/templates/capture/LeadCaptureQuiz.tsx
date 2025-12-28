@@ -1,109 +1,189 @@
-import { useState } from "react";
-import { LeadForm } from "@/components/leads/LeadForm";
 import { Button } from "@/components/ui/button";
-import { Progress } from "@/components/ui/progress";
-import { TemplateData, defaultTemplateData } from "@/types/templateData";
-import { ArrowRight, CheckCircle2 } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { useState } from "react";
 
-interface LeadCaptureQuizProps {
-  data: any;
-  projectId: string;
-  userId: string;
-}
+export default function LeadCaptureQuiz({ data }: any) {
+  const [step, setStep] = useState(1);
+  const [answers, setAnswers] = useState<any>({});
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
 
-const LeadCaptureQuiz = ({ data, projectId, userId }: LeadCaptureQuizProps) => {
-  const templateData: TemplateData = { ...defaultTemplateData, ...data };
-  const config = templateData.leadCapture;
-  const [step, setStep] = useState(0); // 0: Intro, 1..n: Questions, n+1: Form
-  const [answers, setAnswers] = useState<Record<number, number>>({});
+  const questions = [
+    {
+      id: 1,
+      question: data?.question1 || "Qual e seu maior desafio atualmente?",
+      options: [
+        "Falta de tempo",
+        "Falta de conhecimento",
+        "Falta de motivacao",
+        "Falta de recursos"
+      ]
+    },
+    {
+      id: 2,
+      question: data?.question2 || "Qual resultado voce mais deseja alcancar?",
+      options: [
+        "Aumentar minha renda",
+        "Ter mais tempo livre",
+        "Desenvolver novas habilidades",
+        "Conquistar independencia"
+      ]
+    },
+    {
+      id: 3,
+      question: data?.question3 || "Em quanto tempo deseja ver resultados?",
+      options: [
+        "Ate 30 dias",
+        "Ate 90 dias",
+        "Ate 6 meses",
+        "Ate 1 ano"
+      ]
+    }
+  ];
 
-  const totalSteps = config.questions.length + 2; // Intro + Questions + Form
-  const progress = (step / (totalSteps - 1)) * 100;
+  const handleAnswer = (questionId: number, answer: string) => {
+    setAnswers({ ...answers, [questionId]: answer });
+    if (questionId < 3) {
+      setStep(step + 1);
+    } else {
+      setStep(4);
+    }
+  };
 
-  const nextStep = () => setStep(s => s + 1);
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Quiz completo:", { answers, name, email });
+  };
+
+  const progressPercent = (step / 4) * 100;
 
   return (
-    <div className="min-h-screen bg-indigo-50 flex items-center justify-center p-4" style={{ fontFamily: templateData.styles.fontFamily }}>
-      <div className="max-w-2xl w-full bg-white rounded-[40px] shadow-2xl overflow-hidden border border-indigo-100">
+    <div className="min-h-screen bg-gradient-to-br from-teal-400 via-cyan-500 to-blue-600 flex items-center justify-center p-4">
+      <div className="max-w-2xl w-full">
         
-        {/* Progress Bar (only during questions) */}
-        {step > 0 && step <= config.questions.length && (
-          <div className="p-6 pb-0">
-            <div className="flex justify-between text-[10px] font-bold text-indigo-400 uppercase tracking-widest mb-2">
-              <span>Progresso</span>
-              <span>{Math.round(progress)}%</span>
-            </div>
-            <Progress value={progress} className="h-1.5" />
-          </div>
-        )}
-
-        <div className="p-8 md:p-12">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
           
-          {/* STEP 0: Intro */}
-          {step === 0 && (
-            <div className="text-center space-y-6 animate-fade-in">
-              <div className="w-16 h-16 bg-indigo-100 text-indigo-600 rounded-2xl flex items-center justify-center mx-auto mb-6">
-                <ArrowRight className="w-8 h-8" />
-              </div>
-              <h1 className="text-3xl md:text-4xl font-black text-slate-900">{config.quizTitle}</h1>
-              <p className="text-slate-600 text-lg">{config.subheadline}</p>
-              <Button size="xl" className="w-full h-16 text-lg font-bold rounded-2xl shadow-lg" onClick={nextStep}>
-                COMEÇAR QUIZ AGORA
-              </Button>
+          <div className="bg-gradient-to-r from-teal-500 to-blue-500 p-6">
+            <div className="flex items-center justify-between mb-4">
+              <span className="text-white text-sm font-bold">QUIZ PERSONALIZADO</span>
+              <span className="text-white text-sm font-bold">{step}/4</span>
             </div>
-          )}
-
-          {/* STEPS 1..N: Questions */}
-          {step > 0 && step <= config.questions.length && (
-            <div className="space-y-8 animate-slide-in">
-              <h2 className="text-2xl md:text-3xl font-bold text-slate-900 text-center">
-                {config.questions[step-1].question}
-              </h2>
-              <div className="grid gap-4">
-                {config.questions[step-1].options.map((opt, i) => (
-                  <button
-                    key={i}
-                    onClick={() => {
-                      setAnswers({ ...answers, [step-1]: i });
-                      nextStep();
-                    }}
-                    className="flex items-center gap-4 p-6 rounded-2xl border-2 border-slate-100 hover:border-indigo-500 hover:bg-indigo-50 transition-all text-left group"
-                  >
-                    <span className="text-3xl grayscale group-hover:grayscale-0 transition-all">{opt.icon}</span>
-                    <span className="text-lg font-bold text-slate-700">{opt.text}</span>
-                  </button>
-                ))}
-              </div>
-            </div>
-          )}
-
-          {/* FINAL STEP: Form */}
-          {step > config.questions.length && (
-            <div className="text-center space-y-6 animate-fade-in">
-              <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-6">
-                <CheckCircle2 className="w-8 h-8" />
-              </div>
-              <h2 className="text-2xl md:text-3xl font-black text-slate-900">
-                {config.resultHeadline}
-              </h2>
-              <p className="text-slate-600">
-                Digite seu email para receber sua recomendação personalizada baseada nas suas respostas.
-              </p>
-              
-              <LeadForm 
-                projectId={projectId}
-                userId={userId}
-                ctaText="VER MEU RESULTADO"
-                redirectConfig={templateData.redirectAfterCapture}
-                fields={['name', 'email']}
-                className="bg-slate-50 p-6 rounded-3xl"
+            <div className="bg-white/30 rounded-full h-3 overflow-hidden">
+              <div 
+                className="bg-white h-full rounded-full transition-all duration-500 ease-out"
+                style={{ width: `${progressPercent}%` }}
               />
             </div>
-          )}
+          </div>
+
+          <div className="p-8 md:p-12">
+            
+            {step <= 3 && (
+              <div className="space-y-6">
+                <div>
+                  <p className="text-sm text-gray-500 uppercase tracking-wide mb-2">
+                    Pergunta {step} de 3
+                  </p>
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-8">
+                    {questions[step - 1].question}
+                  </h2>
+                </div>
+
+                <div className="grid gap-4">
+                  {questions[step - 1].options.map((option, index) => (
+                    <button
+                      key={index}
+                      onClick={() => handleAnswer(questions[step - 1].id, option)}
+                      className="w-full p-5 text-left border-2 border-gray-200 rounded-xl hover:border-teal-500 hover:bg-teal-50 transition-all duration-200 group"
+                    >
+                      <div className="flex items-center">
+                        <div className="w-8 h-8 rounded-full border-2 border-gray-300 group-hover:border-teal-500 group-hover:bg-teal-500 flex items-center justify-center mr-4 transition-all duration-200">
+                          <span className="text-gray-400 group-hover:text-white font-bold">
+                            {String.fromCharCode(65 + index)}
+                          </span>
+                        </div>
+                        <span className="text-lg text-gray-700 group-hover:text-gray-900 font-medium">
+                          {option}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {step === 4 && (
+              <div className="space-y-6">
+                <div className="text-center mb-8">
+                  <div className="inline-block bg-green-100 rounded-full p-3 mb-4">
+                    <svg className="w-12 h-12 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"/>
+                    </svg>
+                  </div>
+                  <h2 className="text-3xl font-black text-gray-900 mb-3">
+                    Perfeito! Estamos preparando seu resultado...
+                  </h2>
+                  <p className="text-lg text-gray-600">
+                    Baseado nas suas respostas, criamos um plano personalizado para voce
+                  </p>
+                </div>
+
+                <div className="bg-gradient-to-br from-teal-50 to-blue-50 rounded-2xl p-6 mb-6">
+                  <p className="text-sm text-gray-600 mb-4 text-center uppercase tracking-wide font-semibold">
+                    Receba seu resultado personalizado:
+                  </p>
+                  
+                  <ul className="text-left space-y-3 mb-6">
+                    <li className="flex items-start">
+                      <span className="text-teal-500 mr-3 text-xl">✓</span>
+                      <span className="text-gray-800">Analise detalhada do seu perfil</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-teal-500 mr-3 text-xl">✓</span>
+                      <span className="text-gray-800">Plano de acao personalizado</span>
+                    </li>
+                    <li className="flex items-start">
+                      <span className="text-teal-500 mr-3 text-xl">✓</span>
+                      <span className="text-gray-800">Bonus: Guia exclusivo em PDF</span>
+                    </li>
+                  </ul>
+
+                  <form onSubmit={handleSubmit} className="space-y-4">
+                    <Input
+                      type="text"
+                      placeholder="Seu nome"
+                      value={name}
+                      onChange={(e) => setName(e.target.value)}
+                      className="h-14 text-lg border-2 border-gray-300 focus:border-teal-500"
+                      required
+                    />
+                    <Input
+                      type="email"
+                      placeholder="Seu melhor e-mail"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="h-14 text-lg border-2 border-gray-300 focus:border-teal-500"
+                      required
+                    />
+                    <Button 
+                      type="submit"
+                      className="w-full h-16 text-xl font-bold bg-gradient-to-r from-teal-500 to-blue-600 hover:from-teal-600 hover:to-blue-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+                    >
+                      VER MEU RESULTADO AGORA
+                    </Button>
+                  </form>
+                </div>
+
+                <p className="text-xs text-gray-500 text-center">
+                  Seus dados estao protegidos. Sem spam.
+                </p>
+              </div>
+            )}
+
+          </div>
         </div>
+
       </div>
     </div>
   );
-};
-
-export default LeadCaptureQuiz;
+}
