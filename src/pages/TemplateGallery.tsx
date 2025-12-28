@@ -85,7 +85,7 @@ const templates: TemplateCard[] = [
     benefit: "Storytelling clássico que vende todo dia",
     icon: <BookOpen className="w-8 h-8" />,
   },
-  // FUNIL COMPLETO ✅ DOWNSell/UPSell/OBRIGADA
+  // FUNIL
   {
     id: "upsell_offer",
     name: "Upsell Automático",
