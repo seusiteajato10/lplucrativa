@@ -11,9 +11,9 @@ import LgpdTab from './tabs/LgpdTab';
 import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
-import TemplateSettingsTab from './tabs/TemplateSettingsTab'; // Import the component
-import { ProjectNiche, ProjectType } from '@/types/project'; // Importar tipos
-import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card'; // Import CardContent aqui
+import TemplateSettingsTab from './tabs/TemplateSettingsTab';
+import { ProjectNiche, ProjectType } from '@/types/project';
+import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 
 interface EditorSidebarProps {
   templateData: TemplateData;
@@ -89,12 +89,15 @@ const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectT
             <div className="mt-6">
               <Card className="border-none shadow-none bg-transparent">
                 <CardHeader className="p-0 pb-4">
-                  <CardTitle className="text-sm font-bold text-foreground">Configuração do Produto</CardTitle>
+                  <CardTitle className="text-sm font-bold text-foreground">Configuração do Projeto</CardTitle>
                 </CardHeader>
                 <CardContent className="p-0">
                   <TemplateSettingsTab 
                     templateData={{ ...templateData, niche: projectNiche, project_type: projectType }} 
                     onUpdate={onUpdate} 
+                    projectNiche={projectNiche}
+                    projectType={projectType}
+                    currentProjectId={projectId} // Passando o ID do projeto atual
                   />
                 </CardContent>
               </Card>

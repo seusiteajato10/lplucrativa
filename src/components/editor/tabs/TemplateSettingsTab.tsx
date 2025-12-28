@@ -5,24 +5,36 @@ import { Switch } from "@/components/ui/switch";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { TemplateData } from "@/types/templateData";
+import { useProjects } from "@/contexts/ProjectsContext"; // Importar useProjects
+import { ProjectNiche, ProjectType } from "@/types/project"; // Importar tipos
 
 interface TemplateSettingsTabProps {
   templateData: TemplateData;
   onUpdate: (data: Partial<TemplateData>) => void;
-  projectType?: string;
-  projectNiche?: string;
+  projectType?: ProjectType; // Usar o tipo correto
+  projectNiche?: ProjectNiche; // Usar o tipo correto
+  currentProjectId: string; // Adicionar o ID do projeto atual
 }
 
 export default function TemplateSettingsTab({ 
   templateData, 
   onUpdate,
   projectType,
-  projectNiche 
+  projectNiche,
+  currentProjectId
 }: TemplateSettingsTabProps) {
   
+  const { projects } = useProjects(); // Obter todos os projetos do usuário
+
   const isCapturePage = projectType === 'lead_only' || projectType === 'full_funnel';
-  // Correção: 'produto' deve ser 'product' conforme o tipo ProjectNiche
-  const isProductSalesPage = projectNiche === 'product' && projectType !== 'lead_only';
+  const isProductSalesPage = projectNiche === 'product' && projectType !== 'lead_only'; // Corrigido 'produto' para 'product'
+
+  // Filtrar projetos que podem ser páginas de vendas para o funil
+  const salesPages = projects.filter(p => 
+    p.id !== currentProjectId && // Não incluir o próprio projeto atual
+    (p.project_type === 'sales_only' || p.funnel_position === 'sales') && // Apenas páginas de vendas
+    p.niche === projectNiche // Opcional: apenas do mesmo nicho
+  );
 
   return (
     <div className="space-y-4">
@@ -76,7 +88,17 @@ export default function TemplateSettingsTab({
                       <SelectValue placeholder="Escolha a página de vendas" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="produto-exemplo">Produto XX</SelectItem>
+                      {salesPages.length === 0 ? (
+                        <SelectItem value="no-sales-pages" disabled>
+                          Nenhuma página de vendas disponível
+                        </SelectItem>
+                      ) : (
+                        salesPages.map(page => (
+                          <SelectItem key={page.id} value={page.id}>
+                            {page.name}
+                          </SelectItem>
+                        ))
+                      )}
                     </SelectContent>
                   </Select>
                 </div>
