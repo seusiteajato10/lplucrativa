@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { Check, X, Clock } from "lucide-react";
+import { Check, Clock } from "lucide-react";
 
 export default function ProductUpsell({ data }: any) {
   const handleAccept = () => {
@@ -64,50 +64,3 @@ export default function ProductUpsell({ data }: any) {
                       <span className="text-gray-800">Suporte prioritario por 30 dias</span>
                     </li>
                     <li className="flex items-start">
-                      <Check className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
-                      <span className="text-gray-800">Garantia estendida de 60 dias</span>
-                    </li>
-                  </ul>
-                </div>
-
-                <div className="text-center mb-6">
-                  <div className="flex items-center justify-center gap-3 mb-2">
-                    <span className="text-2xl text-gray-400 line-through">R$ {data?.originalPrice || "497,00"}</span>
-                    <span className="text-5xl font-black text-green-600">R$ {data?.upsellPrice || "247,00"}</span>
-                  </div>
-                  <div className="bg-red-100 text-red-700 px-4 py-2 rounded-full inline-block">
-                    <Clock className="w-4 h-4 inline mr-2" />
-                    <span className="font-bold text-sm">Esta oferta expira em 10 minutos</span>
-                  </div>
-                </div>
-
-                <Button 
-                  onClick={handleAccept}
-                  className="w-full h-16 text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg mb-4"
-                >
-                  SIM! QUERO APROVEITAR ESTA OFERTA
-                </Button>
-
-                <button
-                  onClick={handleDecline}
-                  className="w-full text-gray-500 hover:text-gray-700 text-sm underline"
-                >
-                  Nao, obrigado. Quero continuar sem esta oferta
-                </button>
-              </div>
-
-            </div>
-
-            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 text-center">
-              <p className="text-yellow-800 font-semibold">
-                ⚡ Esta oferta especial so aparece UMA VEZ. Nao perca esta oportunidade!
-              </p>
-            </div>
-
-          </div>
-        </div>
-
-      </div>
-    </div>
-  );
-}
