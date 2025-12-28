@@ -1,6 +1,5 @@
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import { useState, useEffect } from "react";
@@ -35,11 +34,8 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
   return (
     <div className="space-y-6">
       
-      {/* TEMPLATE DA PÁGINA */}
       <div className="space-y-3">
-        <h4 className="text-sm font-medium flex items-center gap-2">
-          📄 Template da Página
-        </h4>
+        <h4 className="text-sm font-medium">📄 Template da Página</h4>
         <div>
           <Label className="text-xs text-muted-foreground">Escolha o Template</Label>
           <Select defaultValue="standard">
@@ -54,11 +50,16 @@ export default function TemplateSettingsTab({ templateData, onUpdate, projectTyp
         </div>
       </div>
 
-      {/* FUNIL CONECTADO */}
       <div className="space-y-3 pt-3 border-t">
         <div className="flex items-center justify-between">
           <div>
-            <h4 className="text-sm font-medium flex items-center gap-2">
-              🔄 Funil Conectado
-            </h4>
-            <p
+            <h4 className="text-sm font-medium">🔄 Funil Conectado</h4>
+            <p className="text-xs text-muted-foreground mt-1">
+              Redirecione a lead para sua página de vendas imediatamente após a captura.
+            </p>
+          </div>
+          <Switch checked={funnelEnabled} onCheckedChange={handleFunnelToggle} />
+        </div>
+
+        {funnelEnabled && (
+          <div className="space-y-
