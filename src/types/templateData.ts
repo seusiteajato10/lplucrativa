@@ -207,9 +207,19 @@ export interface LeadCaptureConfig {
 // Configurações do Funil
 export interface FunnelConfig {
   enabled: boolean;
+  
+  // Controles de ativação de cada etapa
+  hasLeadCapture: boolean;
+  hasSales: boolean;
+  hasUpsell: boolean;
+  hasDownsell: boolean;
+  hasThankYou: boolean;
+  
+  // Templates selecionados
   leadCaptureTemplate?: string;
   salesPageTemplate?: string;
   upsellTemplate?: string;
+  downsellTemplate?: string;
   thankyouTemplate?: string;
   
   // Captura
@@ -449,9 +459,15 @@ export const defaultTemplateData: TemplateData = {
   // Default Funnel Config
   funnel: {
     enabled: false,
+    hasLeadCapture: false,
+    hasSales: true,
+    hasUpsell: false,
+    hasDownsell: false,
+    hasThankYou: false,
     leadCaptureTemplate: 'LeadCaptureDiscount',
     salesPageTemplate: 'ProductTemplate',
     upsellTemplate: 'ProductUpsell',
+    downsellTemplate: 'GenericDownsell',
     thankyouTemplate: 'ProductThankYou',
     capture_title: 'Ganhe 50% de Desconto Agora!',
     capture_subtitle: 'Preencha o formulário e receba sua oferta exclusiva',
