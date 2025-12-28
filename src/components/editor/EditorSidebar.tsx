@@ -11,8 +11,9 @@ import LgpdTab from './tabs/LgpdTab';
 import ThankYouTab from './tabs/ThankYouTab';
 import UpsellTab from './tabs/UpsellTab';
 import DownsellTab from './tabs/DownsellTab';
-import TemplateSettingsTab from './tabs/TemplateSettingsTab'; // Este componente agora será renderizado fora dos TabsContent
+import TemplateSettingsTab from './tabs/TemplateSettingsTab'; // Import the component
 import { ProjectNiche, ProjectType } from '@/types/project'; // Importar tipos
+import { Card, CardHeader, CardTitle } from '@/components/ui/card'; // Import Card components for the header
 
 interface EditorSidebarProps {
   templateData: TemplateData;
@@ -84,12 +85,19 @@ const EditorSidebar = ({ templateData, projectId, userId, projectNiche, projectT
               <DownsellTab templateData={templateData} onUpdate={onUpdate} />
             </TabsContent>
             
-            {/* Renderiza TemplateSettingsTab como um componente separado, fora dos TabsContent */}
+            {/* "Configuração do Produto" header and its content */}
             <div className="mt-6">
-              <TemplateSettingsTab 
-                templateData={{ ...templateData, niche: projectNiche, project_type: projectType }} 
-                onUpdate={onUpdate} 
-              />
+              <Card className="border-none shadow-none bg-transparent">
+                <CardHeader className="p-0 pb-4">
+                  <CardTitle className="text-sm font-bold text-foreground">Configuração do Produto</CardTitle>
+                </CardHeader>
+                <CardContent className="p-0">
+                  <TemplateSettingsTab 
+                    templateData={{ ...templateData, niche: projectNiche, project_type: projectType }} 
+                    onUpdate={onUpdate} 
+                  />
+                </CardContent>
+              </Card>
             </div>
           </div>
         </div>
