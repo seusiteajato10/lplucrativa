@@ -1,7 +1,7 @@
 import { Helmet } from "react-helmet-async";
 import DashboardLayout from "@/components/layout/DashboardLayout";
 import { Button } from "@/components/ui/button";
-import { Plus, FolderOpen, Users, CreditCard } from "lucide-react";
+import { Plus, FolderOpen, Users, CreditCard, LayoutTemplate } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useProjects } from "@/contexts/ProjectsContext";
 
@@ -70,9 +70,9 @@ const Dashboard = () => {
           ))}
         </div>
 
-        {/* Create Project CTA */}
+        {/* Create Project CTA - ATUALIZADO COM BOTÃO TEMPLATES */}
         <div className="bg-gradient-to-r from-primary/10 via-accent/10 to-primary/10 rounded-xl p-8 border border-border">
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+          <div className="flex flex-col gap-6">
             <div>
               <h2 className="text-xl font-semibold text-foreground mb-2">
                 Pronto para criar sua próxima landing page?
@@ -81,12 +81,27 @@ const Dashboard = () => {
                 Escolha um template e personalize em minutos. Sem necessidade de conhecimento técnico.
               </p>
             </div>
-            <Button variant="accent" size="lg" className="gap-2 shrink-0" asChild>
-              <Link to="/dashboard/projetos?criar=true">
-                <Plus className="w-5 h-5" />
-                Criar Novo Projeto
+            
+            {/* Botões lado a lado */}
+            <div className="flex flex-col sm:flex-row gap-4">
+              <Button variant="accent" size="lg" className="gap-2 flex-1" asChild>
+                <Link to="/dashboard/projetos?criar=true">
+                  <Plus className="w-5 h-5" />
+                  Criar Novo Projeto
+                </Link>
+              </Button>
+              
+              {/* NOVO: Botão Ver Templates */}
+              <Link
+                to="/templates/galeria"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 px-6 py-3 text-sm font-semibold text-primary bg-white dark:bg-gray-800 border-2 border-primary rounded-lg hover:bg-primary hover:text-white transition-all duration-300 shadow-md hover:shadow-lg flex-1"
+              >
+                <LayoutTemplate className="w-4 h-4" />
+                Ver Todos os Templates
               </Link>
-            </Button>
+            </div>
           </div>
         </div>
       </DashboardLayout>
