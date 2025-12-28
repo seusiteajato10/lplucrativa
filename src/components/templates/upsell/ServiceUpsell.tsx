@@ -1,124 +1,82 @@
-import { Star, ArrowRight, Clock, CheckCircle, X, Briefcase } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { UpsellPageConfig, TemplateStyles } from "@/types/templateData";
+import { Check, Clock, Zap } from "lucide-react";
 
-interface ServiceUpsellProps {
-  config?: UpsellPageConfig;
-  styles?: TemplateStyles;
-  onAccept?: () => void;
-  onDecline?: () => void;
-}
-
-const ServiceUpsell = ({
-  config,
-  styles,
-  onAccept,
-  onDecline,
-}: ServiceUpsellProps) => {
-  const primaryColor = styles?.primaryColor || "#3B82F6";
-
+export default function ServiceUpsell({ data }: any) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background flex items-center justify-center p-4">
-      <Card className="max-w-2xl w-full border-2 shadow-2xl overflow-hidden" style={{ borderColor: primaryColor }}>
-        {/* Urgency Banner */}
-        <div 
-          className="py-3 px-6 text-center text-white font-bold flex items-center justify-center gap-2"
-          style={{ backgroundColor: primaryColor }}
-        >
-          <Star className="w-5 h-5" />
-          <span>UPGRADE EXCLUSIVO - VAGAS LIMITADAS</span>
-          <Star className="w-5 h-5" />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-slate-900 text-white flex items-center justify-center p-4">
+      <div className="max-w-3xl w-full">
         
-        <CardContent className="p-8">
-          {/* Timer */}
-          <div className="flex items-center justify-center gap-2 text-orange-500 mb-6">
-            <Clock className="w-5 h-5 animate-pulse" />
-            <span className="font-semibold">Apenas 3 vagas restantes para hoje!</span>
+        <div className="text-center mb-8">
+          <div className="inline-block bg-yellow-400 text-black px-6 py-2 rounded-full font-black text-sm mb-6 animate-pulse">
+            UPGRADE DISPONIVEL
           </div>
-
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
-            {config?.title || "Quer Atendimento VIP?"}
+          <h1 className="text-4xl md:text-5xl font-black mb-4">
+            Parabens! Voce Qualificou Para Nosso Plano VIP
           </h1>
-          <p className="text-xl text-center text-muted-foreground mb-8">
-            {config?.subtitle || "Pule a fila e receba atendimento prioritário com consultor sênior"}
+          <p className="text-xl text-gray-300">
+            Adicione suporte prioritario e consultoria personalizada por apenas +R$ 97/mes
           </p>
+        </div>
 
-          {/* Service Card */}
-          <div className="bg-muted/30 rounded-xl p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              <div 
-                className="w-32 h-32 rounded-full flex items-center justify-center"
-                style={{ backgroundColor: `${primaryColor}20` }}
-              >
-                <Briefcase className="w-12 h-12" style={{ color: primaryColor }} />
+        <div className="bg-white/10 backdrop-blur-lg rounded-3xl p-8 md:p-12 border border-white/20">
+          
+          <div className="grid md:grid-cols-2 gap-8 mb-8">
+            
+            <div>
+              <h3 className="text-2xl font-bold mb-6 flex items-center">
+                <Zap className="w-6 h-6 text-yellow-400 mr-2" />
+                Plano VIP Inclui:
+              </h3>
+              <ul className="space-y-4">
+                {[
+                  "Suporte prioritario 24/7",
+                  "Consultoria mensal de 1 hora",
+                  "Acesso a ferramentas premium",
+                  "Relatorios personalizados",
+                  "Atendimento via WhatsApp"
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start">
+                    <Check className="w-6 h-6 text-green-400 mr-3 mt-1 flex-shrink-0" />
+                    <span className="text-lg">{item}</span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            <div>
+              <div className="bg-gradient-to-br from-yellow-400 to-orange-500 text-black rounded-2xl p-8 text-center mb-6">
+                <p className="text-sm font-bold mb-2">DE R$ 297/MES POR APENAS</p>
+                <div className="text-6xl font-black mb-2">R$ 97</div>
+                <p className="text-sm">/mes durante 6 meses</p>
               </div>
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-bold text-foreground mb-2">
-                  {config?.productName || "Consultoria VIP"}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  {config?.description || "Atendimento em até 2 horas com nosso melhor especialista."}
-                </p>
-                <div className="flex items-center justify-center md:justify-start gap-4">
-                  <span className="text-2xl text-muted-foreground line-through">
-                    {config?.originalPrice || "R$ 497"}
-                  </span>
-                  <span className="text-4xl font-bold" style={{ color: primaryColor }}>
-                    {config?.discountPrice || config?.price || "R$ 297"}
-                  </span>
-                </div>
+
+              <Button 
+                className="w-full h-16 text-xl font-bold bg-green-500 hover:bg-green-600 text-white rounded-xl shadow-2xl mb-4"
+              >
+                ADICIONAR PLANO VIP AGORA
+              </Button>
+
+              <button className="w-full text-gray-400 hover:text-white text-sm underline">
+                Continuar com o plano basico
+              </button>
+
+              <div className="mt-6 flex items-center justify-center space-x-2 text-sm text-gray-400">
+                <Clock className="w-4 h-4" />
+                <span>Oferta valida apenas nesta pagina</span>
               </div>
             </div>
+
           </div>
 
-          {/* Benefits */}
-          <div className="grid md:grid-cols-2 gap-3 mb-8">
-            {(config?.benefits || [
-              "Atendimento em até 2h",
-              "Consultor sênior dedicado",
-              "Relatório personalizado",
-              "Suporte prioritário 30 dias"
-            ]).map((benefit, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 shrink-0" style={{ color: primaryColor }} />
-                <span className="text-muted-foreground">{benefit}</span>
-              </div>
-            ))}
+          <div className="bg-red-500/20 border border-red-500 rounded-xl p-4 text-center">
+            <p className="font-bold">
+              ⚠️ Esta oferta especial nao estara disponivel depois desta pagina
+            </p>
           </div>
 
-          {/* CTA Buttons */}
-          <div className="space-y-4">
-            <Button 
-              size="lg" 
-              className="w-full text-lg py-6 text-white font-bold"
-              style={{ backgroundColor: primaryColor }}
-              onClick={onAccept}
-            >
-              {config?.ctaAcceptText || "SIM! QUERO ATENDIMENTO VIP"}
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="lg"
-              className="w-full text-muted-foreground hover:text-foreground"
-              onClick={onDecline}
-            >
-              <X className="w-4 h-4 mr-2" />
-              {config?.ctaDeclineText || "Não, prefiro aguardar na fila normal."}
-            </Button>
-          </div>
+        </div>
 
-          {/* Guarantee */}
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            🔒 Satisfação garantida ou seu dinheiro de volta
-          </p>
-        </CardContent>
-      </Card>
+      </div>
     </div>
   );
-};
-
-export default ServiceUpsell;
+}
