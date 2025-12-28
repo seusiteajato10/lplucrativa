@@ -24,6 +24,7 @@ import ThankYouPage from "./pages/ThankYouPage";
 import UpsellPage from "./pages/UpsellPage";
 import DownsellPage from "./pages/DownsellPage";
 import TemplatePreview from "./pages/TemplatePreview";
+import TemplateGallery from "./pages/TemplateGallery";
 import Admin from "./pages/Admin";
 import { AdminRoute } from "./components/admin/AdminRoute";
 import NotFound from "./pages/NotFound";
@@ -59,6 +60,7 @@ const App = () => {
                   <Route path="/pricing" element={<Pricing />} />
                   <Route path="/admin" element={<AdminRoute><Admin /></AdminRoute>} />
                   <Route path="/templates" element={<TemplatePreview />} />
+                  <Route path="/templates/galeria" element={<TemplateGallery />} />
                   {/* Rotas públicas de projetos */}
                   <Route path="/p/:slug" element={<PublicLandingPage />} />
                   <Route path="/p/:slug/obrigado" element={<ThankYouPage />} />
