@@ -1,193 +1,140 @@
-import { CheckCircle, Package, ArrowRight, Gift, Clock, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ThankYouPageConfig, UpsellPageConfig, TemplateStyles } from "@/types/templateData";
+import { Check, Download, Mail, Package, Clock } from "lucide-react";
 
-interface ProductThankYouProps {
-  config?: ThankYouPageConfig;
-  upsellConfig?: UpsellPageConfig;
-  styles?: TemplateStyles;
-  leadName?: string;
-  leadEmail?: string;
-  onUpsellClick?: () => void;
-  showCheckoutButton?: boolean;
-  checkoutButtonText?: string;
-  onCheckoutClick?: () => void;
-}
-
-const ProductThankYou = ({
-  config,
-  upsellConfig,
-  styles,
-  leadName,
-  leadEmail,
-  onUpsellClick,
-  showCheckoutButton,
-  checkoutButtonText,
-  onCheckoutClick,
-}: ProductThankYouProps) => {
-  const primaryColor = styles?.primaryColor || "#8B5CF6";
-  const secondaryColor = styles?.secondaryColor || "#A78BFA";
-
+export default function ProductThankYou({ data }: any) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Success Header */}
-      <div 
-        className="py-16 text-center"
-        style={{ background: `linear-gradient(135deg, ${primaryColor}15, ${secondaryColor}10)` }}
-      >
-        <div className="container mx-auto px-4">
-          <div 
-            className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ backgroundColor: `${primaryColor}20` }}
-          >
-            <CheckCircle className="w-10 h-10" style={{ color: primaryColor }} />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            {config?.title || "Parabéns! Compra Confirmada!"}
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {config?.subtitle || "Seu pedido foi processado com sucesso. Você receberá um email com os detalhes."}
-          </p>
-          {leadName && (
-            <p className="text-lg text-muted-foreground mt-4">
-              Olá, <span className="font-semibold text-foreground">{leadName}</span>!
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-emerald-100 flex items-center justify-center p-4">
+      <div className="max-w-4xl w-full">
+        
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-12 px-8 text-center">
+            <div className="inline-block bg-white rounded-full p-4 mb-6">
+              <Check className="w-16 h-16 text-green-500" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black mb-4">
+              Parabens! Sua Compra Foi Confirmada
+            </h1>
+            <p className="text-xl text-green-100">
+              Pedido #{data?.orderId || "12345"} processado com sucesso
             </p>
-          )}
-        </div>
-      </div>
+          </div>
 
-      {/* Order Details */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto space-y-8">
-          {/* Checkout Button (for after_lead type) */}
-          {showCheckoutButton && (
-            <Card 
-              className="border-2 shadow-xl"
-              style={{ borderColor: primaryColor }}
-            >
-              <CardContent className="p-8 text-center">
-                <ShoppingCart className="w-12 h-12 mx-auto mb-4" style={{ color: primaryColor }} />
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  Finalize sua compra agora!
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  Clique no botão abaixo para garantir seu produto com condições especiais.
-                </p>
-                <Button 
-                  size="lg" 
-                  className="text-white text-lg px-8 py-6"
-                  style={{ backgroundColor: primaryColor }}
-                  onClick={onCheckoutClick}
-                >
-                  {checkoutButtonText || "Comprar Agora"}
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+          <div className="p-8 md:p-12">
+            
+            <div className="bg-blue-50 border-2 border-blue-300 rounded-xl p-6 mb-8">
+              <div className="flex items-start space-x-4">
+                <Mail className="w-6 h-6 text-blue-600 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-bold text-blue-900 mb-2">Enviamos um e-mail de confirmacao</h3>
+                  <p className="text-blue-700 text-sm">
+                    Verifique sua caixa de entrada em <strong>{data?.email || "seu@email.com"}</strong>
+                    <br />
+                    (Se nao encontrar, verifique a pasta de spam)
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          {/* What happens next */}
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
-                <Package className="w-6 h-6" style={{ color: primaryColor }} />
-                Próximos Passos
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
+              
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <Package className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">Pedido Confirmado</h3>
+                <p className="text-sm text-gray-600">Seu pagamento foi aprovado</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <Download className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">Acesso Liberado</h3>
+                <p className="text-sm text-gray-600">Ja pode acessar o produto</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <Clock className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">Suporte Disponivel</h3>
+                <p className="text-sm text-gray-600">Estamos aqui para ajudar</p>
+              </div>
+
+            </div>
+
+            <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-8 mb-8">
+              <h2 className="text-2xl font-black text-gray-900 mb-6 text-center">
+                Proximos Passos:
               </h2>
+              
               <div className="space-y-4">
-                {(config?.nextSteps || [
-                  "Verifique seu email para os detalhes do pedido",
-                  "Acompanhe o status da entrega pelo link enviado",
-                  "Entre em contato caso tenha dúvidas"
-                ]).map((step, index) => (
-                  <div key={index} className="flex items-start gap-4">
-                    <div 
-                      className="w-8 h-8 rounded-full flex items-center justify-center text-white font-bold shrink-0"
-                      style={{ backgroundColor: primaryColor }}
-                    >
-                      {index + 1}
-                    </div>
-                    <p className="text-muted-foreground pt-1">{step}</p>
+                <div className="flex items-start space-x-4">
+                  <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    1
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Verifique seu e-mail</h3>
+                    <p className="text-gray-600 text-sm">
+                      Enviamos todas as informacoes de acesso e login
+                    </p>
+                  </div>
+                </div>
 
-          {/* Upsell Offer */}
-          {upsellConfig?.enabled && !showCheckoutButton && (
-            <Card 
-              className="border-2 shadow-xl overflow-hidden"
-              style={{ borderColor: primaryColor }}
-            >
-              <div 
-                className="py-3 px-6 text-center text-white font-semibold"
-                style={{ backgroundColor: primaryColor }}
+                <div className="flex items-start space-x-4">
+                  <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Acesse a area de membros</h3>
+                    <p className="text-gray-600 text-sm">
+                      Clique no botao abaixo para acessar agora mesmo
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="bg-green-500 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    3
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Comece agora</h3>
+                    <p className="text-gray-600 text-sm">
+                      Aproveite todo o conteudo disponivel
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-4">
+              <Button 
+                className="w-full h-16 text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg"
               >
-                <Gift className="w-5 h-5 inline-block mr-2" />
-                OFERTA EXCLUSIVA - APENAS AGORA
-              </div>
-              <CardContent className="p-8">
-                <div className="flex items-center gap-2 text-orange-500 mb-4">
-                  <Clock className="w-5 h-5" />
-                  <span className="font-semibold">Oferta expira em 15 minutos!</span>
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  {upsellConfig.title || "Aproveite e leve também!"}
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  {upsellConfig.description || "Complemento perfeito para sua compra com desconto exclusivo."}
-                </p>
-                <div className="flex items-center gap-4 mb-6">
-                  {upsellConfig.originalPrice && (
-                    <span className="text-xl text-muted-foreground line-through">
-                      R$ {upsellConfig.originalPrice}
-                    </span>
-                  )}
-                  <span className="text-3xl font-bold" style={{ color: primaryColor }}>
-                    R$ {upsellConfig.price || "97"}
-                  </span>
-                  {upsellConfig.discount && (
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-                      -{upsellConfig.discount}%
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    size="lg" 
-                    className="flex-1 text-white"
-                    style={{ backgroundColor: primaryColor }}
-                    onClick={onUpsellClick}
-                  >
-                    SIM, QUERO APROVEITAR!
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="lg"
-                    className="text-muted-foreground"
-                  >
-                    Não, obrigado
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+                ACESSAR AREA DE MEMBROS AGORA
+              </Button>
 
-          {/* Support Info */}
-          <div className="text-center text-muted-foreground">
-            <p>Dúvidas? Entre em contato conosco</p>
-            {leadEmail && (
-              <p className="text-sm mt-2">
-                Enviamos os detalhes para: <span className="font-medium">{leadEmail}</span>
+              <Button 
+                variant="outline"
+                className="w-full h-14 text-lg font-bold border-2 rounded-xl"
+              >
+                BAIXAR MATERIAIS COMPLEMENTARES
+              </Button>
+            </div>
+
+            <div className="mt-8 text-center">
+              <p className="text-gray-600 text-sm mb-4">
+                Precisa de ajuda? Entre em contato conosco
               </p>
-            )}
+              <div className="flex justify-center space-x-6 text-sm">
+                <a href="mailto:suporte@email.com" className="text-blue-600 hover:underline">
+                  suporte@email.com
+                </a>
+                <a href="https://wa.me/5511999999999" className="text-green-600 hover:underline">
+                  WhatsApp
+                </a>
+              </div>
+            </div>
+
           </div>
         </div>
+
       </div>
     </div>
   );
-};
-
-export default ProductThankYou;
+}
