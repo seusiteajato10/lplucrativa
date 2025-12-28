@@ -1,132 +1,113 @@
-import { Gift, ArrowRight, Clock, CheckCircle, X, ShoppingBag } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { UpsellPageConfig, TemplateStyles } from "@/types/templateData";
+import { Check, X, Clock } from "lucide-react";
 
-interface ProductUpsellProps {
-  config?: UpsellPageConfig;
-  styles?: TemplateStyles;
-  onAccept?: () => void;
-  onDecline?: () => void;
-}
+export default function ProductUpsell({ data }: any) {
+  const handleAccept = () => {
+    console.log("Upsell aceito");
+  };
 
-const ProductUpsell = ({
-  config,
-  styles,
-  onAccept,
-  onDecline,
-}: ProductUpsellProps) => {
-  const primaryColor = styles?.primaryColor || "#8B5CF6";
+  const handleDecline = () => {
+    console.log("Upsell recusado");
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-background flex items-center justify-center p-4">
-      <Card className="max-w-2xl w-full border-2 shadow-2xl overflow-hidden" style={{ borderColor: primaryColor }}>
-        {/* Urgency Banner */}
-        <div 
-          className="py-3 px-6 text-center text-white font-bold flex items-center justify-center gap-2"
-          style={{ backgroundColor: primaryColor }}
-        >
-          <Gift className="w-5 h-5" />
-          <span>OFERTA EXCLUSIVA - APENAS PARA VOCÊ</span>
-          <Gift className="w-5 h-5" />
-        </div>
+    <div className="min-h-screen bg-gradient-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
+      <div className="max-w-4xl w-full">
         
-        <CardContent className="p-8">
-          {/* Timer */}
-          <div className="flex items-center justify-center gap-2 text-orange-500 mb-6">
-            <Clock className="w-5 h-5 animate-pulse" />
-            <span className="font-semibold">Esta oferta expira em 15:00 minutos</span>
-          </div>
-
-          {/* Title */}
-          <h1 className="text-3xl md:text-4xl font-bold text-center text-foreground mb-4">
-            {config?.title || "Espere! Você Ganhou um Desconto Especial!"}
-          </h1>
-          <p className="text-xl text-center text-muted-foreground mb-8">
-            {config?.subtitle || "Adicione este produto complementar ao seu pedido com 40% OFF"}
-          </p>
-
-          {/* Product Card */}
-          <div className="bg-muted/30 rounded-xl p-6 mb-8">
-            <div className="flex flex-col md:flex-row gap-6 items-center">
-              {config?.productImage ? (
-                <img 
-                  src={config.productImage} 
-                  alt={config.productName}
-                  className="w-40 h-40 object-cover rounded-lg"
-                />
-              ) : (
-                <div 
-                  className="w-40 h-40 rounded-lg flex items-center justify-center"
-                  style={{ backgroundColor: `${primaryColor}20` }}
-                >
-                  <ShoppingBag className="w-16 h-16" style={{ color: primaryColor }} />
-                </div>
-              )}
-              <div className="flex-1 text-center md:text-left">
-                <h3 className="text-2xl font-bold text-foreground mb-2">
-                  {config?.productName || "Kit Completo Premium"}
-                </h3>
-                <p className="text-muted-foreground mb-4">
-                  {config?.description || "O complemento perfeito para maximizar seus resultados."}
-                </p>
-                <div className="flex items-center justify-center md:justify-start gap-4">
-                  <span className="text-2xl text-muted-foreground line-through">
-                    {config?.originalPrice || "R$ 297"}
-                  </span>
-                  <span className="text-4xl font-bold" style={{ color: primaryColor }}>
-                    {config?.discountPrice || config?.price || "R$ 177"}
-                  </span>
-                </div>
-              </div>
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          
+          <div className="bg-gradient-to-r from-green-500 to-emerald-600 text-white py-8 px-8 text-center">
+            <div className="inline-block bg-white text-green-600 px-4 py-1 rounded-full text-sm font-bold mb-4 animate-pulse">
+              OFERTA ESPECIAL - SO AGORA
             </div>
+            <h1 className="text-3xl md:text-5xl font-black mb-3">
+              Espere! Temos Uma Oferta Exclusiva Para Voce
+            </h1>
+            <p className="text-xl text-green-100">
+              Aproveite esta oferta por apenas <strong>50% DO VALOR</strong> antes de continuar
+            </p>
           </div>
 
-          {/* Benefits */}
-          <div className="grid md:grid-cols-2 gap-3 mb-8">
-            {(config?.benefits || [
-              "Acesso imediato",
-              "Suporte prioritário",
-              "Atualizações gratuitas",
-              "Garantia estendida"
-            ]).map((benefit, i) => (
-              <div key={i} className="flex items-center gap-3">
-                <CheckCircle className="w-5 h-5 shrink-0" style={{ color: primaryColor }} />
-                <span className="text-muted-foreground">{benefit}</span>
+          <div className="p-8 md:p-12">
+            
+            <div className="grid md:grid-cols-2 gap-8 mb-8">
+              
+              <div>
+                <div className="bg-gray-100 rounded-2xl p-6 h-64 flex items-center justify-center mb-4">
+                  <div className="text-6xl">📦</div>
+                </div>
+                <h2 className="text-2xl font-black text-gray-900 mb-3">
+                  {data?.productName || "Produto Premium"}
+                </h2>
+                <p className="text-gray-600 leading-relaxed mb-4">
+                  {data?.description || "Complemente sua compra com este produto premium que vai potencializar seus resultados"}
+                </p>
               </div>
-            ))}
-          </div>
 
-          {/* CTA Buttons */}
-          <div className="space-y-4">
-            <Button 
-              size="lg" 
-              className="w-full text-lg py-6 text-white font-bold"
-              style={{ backgroundColor: primaryColor }}
-              onClick={onAccept}
-            >
-              {config?.ctaAcceptText || "SIM! QUERO APROVEITAR ESTA OFERTA"}
-              <ArrowRight className="w-5 h-5 ml-2" />
-            </Button>
-            <Button 
-              variant="ghost" 
-              size="lg"
-              className="w-full text-muted-foreground hover:text-foreground"
-              onClick={onDecline}
-            >
-              <X className="w-4 h-4 mr-2" />
-              {config?.ctaDeclineText || "Não, obrigado. Quero continuar sem o desconto."}
-            </Button>
-          </div>
+              <div>
+                <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-2xl p-6 mb-6">
+                  <p className="text-sm text-gray-600 mb-4 uppercase tracking-wide font-semibold">
+                    O que voce vai ganhar:
+                  </p>
+                  
+                  <ul className="space-y-3 mb-6">
+                    <li className="flex items-start">
+                      <Check className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                      <span className="text-gray-800">Acesso imediato ao produto completo</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                      <span className="text-gray-800">Bonus exclusivos (Valor R$ 297)</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                      <span className="text-gray-800">Suporte prioritario por 30 dias</span>
+                    </li>
+                    <li className="flex items-start">
+                      <Check className="w-5 h-5 text-green-500 mr-3 mt-1 flex-shrink-0" />
+                      <span className="text-gray-800">Garantia estendida de 60 dias</span>
+                    </li>
+                  </ul>
+                </div>
 
-          {/* Guarantee */}
-          <p className="text-center text-sm text-muted-foreground mt-6">
-            🔒 Compra 100% segura • Garantia de 30 dias
-          </p>
-        </CardContent>
-      </Card>
+                <div className="text-center mb-6">
+                  <div className="flex items-center justify-center gap-3 mb-2">
+                    <span className="text-2xl text-gray-400 line-through">R$ {data?.originalPrice || "497,00"}</span>
+                    <span className="text-5xl font-black text-green-600">R$ {data?.upsellPrice || "247,00"}</span>
+                  </div>
+                  <div className="bg-red-100 text-red-700 px-4 py-2 rounded-full inline-block">
+                    <Clock className="w-4 h-4 inline mr-2" />
+                    <span className="font-bold text-sm">Esta oferta expira em 10 minutos</span>
+                  </div>
+                </div>
+
+                <Button 
+                  onClick={handleAccept}
+                  className="w-full h-16 text-xl font-bold bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 text-white rounded-xl shadow-lg mb-4"
+                >
+                  SIM! QUERO APROVEITAR ESTA OFERTA
+                </Button>
+
+                <button
+                  onClick={handleDecline}
+                  className="w-full text-gray-500 hover:text-gray-700 text-sm underline"
+                >
+                  Nao, obrigado. Quero continuar sem esta oferta
+                </button>
+              </div>
+
+            </div>
+
+            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 text-center">
+              <p className="text-yellow-800 font-semibold">
+                ⚡ Esta oferta especial so aparece UMA VEZ. Nao perca esta oportunidade!
+              </p>
+            </div>
+
+          </div>
+        </div>
+
+      </div>
     </div>
   );
-};
-
-export default ProductUpsell;
+}
