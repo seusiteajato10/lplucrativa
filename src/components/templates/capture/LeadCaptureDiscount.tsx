@@ -1,105 +1,161 @@
-import { Button } from "@/components/ui/button";
+import React, { useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 import { Input } from "@/components/ui/input";
-import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { toast } from "sonner";
 
-export default function LeadCaptureDiscount({ data }: any) {
-  const [email, setEmail] = useState("");
+type LeadCaptureDiscountProps = {
+  data: Record<string, any>;
+  projectName: string;
+  projectId: string;
+  userId: string;
+  slug: string;
+};
+
+const LeadCaptureDiscount: React.FC<LeadCaptureDiscountProps> = ({
+  data,
+  projectName,
+  projectId,
+  userId,
+  slug,
+}) => {
   const [name, setName] = useState("");
+  const [email, setEmail] = useState("");
+  const [whatsapp, setWhatsapp] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    console.log("Lead capturado:", { name, email });
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
+
+    if (!name.trim() || !email.trim()) {
+      toast.error("Preencha Nome e E‑mail para garantir o desconto.");
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase.from("leads").insert({
+        project_id: projectId,
+        user_id: userId,
+        name,
+        email,
+        whatsapp,
+        source_slug: slug,
+        offer_type: "discount",
+      });
+
+      if (error) {
+        console.error("Erro ao salvar lead:", error);
+        toast.error("Não foi possível registrar seu desconto. Tente novamente.");
+        return;
+      }
+
+      toast.success("Desconto garantido! Verifique seu e‑mail para os detalhes.");
+      // opcional: redirecionar direto para página de vendas com cupom aplicado
+      // window.location.href = `/p/${slug}?step=sales`;
+    } catch (err) {
+      console.error("Erro inesperado ao salvar lead:", err);
+      toast.error("Ocorreu um erro inesperado. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
+  const discountBadge = data.discountBadge || "DESCONTO ESPECIAL POR TEMPO LIMITADO";
+  const discountValue = data.discountValue || "30% OFF";
+  const deadlineText =
+    data.deadlineText || "Válido somente para os cadastrados de hoje.";
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-600 via-pink-500 to-red-500 flex items-center justify-center p-4">
-      <div className="max-w-2xl w-full">
-        
-        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
-          
-          <div className="bg-yellow-400 text-center py-3 px-4">
-            <p className="text-black font-bold text-sm uppercase tracking-wider">
-              OFERTA EXCLUSIVA - APENAS HOJE
-            </p>
-          </div>
+    <div className="min-h-screen bg-background flex items-center justify-center">
+      <div className="w-full max-w-5xl bg-card rounded-2xl shadow-lg p-6 md:p-10 grid md:grid-cols-2 gap-8">
+        {/* Coluna esquerda: oferta de desconto */}
+        <div className="space-y-4">
+          <p className="inline-block px-4 py-1 text-xs font-semibold rounded-full bg-red-500/10 text-red-500">
+            {discountBadge}
+          </p>
 
-          <div className="p-8 md:p-12 text-center">
-            
-            <div className="mb-6">
-              <div className="inline-block bg-red-500 text-white px-6 py-2 rounded-full text-4xl font-black mb-4">
-                50% OFF
-              </div>
-            </div>
+          <h1 className="text-3xl md:text-4xl font-bold">
+            {data.headline || `Garanta ${discountValue} em ${projectName}`}
+          </h1>
 
-            <h1 className="text-3xl md:text-5xl font-black text-gray-900 mb-4 leading-tight">
-              {data?.headline || "Transforme Sua Vida em 30 Dias"}
-            </h1>
+          <p className="text-muted-foreground">
+            {data.subheadline ||
+              "Cadastre‑se para receber seu cupom exclusivo e aproveitar a condição mais vantajosa antes que acabe."}
+          </p>
 
-            <p className="text-lg md:text-xl text-gray-700 mb-8 leading-relaxed">
-              {data?.subheadline || "Descubra o metodo secreto usado por mais de 10.000 pessoas para alcancar resultados extraordinarios"}
-            </p>
+          <ul className="space-y-2 text-sm text-muted-foreground">
+            <li>
+              {data.benefit1 ||
+                "Cupom válido apenas para inscritos nesta página, não disponível em nenhum outro lugar."}
+            </li>
+            <li>
+              {data.benefit2 ||
+                "Use o desconto imediatamente ou guarde para quando estiver pronto para comprar."}
+            </li>
+            <li>
+              {data.benefit3 ||
+                "Avisaremos no seu e‑mail e, se quiser, também no WhatsApp antes do cupom expirar."}
+            </li>
+          </ul>
 
-            <div className="bg-gray-50 rounded-2xl p-6 mb-8">
-              <p className="text-sm text-gray-600 mb-4 uppercase tracking-wide font-semibold">
-                Preencha abaixo e ganhe:
-              </p>
-              
-              <ul className="text-left space-y-3 mb-6">
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-3 text-xl">✓</span>
-                  <span className="text-gray-800 font-medium">Acesso ao Ebook Exclusivo (Valor: R$ 97)</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-3 text-xl">✓</span>
-                  <span className="text-gray-800 font-medium">Bonus: Video-aulas Praticas (Valor: R$ 197)</span>
-                </li>
-                <li className="flex items-start">
-                  <span className="text-green-500 mr-3 text-xl">✓</span>
-                  <span className="text-gray-800 font-medium">Cupom de 50% OFF no Programa Completo</span>
-                </li>
-              </ul>
-
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <Input
-                  type="text"
-                  placeholder="Seu nome completo"
-                  value={name}
-                  onChange={(e) => setName(e.target.value)}
-                  className="h-14 text-lg border-2 border-gray-300 focus:border-purple-500"
-                  required
-                />
-                <Input
-                  type="email"
-                  placeholder="Seu melhor e-mail"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  className="h-14 text-lg border-2 border-gray-300 focus:border-purple-500"
-                  required
-                />
-                <Button 
-                  type="submit"
-                  className="w-full h-16 text-xl font-bold bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white rounded-xl shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
-                >
-                  QUERO MINHA OFERTA AGORA
-                </Button>
-              </form>
-            </div>
-
-            <div className="flex items-center justify-center space-x-2 text-sm text-gray-500">
-              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd"/>
-              </svg>
-              <span>Seus dados estao 100% seguros conosco</span>
-            </div>
-
-          </div>
+          <p className="text-sm font-medium text-red-500">{deadlineText}</p>
         </div>
 
-        <p className="text-center text-white text-sm mt-6">
-          Mais de 10.000 pessoas ja aproveitaram esta oferta
-        </p>
+        {/* Coluna direita: formulário */}
+        <div className="space-y-4">
+          <div>
+            <h2 className="text-xl font-semibold mb-1">
+              {data.formTitle || "Preencha para receber seu cupom:"}
+            </h2>
+            <p className="text-sm text-muted-foreground">
+              {data.formSubtitle ||
+                "Enviaremos o código de desconto diretamente para o seu e‑mail."}
+            </p>
+          </div>
 
+          <form onSubmit={handleSubmit} className="space-y-3">
+            <Input
+              type="text"
+              placeholder="Digite seu nome completo"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+            />
+            <Input
+              type="email"
+              placeholder="Digite seu melhor e‑mail"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+            />
+            <Input
+              type="tel"
+              placeholder="WhatsApp (opcional)"
+              value={whatsapp}
+              onChange={(e) => setWhatsapp(e.target.value)}
+            />
+
+            <Button
+              type="submit"
+              className="w-full mt-2"
+              disabled={isSubmitting}
+            >
+              {isSubmitting
+                ? "Enviando..."
+                : data.buttonLabel || "QUERO GARANTIR MEU DESCONTO"}
+            </Button>
+          </form>
+
+          <p className="mt-2 text-xs text-muted-foreground">
+            {data.privacyText ||
+              "Nada de spam. Utilizaremos seus dados apenas para enviar o cupom e comunicações relacionadas à oferta."}
+          </p>
+        </div>
       </div>
     </div>
   );
-}
+};
+
+export default LeadCaptureDiscount;
