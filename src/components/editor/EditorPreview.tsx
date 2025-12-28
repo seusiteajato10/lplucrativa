@@ -10,20 +10,12 @@ import ProductTemplateModern from '@/components/templates/ProductTemplateModern'
 import ProductTemplateClassic from '@/components/templates/ProductTemplateClassic';
 import { Button } from '@/components/ui/button';
 import { ChevronRight } from 'lucide-react';
-
-// Capture Templates
 import LeadCaptureEbook from '@/components/templates/capture/LeadCaptureEbook';
 import LeadCaptureVSL from '@/components/templates/capture/LeadCaptureVSL';
 import LeadCaptureQuiz from '@/components/templates/capture/LeadCaptureQuiz';
 import LeadCaptureDiscount from '@/components/templates/capture/LeadCaptureDiscount';
-
-// Upsell Templates
 import ProductUpsell from '@/components/templates/upsell/ProductUpsell';
-
-// Downsell Templates
 import GenericDownsell from '@/components/templates/downsell/GenericDownsell';
-
-// Thank You Templates
 import ProductThankYou from '@/components/templates/thankyou/ProductThankYou';
 import ServiceThankYou from '@/components/templates/thankyou/ServiceThankYou';
 import EventThankYou from '@/components/templates/thankyou/EventThankYou';
@@ -42,7 +34,6 @@ interface EditorPreviewProps {
 type FunnelStep = 'capture' | 'sales' | 'upsell' | 'downsell' | 'thankyou';
 
 const EditorPreview = ({ templateData, niche, templateId, previewMode, projectName, projectId, userId }: EditorPreviewProps) => {
-  
   const [currentFunnelStep, setCurrentFunnelStep] = useState<FunnelStep>('sales');
   
   const renderTemplate = () => {
@@ -54,11 +45,9 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
       userId: userId || "preview" 
     };
 
-    // Se o funil está ativado, renderiza baseado na etapa selecionada
     if (templateData?.funnel?.enabled) {
       const funnel = templateData.funnel;
       
-      // ETAPA: CAPTURA
       if (currentFunnelStep === 'capture' && funnel.hasLeadCapture && funnel.leadCaptureTemplate) {
         switch (funnel.leadCaptureTemplate) {
           case 'LeadCaptureDiscount':
@@ -74,7 +63,6 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
         }
       }
 
-      // ETAPA: VENDAS
       if (currentFunnelStep === 'sales' && funnel.salesPageTemplate) {
         switch (funnel.salesPageTemplate) {
           case 'ProductTemplate':
@@ -92,17 +80,14 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
         }
       }
 
-      // ETAPA: UPSELL
       if (currentFunnelStep === 'upsell' && funnel.hasUpsell && funnel.upsellTemplate) {
         return <ProductUpsell {...commonProps} />;
       }
 
-      // ETAPA: DOWNSELL
       if (currentFunnelStep === 'downsell' && funnel.hasDownsell) {
         return <GenericDownsell {...commonProps} />;
       }
 
-      // ETAPA: THANK YOU
       if (currentFunnelStep === 'thankyou' && funnel.hasThankYou && funnel.thankyouTemplate) {
         switch (funnel.thankyouTemplate) {
           case 'ProductThankYou':
@@ -118,20 +103,16 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
         }
       }
 
-      // Se nenhuma etapa foi configurada, mostra mensagem
       return (
         <div className="flex items-center justify-center h-full p-8">
           <div className="text-center">
             <h3 className="text-xl font-bold mb-2">Configure as etapas do funil</h3>
-            <p className="text-muted-foreground">
-              Selecione os templates nas abas ao lado para visualizar cada etapa
-            </p>
+            <p className="text-muted-foreground">Selecione os templates nas abas ao lado para visualizar cada etapa</p>
           </div>
         </div>
       );
     }
 
-    // Lógica de templates de CAPTURA (modo antigo - por templateId)
     if (templateId.startsWith('capture_')) {
       switch (templateId) {
         case 'capture_ebook': 
@@ -147,7 +128,6 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
       }
     }
 
-    // Lógica de templates de PRODUTO (modo antigo)
     if (niche === 'product') {
       switch (templateId) {
         case 'product_vsl': 
@@ -181,7 +161,6 @@ const EditorPreview = ({ templateData, niche, templateId, previewMode, projectNa
       steps.push({ key: 'capture', label: 'Captura', active: true });
     }
     
-    // Vendas sempre está ativo
     steps.push({ key: 'sales', label: 'Vendas', active: true });
     
     if (funnel.hasUpsell) {
