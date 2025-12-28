@@ -1,13 +1,12 @@
 import React from "react";
 import { Helmet } from "react-helmet-async";
-import { useSearchParams, useNavigate } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, ArrowRight, Play, CheckCircle } from "lucide-react";
 
 const TemplatePreview = () => {
-  const [searchParams] = useSearchParams();
+  const { templateId = "capture_ebook" } = useParams();
   const navigate = useNavigate();
-  const templateId = searchParams.get("templateId") || searchParams.get("templateId") || "capture_ebook";
 
   const templates = {
     capture_ebook: {
@@ -17,78 +16,88 @@ const TemplatePreview = () => {
       formTitle: "Cadastre-se para receber",
       cta: "Quero o E-book Grátis",
       color: "from-indigo-500 to-purple-500",
+      icon: "📖",
     },
-    capture_vsl: {
+    "capture_vsl": {
       title: "Captura VSL - Aula ao Vivo",
       hero: "Aula Exclusiva: Multiplique suas Vendas em 30 Dias",
       subtitle: "Inscreva-se AGORA - Vagas Limitadas (só 500 disponíveis)",
       formTitle: "Reserve sua vaga gratuita",
       cta: "Quero Assistir Agora",
       color: "from-blue-500 to-cyan-500",
+      icon: "▶️",
     },
-    capture_quiz: {
+    "capture_quiz": {
       title: "Captura Quiz - Diagnóstico Personalizado",
       hero: "Descubra seu Perfil de Conversão em 60 Segundos",
       subtitle: "Responda 5 perguntas e receba relatório personalizado GRATUITO",
       formTitle: "Receba seu diagnóstico",
       cta: "Ver Meu Resultado",
       color: "from-orange-500 to-red-500",
+      icon: "❓",
     },
-    capture_discount: {
+    "capture_discount": {
       title: "Captura Cupom - Oferta Relâmpago",
       hero: "🚨 70% OFF por TEMPO LIMITADO",
       subtitle: "Cupom exclusivo válido por 24h - Digite seu e-mail",
       formTitle: "Garanta seu desconto",
       cta: "Quero Meu Cupom 70% OFF",
       color: "from-emerald-500 to-green-500",
+      icon: "🎫",
     },
-    product_vsl: {
+    "product_vsl": {
       title: "Venda VSL - Produto Premium",
       hero: "O Curso que Transformou Minha Vida Financeira",
       subtitle: "R$497 → Apenas 12x de R$47 | Garantia de 7 dias",
       formTitle: "Garantir minha vaga",
       cta: "Quero Comprar Agora",
       color: "from-purple-600 to-pink-500",
+      icon: "▶️",
     },
-    product_modern: {
+    "product_modern": {
       title: "Venda Moderna - SaaS Premium",
       hero: "Automatize suas Vendas em 5 Minutos",
       subtitle: "Plano Anual | Cancelamento quando quiser | Resultados imediatos",
       formTitle: "Começar teste grátis",
       cta: "Ativar Plano Anual",
       color: "from-slate-500 to-blue-500",
+      icon: "⚡",
     },
-    product_classic: {
+    "product_classic": {
       title: "Carta de Vendas - Lançamento Quente",
       hero: "Como Faturei R$1,2M em 90 Dias (Sem Sorte)",
       subtitle: "Método passo a passo revelado | 97% de satisfação",
       formTitle: "Acessar método completo",
       cta: "Quero o Método Completo",
       color: "from-amber-500 to-orange-500",
+      icon: "📘",
     },
-    upsell_offer: {
+    "upsell_offer": {
       title: "Upsell Automático - Oferta Extra",
       hero: "🎁 Bônus Exclusivo: +R$3k/mês Garantidos",
       subtitle: "Apenas R$97 (valor real R$497) | Aceita?",
       formTitle: "Adicionar bônus ao carrinho",
       cta: "Sim, Quero o Bônus!",
       color: "from-green-500 to-emerald-500",
+      icon: "➡️",
     },
-    downsell_discount: {
+    "downsell_discount": {
       title: "Downsell - Recuperação de Venda",
       hero: "Não Pode Ir Embora! 50% OFF Final",
       subtitle: "Última chance: curso completo por R$197 (era R$497)",
       formTitle: "Confirmar compra com desconto",
       cta: "Sim, Aceito 50% OFF",
       color: "from-yellow-500 to-orange-500",
+      icon: "💰",
     },
-    thankyou_page: {
+    "thankyou_page": {
       title: "Página Obrigado - Pós-Venda",
       hero: "✅ Compra Confirmada!",
       subtitle: "Acesso liberado em 3 minutos | Verifique seu e-mail",
       formTitle: "O que achou da compra?",
       cta: "Deixar Feedback",
       color: "from-emerald-500 to-teal-500",
+      icon: "✅",
     },
   };
 
@@ -101,13 +110,13 @@ const TemplatePreview = () => {
       </Helmet>
       
       <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-50">
-        {/* HEADER COM BOTÕES FUNCIONAIS */}
+        {/* HEADER FUNCIONAL */}
         <div className="max-w-6xl mx-auto px-6 pt-8 pb-12">
           <div className="flex items-center justify-between">
             <Button 
               variant="ghost" 
               size="sm" 
-              onClick={() => navigate('/templates/galeria')}
+              onClick={() => navigate(-1)}
               className="flex items-center gap-2 hover:bg-slate-100 text-slate-600 hover:text-slate-900 font-medium"
             >
               <ArrowLeft className="w-4 h-4" />
@@ -122,11 +131,10 @@ const TemplatePreview = () => {
                 className="flex items-center gap-2 border-slate-200 hover:border-slate-300 hover:bg-slate-50"
               >
                 Novo projeto
-                <ArrowRight className="w-4 h-4" />
               </Button>
               <Button 
                 className="bg-indigo-600 hover:bg-indigo-700 text-white font-bold px-8 py-2 shadow-lg hover:shadow-xl"
-                onClick={() => navigate('/dashboard/projetos?template=' + templateId)}
+                onClick={() => window.open(`/dashboard/projetos?template=${templateId}`, '_blank')}
               >
                 Usar este template
               </Button>
@@ -134,27 +142,30 @@ const TemplatePreview = () => {
           </div>
         </div>
 
-        {/* PREVIEW REAL - CENTRALIZADO */}
+        {/* PREVIEW ÚNICO POR TEMPLATE */}
         <div className="max-w-4xl mx-auto px-6 pb-24">
           <div className="bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200 max-w-2xl mx-auto">
-            {/* HEADER DO TEMPLATE */}
-            <div className={`bg-gradient-to-r ${template.color} text-white p-12 text-center`}>
+            {/* HEADER ÚNICO */}
+            <div className={`bg-gradient-to-r ${template.color} text-white p-12 text-center relative overflow-hidden`}>
+              <div className="absolute top-8 right-8 bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm font-bold">
+                {template.icon}
+              </div>
               <h1 className="text-4xl md:text-5xl font-black mb-6 leading-tight">{template.hero}</h1>
               <p className="text-xl md:text-2xl mb-12 opacity-95">{template.subtitle}</p>
             </div>
 
-            {/* FORMULÁRIO REAL */}
+            {/* FORM ULTRA-REALISTA */}
             <div className="p-12">
               <div className="space-y-6">
                 <h3 className="text-2xl font-bold text-slate-900 text-center mb-8">{template.formTitle}</h3>
                 
                 <div className="space-y-4">
                   <input 
-                    className="w-full p-5 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 bg-slate-50 text-lg placeholder-slate-500 transition-all duration-300" 
+                    className="w-full p-5 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 bg-slate-50 text-lg placeholder-slate-500 transition-all duration-300 shadow-sm" 
                     placeholder="Digite seu melhor e-mail" 
                   />
                   <input 
-                    className="w-full p-5 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 bg-slate-50 text-lg placeholder-slate-500 transition-all duration-300" 
+                    className="w-full p-5 rounded-2xl border-2 border-slate-200 focus:border-indigo-500 focus:ring-4 focus:ring-indigo-500/10 bg-slate-50 text-lg placeholder-slate-500 transition-all duration-300 shadow-sm" 
                     placeholder="Nome completo (opcional)" 
                   />
                 </div>
