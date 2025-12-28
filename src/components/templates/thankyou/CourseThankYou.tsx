@@ -1,234 +1,197 @@
-import { CheckCircle, PlayCircle, ArrowRight, Star, Clock, BookOpen, Award, ShoppingCart } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
-import { ThankYouPageConfig, UpsellPageConfig, TemplateStyles } from "@/types/templateData";
+import { Check, BookOpen, PlayCircle, Award, Users } from "lucide-react";
 
-interface CourseThankYouProps {
-  config?: ThankYouPageConfig;
-  upsellConfig?: UpsellPageConfig;
-  styles?: TemplateStyles;
-  leadName?: string;
-  leadEmail?: string;
-  courseName?: string;
-  onUpsellClick?: () => void;
-  showCheckoutButton?: boolean;
-  checkoutButtonText?: string;
-  onCheckoutClick?: () => void;
-}
-
-const CourseThankYou = ({
-  config,
-  upsellConfig,
-  styles,
-  leadName,
-  leadEmail,
-  courseName,
-  onUpsellClick,
-  showCheckoutButton,
-  checkoutButtonText,
-  onCheckoutClick,
-}: CourseThankYouProps) => {
-  const primaryColor = styles?.primaryColor || "#10B981";
-  const secondaryColor = styles?.secondaryColor || "#34D399";
-
+export default function CourseThankYou({ data }: any) {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-muted/20">
-      {/* Success Header */}
-      <div 
-        className="py-16 text-center"
-        style={{ background: `linear-gradient(135deg, ${primaryColor}15, ${secondaryColor}10)` }}
-      >
-        <div className="container mx-auto px-4">
-          <div 
-            className="w-20 h-20 rounded-full mx-auto mb-6 flex items-center justify-center"
-            style={{ backgroundColor: `${primaryColor}20` }}
-          >
-            <Award className="w-10 h-10" style={{ color: primaryColor }} />
-          </div>
-          <h1 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            {config?.title || "Matrícula Confirmada!"}
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            {config?.subtitle || "Parabéns! Você acaba de dar o primeiro passo para transformar sua carreira."}
-          </p>
-          {leadName && (
-            <p className="text-lg text-muted-foreground mt-4">
-              Bem-vindo ao curso, <span className="font-semibold text-foreground">{leadName}</span>!
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 to-blue-100 flex items-center justify-center p-4">
+      <div className="max-w-4xl w-full">
+        
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
+          
+          <div className="bg-gradient-to-r from-indigo-600 to-blue-600 text-white py-12 px-8 text-center">
+            <div className="inline-block bg-white rounded-full p-4 mb-6">
+              <Check className="w-16 h-16 text-indigo-600" />
+            </div>
+            <h1 className="text-4xl md:text-5xl font-black mb-4">
+              Bem-Vindo ao Curso! Vamos Comecar
+            </h1>
+            <p className="text-xl text-indigo-100">
+              Seu acesso foi liberado com sucesso
             </p>
-          )}
-        </div>
-      </div>
+          </div>
 
-      {/* Content */}
-      <div className="container mx-auto px-4 py-12">
-        <div className="max-w-3xl mx-auto space-y-8">
-          {/* Checkout Button (for after_lead type) */}
-          {showCheckoutButton && (
-            <Card 
-              className="border-2 shadow-xl"
-              style={{ borderColor: primaryColor }}
-            >
-              <CardContent className="p-8 text-center">
-                <ShoppingCart className="w-12 h-12 mx-auto mb-4" style={{ color: primaryColor }} />
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  Finalize sua matrícula agora!
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  Clique no botão abaixo para garantir seu acesso ao curso completo.
-                </p>
-                <Button 
-                  size="lg" 
-                  className="text-white text-lg px-8 py-6"
-                  style={{ backgroundColor: primaryColor }}
-                  onClick={onCheckoutClick}
-                >
-                  {checkoutButtonText || "Matricular Agora"}
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </CardContent>
-            </Card>
-          )}
+          <div className="p-8 md:p-12">
+            
+            <div className="bg-green-50 border-2 border-green-300 rounded-xl p-6 mb-8">
+              <div className="flex items-start space-x-4">
+                <Check className="w-6 h-6 text-green-600 flex-shrink-0 mt-1" />
+                <div>
+                  <h3 className="font-bold text-green-900 mb-2">Acesso Liberado</h3>
+                  <p className="text-green-700 text-sm">
+                    Enviamos um e-mail com seu login e senha para <strong>{data?.email || "seu@email.com"}</strong>
+                    <br />
+                    Ja pode comecar a assistir as aulas agora mesmo!
+                  </p>
+                </div>
+              </div>
+            </div>
 
-          {/* Course Access Card */}
-          <Card className="border-0 shadow-lg">
-            <CardContent className="p-8">
-              <h2 className="text-2xl font-bold text-foreground mb-6 flex items-center gap-3">
-                <PlayCircle className="w-6 h-6" style={{ color: primaryColor }} />
-                Acesse Seu Curso
+            <div className="grid md:grid-cols-4 gap-6 mb-8">
+              
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <div className="text-4xl font-black text-indigo-600 mb-2">
+                  {data?.modulesCount || "12"}
+                </div>
+                <p className="text-sm text-gray-600">Modulos</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <div className="text-4xl font-black text-indigo-600 mb-2">
+                  {data?.videosCount || "87"}
+                </div>
+                <p className="text-sm text-gray-600">Video-aulas</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <div className="text-4xl font-black text-indigo-600 mb-2">
+                  {data?.hoursCount || "24h"}
+                </div>
+                <p className="text-sm text-gray-600">De Conteudo</p>
+              </div>
+
+              <div className="bg-gray-50 rounded-xl p-6 text-center">
+                <div className="text-4xl font-black text-indigo-600 mb-2">
+                  {data?.studentsCount || "1.2k"}
+                </div>
+                <p className="text-sm text-gray-600">Alunos</p>
+              </div>
+
+            </div>
+
+            <div className="bg-gradient-to-br from-indigo-50 to-blue-50 rounded-2xl p-8 mb-8">
+              <h2 className="text-2xl font-black text-gray-900 mb-6 text-center">
+                Comece Sua Jornada:
               </h2>
               
-              {courseName && (
-                <div className="bg-muted/50 rounded-lg p-4 mb-6">
-                  <p className="text-sm text-muted-foreground">Curso:</p>
-                  <p className="font-semibold text-foreground">{courseName}</p>
+              <div className="space-y-4">
+                <div className="flex items-start space-x-4">
+                  <div className="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    1
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-bold text-gray-900 mb-1">Faca login na plataforma</h3>
+                    <p className="text-gray-600 text-sm mb-3">
+                      Use o e-mail e senha que enviamos para voce
+                    </p>
+                    <Button 
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white"
+                    >
+                      <PlayCircle className="w-4 h-4 mr-2" />
+                      Acessar Plataforma Agora
+                    </Button>
+                  </div>
                 </div>
-              )}
 
-              {!showCheckoutButton && (
-                <Button 
-                  size="lg" 
-                  className="w-full text-white mb-6"
-                  style={{ backgroundColor: primaryColor }}
-                >
-                  <PlayCircle className="w-5 h-5 mr-2" />
-                  ACESSAR ÁREA DE MEMBROS
-                </Button>
-              )}
+                <div className="flex items-start space-x-4">
+                  <div className="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    2
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Assista a aula de boas-vindas</h3>
+                    <p className="text-gray-600 text-sm">
+                      Entenda como funciona o curso e como aproveitar ao maximo
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    3
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Baixe os materiais de apoio</h3>
+                    <p className="text-gray-600 text-sm">
+                      PDFs, planilhas e recursos extras estao disponiveis
+                    </p>
+                  </div>
+                </div>
+
+                <div className="flex items-start space-x-4">
+                  <div className="bg-indigo-600 text-white rounded-full w-8 h-8 flex items-center justify-center font-bold flex-shrink-0">
+                    4
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-gray-900 mb-1">Entre na comunidade</h3>
+                    <p className="text-gray-600 text-sm mb-3">
+                      Conecte-se com outros alunos e tire duvidas
+                    </p>
+                    <Button 
+                      variant="outline"
+                      size="sm"
+                      className="border-2 border-green-300"
+                    >
+                      <Users className="w-4 h-4 mr-2" />
+                      Entrar no Grupo
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-6 mb-8">
               
-              <div className="pt-6 border-t border-border">
-                <h3 className="font-semibold text-foreground mb-4">Como Começar</h3>
-                <div className="space-y-3">
-                  {(config?.nextSteps || [
-                    "Acesse a área de membros com seu email",
-                    "Assista à aula de boas-vindas",
-                    "Baixe os materiais de apoio",
-                    "Entre no grupo exclusivo de alunos"
-                  ]).map((step, index) => (
-                    <div key={index} className="flex items-center gap-3">
-                      <div 
-                        className="w-6 h-6 rounded-full flex items-center justify-center text-white text-sm font-bold"
-                        style={{ backgroundColor: primaryColor }}
-                      >
-                        {index + 1}
-                      </div>
-                      <span className="text-muted-foreground">{step}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          {/* Upsell - Complete Package */}
-          {upsellConfig?.enabled && !showCheckoutButton && (
-            <Card 
-              className="border-2 shadow-xl overflow-hidden"
-              style={{ borderColor: primaryColor }}
-            >
-              <div 
-                className="py-3 px-6 text-center text-white font-semibold"
-                style={{ backgroundColor: primaryColor }}
-              >
-                <Star className="w-5 h-5 inline-block mr-2" />
-                OFERTA ESPECIAL PARA NOVOS ALUNOS
-              </div>
-              <CardContent className="p-8">
-                <div className="flex items-center gap-2 text-orange-500 mb-4">
-                  <Clock className="w-5 h-5" />
-                  <span className="font-semibold">Oferta válida apenas agora!</span>
-                </div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">
-                  {upsellConfig.title || "Complete sua formação!"}
-                </h3>
-                <p className="text-muted-foreground mb-6">
-                  {upsellConfig.description || "Adicione o curso avançado e acelere seus resultados com desconto exclusivo de boas-vindas."}
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl p-6 text-center border-2 border-blue-200">
+                <BookOpen className="w-10 h-10 text-blue-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">Material Completo</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  PDFs, planilhas e templates
                 </p>
-                
-                <div className="grid md:grid-cols-2 gap-4 mb-6">
-                  {(upsellConfig.benefits || [
-                    "Módulos avançados",
-                    "Mentorias ao vivo",
-                    "Certificado premium",
-                    "Acesso vitalício"
-                  ]).map((benefit, i) => (
-                    <div key={i} className="flex items-center gap-2">
-                      <CheckCircle className="w-5 h-5" style={{ color: primaryColor }} />
-                      <span className="text-sm text-muted-foreground">{benefit}</span>
-                    </div>
-                  ))}
-                </div>
+                <Button variant="outline" size="sm">
+                  Baixar Tudo
+                </Button>
+              </div>
 
-                <div className="flex items-center gap-4 mb-6">
-                  {upsellConfig.originalPrice && (
-                    <span className="text-xl text-muted-foreground line-through">
-                      R$ {upsellConfig.originalPrice}
-                    </span>
-                  )}
-                  <span className="text-3xl font-bold" style={{ color: primaryColor }}>
-                    R$ {upsellConfig.price || "497"}
-                  </span>
-                  {upsellConfig.discount && (
-                    <span className="bg-green-100 text-green-700 px-3 py-1 rounded-full text-sm font-semibold">
-                      -{upsellConfig.discount}%
-                    </span>
-                  )}
-                </div>
-                
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Button 
-                    size="lg" 
-                    className="flex-1 text-white"
-                    style={{ backgroundColor: primaryColor }}
-                    onClick={onUpsellClick}
-                  >
-                    <BookOpen className="w-5 h-5 mr-2" />
-                    ADICIONAR À MINHA MATRÍCULA
-                  </Button>
-                  <Button 
-                    variant="ghost" 
-                    size="lg"
-                    className="text-muted-foreground"
-                  >
-                    Começar com o básico
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
+              <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 text-center border-2 border-purple-200">
+                <Award className="w-10 h-10 text-purple-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">Certificado</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Complete e receba
+                </p>
+                <Button variant="outline" size="sm">
+                  Ver Requisitos
+                </Button>
+              </div>
 
-          {/* Email Info */}
-          <div className="text-center text-muted-foreground">
-            <p>Seus dados de acesso foram enviados por email</p>
-            {leadEmail && (
-              <p className="text-sm mt-2">
-                Verifique: <span className="font-medium">{leadEmail}</span>
+              <div className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-xl p-6 text-center border-2 border-green-200">
+                <Users className="w-10 h-10 text-green-600 mx-auto mb-3" />
+                <h3 className="font-bold text-gray-900 mb-2">Suporte</h3>
+                <p className="text-sm text-gray-600 mb-3">
+                  Tire suas duvidas
+                </p>
+                <Button variant="outline" size="sm">
+                  Falar Conosco
+                </Button>
+              </div>
+
+            </div>
+
+            <div className="bg-yellow-50 border-2 border-yellow-300 rounded-xl p-6 text-center mb-8">
+              <h3 className="font-bold text-yellow-900 mb-2">Dica de Ouro</h3>
+              <p className="text-yellow-800 text-sm">
+                Alunos que assistem as primeiras 3 aulas nas primeiras 24 horas tem <strong>3x mais chances</strong> de concluir o curso!
               </p>
-            )}
+            </div>
+
+            <Button 
+              className="w-full h-16 text-xl font-bold bg-gradient-to-r from-indigo-600 to-blue-600 hover:from-indigo-700 hover:to-blue-700 text-white rounded-xl shadow-lg"
+            >
+              COMECAR AGORA
+            </Button>
+
           </div>
         </div>
+
       </div>
     </div>
   );
-};
-
-export default CourseThankYou;
+}
