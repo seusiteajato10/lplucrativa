@@ -51,7 +51,9 @@ const ProjectEditor = () => {
 
   return (
     <>
-      <Helmet><title>Editar {project.name}</title></Helmet>
+      <Helmet>
+        <title>Editar {project.name}</title>
+      </Helmet>
       <div className="h-screen flex flex-col bg-background">
         <EditorTopBar
           projectName={project.name}
@@ -72,8 +74,8 @@ const ProjectEditor = () => {
             templateData={templateData}
             projectId={project.id}
             userId={user?.id || ''}
-            projectNiche={project.niche} /* Passando niche */
-            projectType={project.project_type} /* Passando project_type */
+            projectNiche={project.niche}
+            projectType={project.project_type}
             onUpdate={updateTemplateData}
           />
           <EditorPreview
@@ -82,10 +84,17 @@ const ProjectEditor = () => {
             templateId={templateId}
             previewMode={previewMode}
             projectName={project.name}
+            projectId={project.id}
+            userId={user?.id || ''}
           />
         </div>
       </div>
-      <VersionHistoryModal open={historyOpen} onOpenChange={setHistoryOpen} projectId={project.id} onRestore={handleRestoreVersion} />
+      <VersionHistoryModal
+        open={historyOpen}
+        onOpenChange={setHistoryOpen}
+        projectId={project.id}
+        onRestore={handleRestoreVersion}
+      />
     </>
   );
 };
