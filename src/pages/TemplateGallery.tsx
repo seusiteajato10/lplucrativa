@@ -1,153 +1,254 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from 'react';
+import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Search, LayoutTemplate, Filter, Rocket } from 'lucide-react';
-import { getTemplates, TemplateMeta } from '@/lib/template-registry';
-import TemplateCard from '@/components/gallery/TemplateCard';
-import PreviewModal from '@/components/gallery/PreviewModal';
+import { useNavigate } from 'react-router-dom';
+import { Button } from '@/components/ui/input';
+import { X, LayoutTemplate, MousePointer2, ShoppingCart, ArrowUpCircle, ArrowDownCircle, CheckCircle2 } from 'lucide-react';
+
+// IMPORTAÇÃO DOS COMPONENTES REAIS
+import LeadCaptureDiscount from "@/components/templates/capture/LeadCaptureDiscount";
+import LeadCaptureEbook from "@/components/templates/capture/LeadCaptureEbook";
+import LeadCaptureVSL from "@/components/templates/capture/LeadCaptureVSL";
+import LeadCaptureQuiz from "@/components/templates/capture/LeadCaptureQuiz";
+
+import ProductTemplate from "@/components/templates/ProductTemplate";
+import ProductTemplateVSL from "@/components/templates/ProductTemplateVSL";
+import ProductTemplateModern from "@/components/templates/ProductTemplateModern";
+import ProductTemplateClassic from "@/components/templates/ProductTemplateClassic";
+import ServiceTemplate from "@/components/templates/ServiceTemplate";
+import EventTemplate from "@/components/templates/EventTemplate";
+import CourseTemplate from "@/components/templates/CourseTemplate";
+
+import ProductUpsell from "@/components/templates/upsell/ProductUpsell";
+import ServiceUpsell from "@/components/templates/upsell/ServiceUpsell";
+import EventUpsell from "@/components/templates/upsell/EventUpsell";
+import CourseUpsell from "@/components/templates/upsell/CourseUpsell";
+
+import GenericDownsell from "@/components/templates/downsell/GenericDownsell";
+
+import ProductThankYou from "@/components/templates/thankyou/ProductThankYou";
+import ServiceThankYou from "@/components/templates/thankyou/ServiceThankYou";
+import EventThankYou from "@/components/templates/thankyou/EventThankYou";
+import CourseThankYou from "@/components/templates/thankyou/CourseThankYou";
 
 const TemplateGallery = () => {
-  const [search, setSearch] = useState('');
-  const [activeCategory, setActiveCategory] = useState('todos');
-  const [selectedTemplate, setSelectedTemplate] = useState<TemplateMeta | null>(null);
-  const [isPreviewOpen, setIsPreviewOpen] = useState(false);
-  const [templates, setTemplates] = useState<TemplateMeta[]>([]);
+  const navigate = useNavigate();
+  const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
-  useEffect(() => {
-    // Carrega os templates registrados
-    setTemplates(getTemplates());
-  }, []);
-
-  const categories = [
-    { id: 'todos', label: 'Todos' },
-    { id: 'captura', label: 'Captura de Leads' },
-    { id: 'vendas', label: 'Páginas de Vendas' },
-    { id: 'upsell', label: 'Upsell' },
-    { id: 'downsell', label: 'Downsell' },
-    { id: 'thankyou', label: 'Obrigado' },
-  ];
-
-  const filteredTemplates = useMemo(() => {
-    return templates.filter(tpl => {
-      const matchesCategory = activeCategory === 'todos' || tpl.category === activeCategory;
-      const matchesSearch = tpl.name.toLowerCase().includes(search.toLowerCase()) || 
-                           tpl.description.toLowerCase().includes(search.toLowerCase());
-      return matchesCategory && matchesSearch;
-    });
-  }, [activeCategory, search, templates]);
-
-  const openPreview = (tpl: TemplateMeta) => {
-    setSelectedTemplate(tpl);
-    setIsPreviewOpen(true);
-    // Bloqueia o scroll do body quando o modal abre
-    document.body.style.overflow = 'hidden';
-  };
-
-  const closePreview = () => {
-    setIsPreviewOpen(false);
-    document.body.style.overflow = 'unset';
+  // Props padrão para o Preview Real
+  const commonProps = {
+    data: {},
+    projectName: "Projeto Demo",
+    projectId: "demo-id",
+    userId: "demo-user",
+    slug: "demo",
   };
 
   return (
-    <div className="min-h-screen bg-slate-50/50 flex flex-col font-sans antialiased">
+    <div className="min-h-screen bg-slate-50 font-sans antialiased">
       <Helmet>
-        <title>Escolha seu Template | LP Lucrativa</title>
+        <title>Galeria de Templates | LP Lucrativa</title>
       </Helmet>
 
-      {/* Header Wix Style */}
+      {/* HEADER DA GALERIA */}
       <section className="bg-white pt-24 pb-12 px-6 border-b border-slate-200">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-2 bg-primary/10 text-primary px-4 py-2 rounded-full text-sm font-bold mb-6">
-              <Rocket className="w-4 h-4" />
-              Templates Profissionais de Alta Conversão
-            </div>
-            <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
-              Escolha seu template favorito
-            </h1>
-            <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto leading-relaxed">
-              Explore nossa biblioteca de modelos validados para cada etapa do seu funil de vendas. 
-              Clique em "Ver Demo" para visualizar o design real.
-            </p>
-          </div>
-          
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-8 mt-12 bg-slate-50 p-6 rounded-[32px] border border-slate-200">
-            {/* Categorias */}
-            <div className="flex flex-wrap justify-center lg:justify-start gap-2 overflow-x-auto pb-2 scrollbar-hide">
-              {categories.map((cat) => (
-                <button
-                  key={cat.id}
-                  onClick={() => setActiveCategory(cat.id)}
-                  className={`flex items-center gap-2 px-6 py-3 text-sm font-bold rounded-full transition-all duration-300 ${
-                    activeCategory === cat.id
-                      ? 'bg-slate-900 text-white shadow-xl scale-105'
-                      : 'bg-white text-slate-500 border border-slate-200 hover:border-slate-900 hover:text-slate-900'
-                  }`}
-                >
-                  {cat.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Busca */}
-            <div className="relative w-full lg:w-96 group">
-              <Search className="absolute left-5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400 group-focus-within:text-slate-900 transition-colors" />
-              <Input
-                placeholder="Qual o seu objetivo hoje?"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                className="pl-14 h-14 border-slate-200 rounded-2xl focus-visible:ring-slate-900/10 transition-all bg-white text-base font-medium shadow-sm"
-              />
-            </div>
-          </div>
+        <div className="max-w-7xl mx-auto text-center">
+          <h1 className="text-5xl md:text-6xl font-black text-slate-900 mb-6 tracking-tight">
+            Escolha seu template favorito
+          </h1>
+          <p className="text-xl text-slate-500 font-medium max-w-2xl mx-auto">
+            Explore nossa biblioteca de modelos reais. Clique para visualizar a demonstração ao vivo.
+          </p>
         </div>
       </section>
 
-      {/* Grid de Templates */}
-      <main className="flex-1 py-16 px-6 max-w-7xl mx-auto w-full">
-        {filteredTemplates.length > 0 ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
-            {filteredTemplates.map((template) => (
-              <TemplateCard 
-                key={template.id}
-                {...template}
-                onPreview={() => openPreview(template)}
-              />
-            ))}
+      {/* GRID DE TEMPLATES */}
+      <main className="max-w-7xl mx-auto px-6 py-16">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+          
+          {/* CATEGORIA: CAPTURA */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-emerald-500 h-full" onClick={() => setSelectedTemplate('capture_discount')}>
+            <div className="h-64 bg-gradient-to-br from-emerald-400 to-green-600 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🏷️</div>
+                <div className="text-2xl font-bold">Captura com Cupom</div>
+                <div className="text-lg">Alta Conversão</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Cupom de Desconto</h3>
+            <p className="text-slate-600">Ideal para atrair clientes com ofertas imediatas e gatilhos de urgência.</p>
           </div>
-        ) : (
-          <div className="text-center py-32 bg-white rounded-[40px] border-2 border-dashed border-slate-200">
-            <LayoutTemplate className="w-20 h-20 text-slate-200 mx-auto mb-6" />
-            <h3 className="text-2xl font-black text-slate-800">Nenhum modelo encontrado</h3>
-            <p className="text-slate-500 max-w-sm mx-auto mt-2 text-lg">
-              Não encontramos templates para "{search}". Tente buscar por termos mais genéricos.
-            </p>
+
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-emerald-500 h-full" onClick={() => setSelectedTemplate('capture_ebook')}>
+            <div className="h-64 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">📚</div>
+                <div className="text-2xl font-bold">E-book / Isca</div>
+                <div className="text-lg">Lead Magnet</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Isca Digital</h3>
+            <p className="text-slate-600">Perfeito para entregar materiais ricos em troca do contato do lead.</p>
           </div>
-        )}
+
+          {/* CATEGORIA: VENDAS */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-blue-500 h-full" onClick={() => setSelectedTemplate('product_default')}>
+            <div className="h-64 bg-gradient-to-br from-blue-500 to-indigo-600 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🛍️</div>
+                <div className="text-2xl font-bold">Produto Físico</div>
+                <div className="text-lg">Venda Direta</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Venda Padrão</h3>
+            <p className="text-slate-600">Página completa com prova social, benefícios e checkout integrado.</p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-pink-500 h-full" onClick={() => setSelectedTemplate('product_vsl')}>
+            <div className="h-64 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🎥</div>
+                <div className="text-2xl font-bold">VSL / Vídeo</div>
+                <div className="text-lg">Persuasão Máxima</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Página com VSL</h3>
+            <p className="text-slate-600">Focada em converter através de uma narrativa de vídeo poderosa.</p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-slate-800 h-full" onClick={() => setSelectedTemplate('service_basic')}>
+            <div className="h-64 bg-gradient-to-br from-slate-700 to-slate-900 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">💼</div>
+                <div className="text-2xl font-bold">Serviço / Consultoria</div>
+                <div className="text-lg">Profissional</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Página de Serviço</h3>
+            <p className="text-slate-600">Exponha sua expertise e agende clientes com facilidade.</p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-orange-500 h-full" onClick={() => setSelectedTemplate('course_basic')}>
+            <div className="h-64 bg-gradient-to-br from-indigo-600 to-blue-700 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🎓</div>
+                <div className="text-2xl font-bold">Curso Online</div>
+                <div className="text-lg">Infoprodutos</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Treinamento</h3>
+            <p className="text-slate-600">Estrutura ideal para vender cursos, mentorias e workshops gravados.</p>
+          </div>
+
+          {/* CATEGORIA: UPSELL / DOWNSELL */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-amber-500 h-full" onClick={() => setSelectedTemplate('ProductUpsell')}>
+            <div className="h-64 bg-gradient-to-br from-amber-400 to-orange-600 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">🚀</div>
+                <div className="text-2xl font-bold">Upsell de Produto</div>
+                <div className="text-lg">Aumentar Ticket</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Oferta Especial</h3>
+            <p className="text-slate-600">Aparece logo após a compra para oferecer um upgrade exclusivo.</p>
+          </div>
+
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-red-500 h-full" onClick={() => setSelectedTemplate('GenericDownsell')}>
+            <div className="h-64 bg-gradient-to-br from-red-500 to-rose-700 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">📉</div>
+                <div className="text-2xl font-bold">Downsell</div>
+                <div className="text-lg">Recuperar Venda</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Opção Acessível</h3>
+            <p className="text-slate-600">Oferta alternativa para não perder o cliente que recusou o upsell.</p>
+          </div>
+
+          {/* CATEGORIA: OBRIGADO */}
+          <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-green-500 h-full" onClick={() => setSelectedTemplate('ProductThankYou')}>
+            <div className="h-64 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-6 flex items-center justify-center text-white">
+              <div className="text-center">
+                <div className="text-4xl mb-4">✅</div>
+                <div className="text-2xl font-bold">Página de Obrigado</div>
+                <div className="text-lg">Confirmação</div>
+              </div>
+            </div>
+            <h3 className="text-2xl font-bold text-slate-900 mb-2">Sucesso de Compra</h3>
+            <p className="text-slate-600">Página final do funil com instruções de acesso e agradecimento.</p>
+          </div>
+
+        </div>
       </main>
 
-      {/* Modal de Preview */}
-      <PreviewModal 
-        isOpen={isPreviewOpen} 
-        onClose={closePreview} 
-        template={selectedTemplate}
-      />
+      {/* SISTEMA DE PREVIEW (MODAL) */}
+      {selectedTemplate && (
+        <div className="fixed inset-0 z-[100] flex flex-col bg-white animate-in fade-in duration-300">
+          {/* BARRA SUPERIOR DO PREVIEW */}
+          <div className="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-white shadow-sm">
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white">
+                <LayoutTemplate className="w-4 h-4" />
+              </div>
+              <span className="font-bold text-slate-900">Visualizando Template: {selectedTemplate}</span>
+            </div>
+            <button 
+              onClick={() => setSelectedTemplate(null)}
+              className="p-2 hover:bg-slate-100 rounded-full transition-colors"
+            >
+              <X className="w-8 h-8 text-slate-900" />
+            </button>
+          </div>
 
+          {/* ÁREA DE RENDERIZAÇÃO REAL */}
+          <div className="flex-1 overflow-auto bg-slate-100 p-4 md:p-8 flex justify-center">
+            <div className="w-full max-w-7xl bg-white shadow-2xl rounded-xl overflow-hidden min-h-full">
+              
+              {/* RENDERS CONDICIONAIS DOS TEMPLATES REAIS */}
+              {selectedTemplate === 'capture_discount' && <LeadCaptureDiscount {...commonProps} />}
+              {selectedTemplate === 'capture_ebook' && <LeadCaptureEbook {...commonProps} />}
+              {selectedTemplate === 'capture_vsl' && <LeadCaptureVSL {...commonProps} />}
+              {selectedTemplate === 'capture_quiz' && <LeadCaptureQuiz {...commonProps} />}
+
+              {selectedTemplate === 'product_default' && <ProductTemplate {...commonProps} />}
+              {selectedTemplate === 'product_vsl' && <ProductTemplateVSL {...commonProps} />}
+              {selectedTemplate === 'product_modern' && <ProductTemplateModern {...commonProps} />}
+              {selectedTemplate === 'product_classic' && <ProductTemplateClassic {...commonProps} />}
+              {selectedTemplate === 'service_basic' && <ServiceTemplate {...commonProps} />}
+              {selectedTemplate === 'event_basic' && <EventTemplate {...commonProps} />}
+              {selectedTemplate === 'course_basic' && <CourseTemplate {...commonProps} />}
+
+              {selectedTemplate === 'ProductUpsell' && <ProductUpsell {...commonProps} />}
+              {selectedTemplate === 'ServiceUpsell' && <ServiceUpsell {...commonProps} />}
+              {selectedTemplate === 'EventUpsell' && <EventUpsell {...commonProps} />}
+              {selectedTemplate === 'CourseUpsell' && <CourseUpsell {...commonProps} />}
+
+              {selectedTemplate === 'GenericDownsell' && <GenericDownsell {...commonProps} />}
+
+              {selectedTemplate === 'ProductThankYou' && <ProductThankYou {...commonProps} />}
+              {selectedTemplate === 'ServiceThankYou' && <ServiceThankYou {...commonProps} />}
+              {selectedTemplate === 'EventThankYou' && <EventThankYou {...commonProps} />}
+              {selectedTemplate === 'CourseThankYou' && <CourseThankYou {...commonProps} />}
+
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FOOTER DA GALERIA */}
       <footer className="bg-slate-900 py-20 px-6 mt-auto">
         <div className="max-w-4xl mx-auto text-center">
           <h2 className="text-white text-4xl font-black mb-6">Pronto para criar sua página?</h2>
           <p className="text-slate-400 text-lg mb-10">
-            Escolha um template e comece a capturar leads em menos de 10 minutos.
+            Cada modelo acima foi testado para garantir a melhor conversão para o seu negócio.
           </p>
-          <Button 
-            className="bg-white text-slate-900 hover:bg-slate-100 font-black px-12 py-8 rounded-2xl text-xl shadow-2xl"
+          <button 
+            className="bg-white text-slate-900 hover:bg-slate-100 font-black px-12 py-8 rounded-2xl text-xl shadow-2xl transition-all"
             onClick={() => window.open('/signup', '_blank')}
           >
             CRIAR CONTA GRÁTIS
-          </Button>
+          </button>
         </div>
       </footer>
     </div>
