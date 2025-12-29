@@ -24,58 +24,48 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Perguntas com melhor UX (6-8 perguntas ideal) [web:379][web:381]
-  const questions =
-    (data.questions as Array<{
-      id: string;
-      question: string;
-      options: { label: string; value: string; emoji?: string }[];
-    }>) ||
-    [
-      {
-        id: "q1",
-        question: "Qual é o seu nível atual?",
-        options: [
-          { label: "Estou começando do zero", value: "iniciante", emoji: "🌱" },
-          { label: "Já tenho alguma experiência", value: "intermediario", emoji: "📈" },
-          { label: "Sou avançado e quero otimizar", value: "avancado", emoji: "🚀" },
-        ],
-      },
-      {
-        id: "q2",
-        question: "Qual é o seu maior desafio agora?",
-        options: [
-          { label: "Gerar mais leads qualificados", value: "leads", emoji: "🎯" },
-          { label: "Aumentar conversão em vendas", value: "vendas", emoji: "💰" },
-          { label: "Organizar minha estratégia", value: "organizacao", emoji: "📊" },
-        ],
-      },
-      {
-        id: "q3",
-        question: "Quanto tempo você dedica por semana?",
-        options: [
-          { label: "Menos de 5 horas", value: "pouco", emoji: "⏰" },
-          { label: "Entre 5 e 15 horas", value: "medio", emoji: "⏳" },
-          { label: "Mais de 15 horas", value: "muito", emoji: "🔥" },
-        ],
-      },
-    ];
+  // Perguntas do quiz
+  const questions = (data.questions || []).length ? data.questions : [
+    {
+      id: "q1",
+      question: "Qual é o seu nível atual?",
+      options: [
+        { label: "Estou começando do zero", value: "iniciante", emoji: "🌱" },
+        { label: "Já tenho alguma experiência", value: "intermediario", emoji: "📈" },
+        { label: "Sou avançado e quero otimizar", value: "avancado", emoji: "🚀" },
+      ],
+    },
+    {
+      id: "q2",
+      question: "Qual é o seu maior desafio agora?",
+      options: [
+        { label: "Gerar mais leads qualificados", value: "leads", emoji: "🎯" },
+        { label: "Aumentar conversão em vendas", value: "vendas", emoji: "💰" },
+        { label: "Organizar minha estratégia", value: "organizacao", emoji: "📊" },
+      ],
+    },
+    {
+      id: "q3",
+      question: "Quanto tempo você dedica por semana?",
+      options: [
+        { label: "Menos de 5 horas", value: "pouco", emoji: "⏰" },
+        { label: "Entre 5 e 15 horas", value: "medio", emoji: "⏳" },
+        { label: "Mais de 15 horas", value: "muito", emoji: "🔥" },
+      ],
+    },
+  ];
 
-  const totalSteps = questions.length + 1; // perguntas + formulário final
+  const totalSteps = questions.length + 1;
   const progress = ((currentStep + 1) / totalSteps) * 100;
 
   const handleAnswerSelect = (questionId: string, value: string) => {
-    setAnswers((prev) => ({
-      ...prev,
-      [questionId]: value,
-    }));
-    
-    // Avançar automaticamente após selecionar (UX fluida) [web:379]
+    setAnswers((prev) => ({ ...prev, [questionId]: value }));
+
     setTimeout(() => {
       if (currentStep < questions.length - 1) {
         setCurrentStep(currentStep + 1);
       } else {
-        setCurrentStep(totalSteps - 1); // ir para formulário
+        setCurrentStep(totalSteps - 1);
       }
     }, 300);
   };
@@ -109,8 +99,6 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
       }
 
       toast.success("Resultado pronto! Confira seu e‑mail em instantes.");
-      // Opcional: redirecionar para página de resultado
-      // window.location.href = `/p/${slug}/resultado`;
     } catch (err) {
       console.error("Erro inesperado:", err);
       toast.error("Erro inesperado. Tente novamente.");
@@ -126,7 +114,6 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center p-4">
       <div className="w-full max-w-2xl">
-        {/* Progress bar */}
         <div className="mb-6">
           <div className="h-2 bg-white/50 rounded-full overflow-hidden shadow-inner">
             <div
@@ -141,11 +128,9 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
           </p>
         </div>
 
-        {/* Card principal */}
         <div className="bg-white rounded-3xl shadow-2xl p-8 md:p-12">
           {currentStep < questions.length ? (
-            // Perguntas do quiz
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="space-y-6">
               <div className="text-center space-y-2">
                 <span className="inline-block px-4 py-1.5 text-xs font-bold rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white">
                   {data.badge || "QUIZ INTERATIVO"}
@@ -197,8 +182,7 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
               )}
             </div>
           ) : (
-            // Formulário final (opt-in gate) [web:379][web:386]
-            <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+            <div className="space-y-6">
               <div className="text-center space-y-3">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white text-3xl mb-2">
                   ✨
@@ -274,7 +258,6 @@ const LeadCaptureQuiz: React.FC<LeadCaptureQuizProps> = ({
           )}
         </div>
 
-        {/* Trust indicators */}
         <div className="mt-6 flex items-center justify-center gap-6 text-xs text-muted-foreground">
           <div className="flex items-center gap-1.5">
             <svg className="w-4 h-4 text-green-600" fill="currentColor" viewBox="0 0 20 20">
