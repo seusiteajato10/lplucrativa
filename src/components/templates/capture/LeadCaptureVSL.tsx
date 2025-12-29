@@ -1,7 +1,5 @@
 import React, { useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 
 type LeadCaptureVSLProps = {
@@ -38,10 +36,11 @@ const LeadCaptureVSL: React.FC<LeadCaptureVSLProps> = ({
       const { error } = await supabase.from("leads").insert({
         project_id: projectId,
         user_id: userId,
-        name,
-        email,
-        whatsapp,
+        name: name.trim(),
+        email: email.trim().toLowerCase(),
+        whatsapp: whatsapp.trim() || null,
         source_slug: slug,
+        offer_type: "vsl",
       });
 
       if (error) {
@@ -51,6 +50,9 @@ const LeadCaptureVSL: React.FC<LeadCaptureVSLProps> = ({
       }
 
       toast.success("Cadastro realizado com sucesso! Confira seu e‑mail.");
+      setName("");
+      setEmail("");
+      setWhatsapp("");
       // opcional: redirecionar para a VSL de vendas
       // window.location.href = `/p/${slug}?step=sales`;
     } catch (err) {
@@ -64,24 +66,24 @@ const LeadCaptureVSL: React.FC<LeadCaptureVSLProps> = ({
   const videoUrl = data.videoUrl || data.vslUrl;
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center">
-      <div className="w-full max-w-6xl bg-card rounded-2xl shadow-lg p-6 md:p-10 grid md:grid-cols-2 gap-8">
+    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 flex items-center justify-center py-10 px-4">
+      <div className="w-full max-w-5xl bg-white shadow-xl rounded-xl p-6 md:p-10 grid md:grid-cols-2 gap-10">
         {/* Coluna esquerda: VSL */}
         <div className="space-y-4">
           <p className="inline-block px-4 py-1 text-xs font-semibold rounded-full bg-primary/10 text-primary">
             {data.badge || "AULA GRATUITA • VAGAS LIMITADAS"}
           </p>
 
-          <h1 className="text-3xl md:text-4xl font-bold">
+          <h1 className="text-3xl md:text-4xl font-extrabold text-gray-900">
             {data.headline || projectName}
           </h1>
 
-          <p className="text-muted-foreground">
+          <p className="text-muted-foreground text-lg mb-6">
             {data.subheadline ||
               "Assista à apresentação completa e descubra como aplicar essa estratégia ainda hoje."}
           </p>
 
-          <div className="mt-4 aspect-video w-full rounded-xl overflow-hidden bg-muted flex items-center justify-center">
+          <div className="mt-4 aspect-video w-full rounded-xl overflow-hidden bg-muted flex items-center justify-center shadow-lg">
             {videoUrl ? (
               <iframe
                 src={videoUrl}
@@ -98,54 +100,55 @@ const LeadCaptureVSL: React.FC<LeadCaptureVSLProps> = ({
           </div>
         </div>
 
-        {/* Coluna direita: formulário */}
-        <div className="space-y-4">
-          <div>
-            <h2 className="text-xl font-semibold mb-1">
-              {data.formTitle || "Inscreva‑se para assistir:"}
-            </h2>
-            <p className="text-sm text-muted-foreground">
-              {data.formSubtitle ||
-                "Informe seus dados para liberar o acesso imediato à aula completa."}
-            </p>
-          </div>
+        {/* Coluna direita: Formulário */}
+        <div className="space-y-4 flex flex-col justify-start">
+          <h2 className="text-2xl font-semibold mb-3">
+            {data.formTitle || "Inscreva-se para assistir:"}
+          </h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            {data.formSubtitle ||
+              "Informe seus dados para liberar o acesso imediato à aula completa."}
+          </p>
 
-          <form onSubmit={handleSubmit} className="space-y-3">
-            <Input
+          <form onSubmit={handleSubmit} className="space-y-4">
+            <input
               type="text"
               placeholder="Digite seu nome completo"
               value={name}
               onChange={(e) => setName(e.target.value)}
               required
+              className="flex h-12 w-full rounded-lg border-2 border-input bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
             />
-            <Input
+            <input
               type="email"
               placeholder="Digite seu melhor e‑mail"
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               required
+              inputMode="email"
+              className="flex h-12 w-full rounded-lg border-2 border-input bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
             />
-            <Input
+            <input
               type="tel"
               placeholder="WhatsApp (opcional)"
               value={whatsapp}
               onChange={(e) => setWhatsapp(e.target.value)}
+              inputMode="tel"
+              className="flex h-12 w-full rounded-lg border-2 border-input bg-background px-4 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500 focus-visible:border-indigo-500 disabled:cursor-not-allowed disabled:opacity-50 transition-all"
             />
 
-            <Button
+            <button
               type="submit"
-              className="w-full mt-2"
+              className="w-full h-12 inline-flex items-center justify-center rounded-lg text-base font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-lg transition-all duration-300 hover:from-indigo-600 hover:to-purple-700 hover:shadow-xl disabled:opacity-50 disabled:cursor-not-allowed"
               disabled={isSubmitting}
             >
-              {isSubmitting
-                ? "Enviando..."
-                : data.buttonLabel || "QUERO LIBERAR MEU ACESSO"}
-            </Button>
+              {isSubmitting ? "Enviando..." : data.buttonLabel || "QUERO LIBERAR MEU ACESSO"}
+            </button>
           </form>
 
-          <p className="mt-2 text-xs text-muted-foreground">
+          <p className="mt-2 text-xs text-muted-foreground text-center">
             {data.privacyText ||
-              "Sem spam. Você pode sair da lista quando quiser. Seus dados estão protegidos."}
+              "🔒 Seus dados estão seguros. Você pode cancelar sua inscrição a qualquer momento."}
           </p>
         </div>
       </div>
