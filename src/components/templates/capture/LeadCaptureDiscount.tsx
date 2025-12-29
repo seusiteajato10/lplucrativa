@@ -479,4 +479,3 @@ const LeadCaptureDiscount: React.FC<LeadCaptureDiscountProps> = ({
 };
 
 export default LeadCaptureDiscount;
-
