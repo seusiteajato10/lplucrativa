@@ -3,8 +3,7 @@
 import React, { useState } from 'react';
 import { Helmet } from 'react-helmet-async';
 import { useNavigate } from 'react-router-dom';
-import { Button } from '@/components/ui/input';
-import { X, LayoutTemplate, MousePointer2, ShoppingCart, ArrowUpCircle, ArrowDownCircle, CheckCircle2 } from 'lucide-react';
+import { X, LayoutTemplate } from 'lucide-react';
 
 // IMPORTAÇÃO DOS COMPONENTES REAIS
 import LeadCaptureDiscount from "@/components/templates/capture/LeadCaptureDiscount";
@@ -33,7 +32,6 @@ import EventThankYou from "@/components/templates/thankyou/EventThankYou";
 import CourseThankYou from "@/components/templates/thankyou/CourseThankYou";
 
 const TemplateGallery = () => {
-  const navigate = useNavigate();
   const [selectedTemplate, setSelectedTemplate] = useState<string | null>(null);
 
   // Props padrão para o Preview Real
@@ -168,7 +166,7 @@ const TemplateGallery = () => {
 
           {/* CATEGORIA: OBRIGADO */}
           <div className="bg-white rounded-3xl p-8 shadow-lg hover:shadow-2xl hover:-translate-y-3 transition-all cursor-pointer border-4 border-white hover:border-green-500 h-full" onClick={() => setSelectedTemplate('ProductThankYou')}>
-            <div className="h-64 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl mb-6 flex items-center justify-center text-white">
+            <div className="h-64 bg-gradient-to-br from-green-50 to-emerald-600 rounded-2xl mb-6 flex items-center justify-center text-white">
               <div className="text-center">
                 <div className="text-4xl mb-4">✅</div>
                 <div className="text-2xl font-bold">Página de Obrigado</div>
@@ -182,16 +180,16 @@ const TemplateGallery = () => {
         </div>
       </main>
 
-      {/* SISTEMA DE PREVIEW (MODAL) */}
+      {/* SISTEMA DE PREVIEW (MODAL) - CORRIGIDO PARA EXIBIR COMPLETO */}
       {selectedTemplate && (
-        <div className="fixed inset-0 z-[100] flex flex-col bg-white animate-in fade-in duration-300">
+        <div className="fixed inset-0 z-[100] flex flex-col bg-slate-100 animate-in fade-in duration-300">
           {/* BARRA SUPERIOR DO PREVIEW */}
-          <div className="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-white shadow-sm">
+          <div className="h-16 border-b border-slate-200 px-6 flex items-center justify-between bg-white shadow-sm shrink-0">
             <div className="flex items-center gap-3">
               <div className="w-8 h-8 rounded-lg bg-slate-900 flex items-center justify-center text-white">
                 <LayoutTemplate className="w-4 h-4" />
               </div>
-              <span className="font-bold text-slate-900">Visualizando Template: {selectedTemplate}</span>
+              <span className="font-bold text-slate-900 uppercase text-xs tracking-wider">Visualizando Template: {selectedTemplate}</span>
             </div>
             <button 
               onClick={() => setSelectedTemplate(null)}
@@ -201,9 +199,9 @@ const TemplateGallery = () => {
             </button>
           </div>
 
-          {/* ÁREA DE RENDERIZAÇÃO REAL */}
-          <div className="flex-1 overflow-auto bg-slate-100 p-4 md:p-8 flex justify-center">
-            <div className="w-full max-w-7xl bg-white shadow-2xl rounded-xl overflow-hidden min-h-full">
+          {/* ÁREA DE RENDERIZAÇÃO REAL - CENTRALIZADA E COM SCROLL CORRETO */}
+          <div className="flex-1 overflow-y-auto overflow-x-hidden p-4 md:p-12 flex justify-center items-start">
+            <div className="w-full max-w-5xl bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-3xl my-8 relative overflow-visible">
               
               {/* RENDERS CONDICIONAIS DOS TEMPLATES REAIS */}
               {selectedTemplate === 'capture_discount' && <LeadCaptureDiscount {...commonProps} />}
